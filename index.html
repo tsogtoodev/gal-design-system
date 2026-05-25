@@ -343,7 +343,7 @@
     <div class="brand">
       <img class="brand-mark" src="assets/logo.png" alt="Gal">
       <div class="brand-name">Gal</div>
-      <div class="brand-sub">Design System · v0.1</div>
+      <div class="brand-sub">Design System · v0.2</div>
     </div>
     <div class="crumb" id="crumb">
       <span>Preview</span>
@@ -388,8 +388,8 @@
               <div class="value" id="stat-components">—</div>
             </div>
             <div class="welcome-stat">
-              <span class="gal-label">App screens</span>
-              <div class="value">4</div>
+              <span class="gal-label">AI elements</span>
+              <div class="value" id="stat-ai">—</div>
             </div>
           </div>
         </div>
@@ -485,23 +485,58 @@
         })),
       },
       {
-        label: 'UI Kit · App',
+        label: 'AI Components',
         items: [
-          { id: 'app', title: 'Click-thru app', src: 'ui_kits/app/index.html' },
+          ['actions',          'Actions'],
+          ['artifact',         'Artifact'],
+          ['branch',           'Branch'],
+          ['chart',            'Chart'],
+          ['code-block',       'Code block'],
+          ['conversation',     'Conversation'],
+          ['image',            'Image'],
+          ['inline-citation',  'Inline citation'],
+          ['loader',           'Loader'],
+          ['message',          'Message'],
+          ['model-selector',   'Model selector'],
+          ['plan',             'Plan'],
+          ['prompt-input',     'Prompt input'],
+          ['reasoning',        'Reasoning'],
+          ['response',         'Response'],
+          ['sources',          'Sources'],
+          ['spreadsheet',      'Spreadsheet'],
+          ['suggestion',       'Suggestion'],
+          ['task',             'Task'],
+          ['tool',             'Tool'],
+          ['weather',          'Weather'],
+          ['web-preview',      'Web preview'],
+          ['workflow',         'Workflow'],
+        ].map(([slug, title]) => ({
+          id: 'ai-' + slug,
+          title,
+          src: 'preview/ai-' + slug + '.html',
+        })),
+      },
+      {
+        label: 'UI Kit · Apps',
+        items: [
+          { id: 'app',    title: 'Click-thru app', src: 'ui_kits/app/index.html' },
+          { id: 'ai-app', title: 'AI app',         src: 'ui_kits/ai-app/index.html' },
         ],
       },
     ];
 
     // Flat lookup
     const lookup = {};
-    let total = { foundations: 0, components: 0 };
+    let total = { foundations: 0, components: 0, ai: 0 };
     groups.forEach(g => {
       g.items.forEach(it => lookup[it.id] = { ...it, group: g.label });
       if (g.label.startsWith('Foundations')) total.foundations += g.items.length;
       if (g.label === 'Components') total.components += g.items.length;
+      if (g.label === 'AI Elements') total.ai += g.items.length;
     });
     document.getElementById('stat-foundations').textContent = total.foundations;
     document.getElementById('stat-components').textContent = total.components;
+    document.getElementById('stat-ai').textContent = total.ai;
 
     // ---------- Render nav ----------
     const navEl = document.getElementById('nav');
