@@ -36,15 +36,10 @@
       min-width: 240px;
     }
     .brand-mark {
-      width: 28px; height: 28px;
-      border-radius: var(--r-sm);
-      background: var(--accent);
-      display: grid; place-items: center;
-      color: #fff;
-      font-family: var(--font-mono);
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
+      height: 28px;
+      width: auto;
+      display: block;
+      object-fit: contain;
     }
     .brand-name {
       font-size: 15px;
@@ -346,7 +341,7 @@
   <!-- Top bar -->
   <header class="topbar">
     <div class="brand">
-      <div class="brand-mark">G</div>
+      <img class="brand-mark" src="assets/logo.png" alt="Gal">
       <div class="brand-name">Gal</div>
       <div class="brand-sub">Design System · v0.1</div>
     </div>
