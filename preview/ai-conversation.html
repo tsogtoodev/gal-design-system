@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:20px;min-height:100vh;box-sizing:border-box}
+  .frame{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:16px;box-shadow:var(--elev-1);padding:6px;display:flex;flex-direction:column;gap:6px;}
+  .fh{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;}
+  .fh .t{font:600 14px/1.2 var(--font-sans);color:var(--fg-1);}
+  .fh .actions{display:flex;gap:4px;}
+  .ibtn{width:24px;height:24px;border:0;background:transparent;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;}
+  .ibtn:hover{background:rgba(15,15,15,0.05);color:var(--fg-1);}
+  .ibtn svg{width:14px;height:14px;}
+  .sub{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:14px;}
+  .ml{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .ff{display:flex;align-items:center;gap:10px;padding:8px 10px 8px;}
+  .ff .meta{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);white-space:nowrap;}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font:500 12px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 140ms;white-space:nowrap;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+  .btn svg{width:12px;height:12px;flex-shrink:0;}
+  .av{width:28px;height:28px;border-radius:50%;flex-shrink:0;background-size:cover;background-position:center;}
+  .av.bot{background:#0F0F10;color:white;display:inline-flex;align-items:center;justify-content:center;}
+  .av.bot svg{width:14px;height:14px;}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;}
+  .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .pill.success{background:var(--success-soft);color:var(--success);}
+  .pill.info{background:var(--info-soft);color:var(--info);}
+  .pill.warn{background:var(--warning-soft);color:var(--warning);}
+  .pill.danger{background:var(--danger-soft);color:var(--danger);}
+  .pill.neutral{background:var(--bg-surface-2);color:var(--fg-2);border:1px solid var(--border);}
+  .pill.neutral::before{display:none;}
+  #conv-input:focus, #conv-input:focus-visible{outline:0 !important;box-shadow:none !important;border:0 !important;}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="fh">
+    <span class="t">Conversation</span>
+    <div class="actions">
+      <button class="ibtn" aria-label="More"><i data-lucide="more-vertical"></i></button>
+      <button class="ibtn" aria-label="Close"><i data-lucide="x"></i></button>
+    </div>
+  </div>
+  <div class="sub" style="padding:0;overflow:hidden;">
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+      <span class="ml">Thread · 4 turns</span>
+      <span style="margin-left:auto;display:inline-flex;gap:6px;align-items:center;color:var(--fg-3);font-size:11px;">
+        <i data-lucide="cpu" style="width:11px;height:11px;"></i> Claude 4.5
+      </span>
+    </div>
+
+    <div style="padding:14px 16px;display:flex;flex-direction:column;gap:14px;max-height:340px;overflow-y:auto;">
+      <!-- user -->
+      <div style="display:flex;gap:10px;">
+        <span class="av" style="background-image:url('https://i.pravatar.cc/60?img=7')"></span>
+        <div style="flex:1;min-width:0;">
+          <div class="ml" style="margin-bottom:4px;">You · 12:04</div>
+          <div style="font-size:13px;line-height:1.5;color:var(--fg-1);">Summarize the Q4 deployment changelog and flag anything that affected production.</div>
+        </div>
+      </div>
+      <!-- assistant -->
+      <div style="display:flex;gap:10px;">
+        <span class="av bot"><i data-lucide="sparkles"></i></span>
+        <div style="flex:1;min-width:0;">
+          <div class="ml" style="margin-bottom:4px;">Gal · streaming</div>
+          <div style="font-size:13px;line-height:1.5;color:var(--fg-1);">Q4 shipped 18 deploys across 3 services. Two affected production:<br>
+            <span style="color:var(--fg-2);">• <b style="color:var(--fg-1);">main-8f3c2a1</b> — latency mitigations (rolled in 25m ago)</span><br>
+            <span style="color:var(--fg-2);">• <b style="color:var(--fg-1);">main-441cde0</b> — dashboard fix (3h ago)</span><br>
+            Want a breakdown by service?<span style="display:inline-block;width:6px;height:14px;background:var(--accent);margin-left:2px;vertical-align:-2px;animation:blink 1.2s infinite;"></span>
+          </div>
+          <style>@keyframes blink{50%{opacity:0;}}</style>
+        </div>
+      </div>
+    </div>
+
+    <!-- composer -->
+    <div style="padding:10px 12px;border-top:1px solid var(--border);background:var(--bg-surface-2);display:flex;align-items:center;gap:8px;">
+      <button class="ibtn" aria-label="Attach"><i data-lucide="paperclip"></i></button>
+      <input style="flex:1;border:0;outline:0;background:transparent;font:400 13px var(--font-sans);box-shadow:none;" placeholder="Reply to thread…" id="conv-input">
+      <button class="btn btn-primary">Send <i data-lucide="arrow-up"></i></button>
+    </div>
+  </div>
+  <div class="ff">
+    <span class="meta">THREAD</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-ghost">Clear</button>
+    <button class="btn btn-outline"><i data-lucide="share-2"></i> Share</button>
+  </div>
+</div>
+<script>if(window.lucide)lucide.createIcons();</script></body></html>

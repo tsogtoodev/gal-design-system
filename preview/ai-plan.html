@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:20px;min-height:100vh;box-sizing:border-box}
+  .frame{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:16px;box-shadow:var(--elev-1);padding:6px;display:flex;flex-direction:column;gap:6px;}
+  .fh{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;gap:10px;}
+  .fh .t{font:600 14px/1.2 var(--font-sans);color:var(--fg-1);}
+  .ibtn{width:24px;height:24px;border:0;background:transparent;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;}
+  .ibtn:hover{background:rgba(15,15,15,0.05);color:var(--fg-1);}
+  .ibtn svg{width:14px;height:14px;}
+  .sub{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:14px;}
+  .ml{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .ff{display:flex;align-items:center;gap:10px;padding:8px 10px 8px;}
+  .ff .meta{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);white-space:nowrap;}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font:500 12px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 140ms;white-space:nowrap;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn svg{width:12px;height:12px;flex-shrink:0;}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;}
+  .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .pill.success{background:var(--success-soft);color:var(--success);}
+  .pill.info{background:var(--info-soft);color:var(--info);}
+  .pill.warn{background:var(--warning-soft);color:var(--warning);}
+  .pill.danger{background:var(--danger-soft);color:var(--danger);}
+  .pill.neutral{background:var(--bg-surface-2);color:var(--fg-2);border:1px solid var(--border);}
+  .pill.neutral::before{display:none;}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="fh"><span class="t">Plan</span><span class="pill info" style="margin-left:auto;">EXECUTING · 2/5</span></div>
+  <div class="sub" style="padding:0;">
+    <div class="plan-step done">
+      <span class="num">01</span>
+      <div class="body">
+        <div class="step-title">Read existing auth middleware</div>
+        <div class="step-sub">Identify shared modules, dependencies, exports</div>
+      </div>
+      <span class="pill success">DONE</span>
+    </div>
+    <div class="plan-step done">
+      <span class="num">02</span>
+      <div class="body">
+        <div class="step-title">Map three target layers</div>
+        <div class="step-sub">Token verification · Session lookup · RBAC</div>
+      </div>
+      <span class="pill success">DONE</span>
+    </div>
+    <div class="plan-step running">
+      <span class="num">03</span>
+      <div class="body">
+        <div class="step-title">Draft requireRole() helper</div>
+        <div class="step-sub">Pure function, accepts Role, returns middleware</div>
+      </div>
+      <span class="pill info">RUNNING</span>
+    </div>
+    <div class="plan-step pending">
+      <span class="num">04</span>
+      <div class="body">
+        <div class="step-title">Write migration plan</div>
+        <div class="step-sub">Per-route conversion order, rollback strategy</div>
+      </div>
+      <span class="pill neutral">QUEUED</span>
+    </div>
+    <div class="plan-step pending">
+      <span class="num">05</span>
+      <div class="body">
+        <div class="step-title">Generate PR description</div>
+        <div class="step-sub">Summary, breaking changes, test coverage</div>
+      </div>
+      <span class="pill neutral">QUEUED</span>
+    </div>
+  </div>
+  <div class="ff">
+    <span class="meta">PLAN · 5 STEPS</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-ghost">Cancel</button>
+    <button class="btn btn-outline"><i data-lucide="pause"></i> Pause</button>
+  </div>
+</div>
+<style>
+  .plan-step{display:flex;align-items:center;gap:14px;padding:12px 14px;border-top:1px solid var(--border);}
+  .plan-step:first-child{border-top:0;}
+  .plan-step .num{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;color:var(--fg-3);min-width:22px;}
+  .plan-step .body{flex:1;min-width:0;}
+  .plan-step .step-title{font:600 13px/1.3 var(--font-sans);color:var(--fg-1);}
+  .plan-step .step-sub{font-size:11px;color:var(--fg-2);margin-top:2px;}
+  .plan-step.done .step-title{color:var(--fg-2);}
+  .plan-step.pending .step-title{color:var(--fg-2);}
+  .plan-step.running{background:var(--bg-surface-2);}
+</style>
+<script>if(window.lucide)lucide.createIcons();</script></body></html>

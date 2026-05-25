@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:20px;min-height:100vh;box-sizing:border-box}
+  .frame{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:16px;box-shadow:var(--elev-1);padding:6px;display:flex;flex-direction:column;gap:6px;}
+  .fh{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;}
+  .fh .t{font:600 14px/1.2 var(--font-sans);color:var(--fg-1);}
+  .ibtn{width:28px;height:28px;border:0;background:transparent;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;flex-shrink:0;}
+  .ibtn:hover{background:rgba(15,15,15,0.05);color:var(--fg-1);}
+  .ibtn svg{width:14px;height:14px;}
+  .sub{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:14px;}
+  .ml{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .ff{display:flex;align-items:center;gap:10px;padding:8px 10px 8px;}
+  .ff .meta{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);white-space:nowrap;}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font:500 12px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 140ms;white-space:nowrap;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn svg{width:12px;height:12px;flex-shrink:0;}
+
+  /* Attachment chip */
+  .att{display:inline-flex;align-items:center;gap:6px;padding:4px 4px 4px 10px;border-radius:999px;background:var(--bg-surface-2);border:1px solid var(--border);font:500 11px/1 var(--font-sans);color:var(--fg-1);}
+  .att > svg{width:11px;height:11px;color:var(--fg-3);}
+  .att .x{width:18px;height:18px;border-radius:50%;border:0;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:var(--fg-3);transition:background 140ms,color 140ms;}
+  .att .x:hover{background:rgba(15,15,15,0.08);color:var(--fg-1);}
+  .att .x svg{width:11px;height:11px;}
+
+  /* Textarea (contenteditable) — never paint outline */
+  [contenteditable="true"]{outline:0 !important;box-shadow:none !important;-webkit-tap-highlight-color:transparent;}
+  [contenteditable="true"]:focus, [contenteditable="true"]:focus-visible{outline:0 !important;box-shadow:none !important;}
+
+  /* Send button — square pill matching the height of toolbar buttons */
+  .send{width:32px;height:32px;padding:0;border-radius:999px;background:var(--accent);color:white;border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background 140ms;flex-shrink:0;}
+  .send:hover{background:var(--accent-hover);}
+  .send svg{width:14px;height:14px;}
+  .send:disabled{opacity:0.4;cursor:not-allowed;}
+
+  /* Model selector */
+  .ms-host{position:relative;display:inline-flex;}
+  .ms-pop{position:absolute;bottom:calc(100% + 6px);left:0;width:260px;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--elev-2);padding:6px;opacity:0;transform:translateY(4px) scale(0.97);transform-origin:bottom left;pointer-events:none;transition:opacity 180ms cubic-bezier(.2,.7,.2,1),transform 220ms cubic-bezier(.2,.7,.2,1);z-index:10;}
+  .ms-host.open .ms-pop{opacity:1;transform:none;pointer-events:auto;}
+  .ms-row{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;cursor:pointer;transition:background 100ms;}
+  .ms-row:hover{background:var(--bg-surface-2);}
+  .ms-row .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .ms-row .info{flex:1;min-width:0;}
+  .ms-row .name{font:500 13px/1.2 var(--font-sans);color:var(--fg-1);}
+  .ms-row .desc{font-size:11px;color:var(--fg-2);margin-top:1px;}
+  .ms-row .chk{width:14px;height:14px;color:var(--accent);opacity:0;transition:opacity 120ms;flex-shrink:0;}
+  .ms-row.selected .chk{opacity:1;}
+  .ms-section{padding:6px 10px 4px;font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .ms-divider{height:1px;background:var(--border);margin:4px 4px;}
+
+  /* Chevron rotation */
+  .ms-host.open .ms-chev{transform:rotate(180deg);}
+  .ms-chev{transition:transform 220ms cubic-bezier(.2,.7,.2,1);}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="fh"><span class="t">PromptInput</span><span class="ml" style="margin-left:auto;">composer</span></div>
+
+  <div class="sub" style="padding:0;">
+
+    <!-- attachments preview row -->
+    <div id="attachments" style="display:flex;gap:6px;padding:10px 12px 0;flex-wrap:wrap;">
+      <span class="att" data-id="a1"><i data-lucide="file-text"></i>spec-v3.pdf<button class="x" aria-label="Remove"><i data-lucide="x"></i></button></span>
+      <span class="att" data-id="a2"><i data-lucide="image"></i>screenshot.png<button class="x" aria-label="Remove"><i data-lucide="x"></i></button></span>
+      <span class="att" data-id="a3"><i data-lucide="file-text"></i>changelog.md<button class="x" aria-label="Remove"><i data-lucide="x"></i></button></span>
+    </div>
+
+    <!-- contenteditable composer -->
+    <div style="padding:8px 14px 6px;">
+      <div contenteditable="true" id="composer" style="min-height:60px;font:400 14px/1.5 var(--font-sans);color:var(--fg-1);">Write a step-by-step plan to refactor the auth middleware. Use the attached spec.</div>
+    </div>
+
+    <!-- toolbar -->
+    <div style="display:flex;align-items:center;gap:4px;padding:8px 12px;border-top:1px solid var(--border);">
+      <button class="ibtn" title="Attach"><i data-lucide="paperclip"></i></button>
+      <button class="ibtn" title="Image"><i data-lucide="image"></i></button>
+      <button class="ibtn" title="Voice"><i data-lucide="mic"></i></button>
+      <span style="width:1px;height:14px;background:var(--border);margin:0 4px;"></span>
+
+      <!-- Working model selector -->
+      <div class="ms-host" id="model-host">
+        <button class="btn btn-outline" id="model-trigger" style="font-size:11px;padding:5px 10px;">
+          <i data-lucide="cpu"></i>
+          <span id="model-label">Claude 4.5</span>
+          <i data-lucide="chevron-down" class="ms-chev"></i>
+        </button>
+        <div class="ms-pop" id="model-pop" role="listbox">
+          <div class="ms-section">Anthropic</div>
+          <div class="ms-row selected" data-name="Claude 4.5 Sonnet" data-label="Claude 4.5"><span class="dot" style="background:#F5642B;"></span><div class="info"><div class="name">Claude 4.5 Sonnet</div><div class="desc">200K context · best balance</div></div><i data-lucide="check" class="chk"></i></div>
+          <div class="ms-row" data-name="Claude 4 Opus" data-label="Claude Opus"><span class="dot" style="background:#F5642B;"></span><div class="info"><div class="name">Claude 4 Opus</div><div class="desc">Heaviest reasoning · slower</div></div><i data-lucide="check" class="chk"></i></div>
+          <div class="ms-row" data-name="Claude 4 Haiku" data-label="Claude Haiku"><span class="dot" style="background:#F5642B;"></span><div class="info"><div class="name">Claude 4 Haiku</div><div class="desc">Fast · cheap</div></div><i data-lucide="check" class="chk"></i></div>
+          <div class="ms-divider"></div>
+          <div class="ms-section">OpenAI</div>
+          <div class="ms-row" data-name="GPT-5" data-label="GPT-5"><span class="dot" style="background:#10A37F;"></span><div class="info"><div class="name">GPT-5</div><div class="desc">128K context · reasoning</div></div><i data-lucide="check" class="chk"></i></div>
+          <div class="ms-row" data-name="GPT-5 mini" data-label="GPT-5 mini"><span class="dot" style="background:#10A37F;"></span><div class="info"><div class="name">GPT-5 mini</div><div class="desc">Lighter, faster</div></div><i data-lucide="check" class="chk"></i></div>
+        </div>
+      </div>
+
+      <button class="btn btn-outline" style="font-size:11px;padding:5px 10px;"><i data-lucide="globe"></i> Search</button>
+      <span style="flex:1;"></span>
+      <span class="ml" id="charcount" style="margin-right:4px;">142 / 4000</span>
+      <button class="send" id="send" aria-label="Send"><i data-lucide="arrow-up"></i></button>
+    </div>
+  </div>
+
+  <div class="ff"><span class="meta">⌘ + ↵ TO SEND · ↑ TO EDIT LAST</span></div>
+</div>
+
+<script>
+  if (window.lucide) lucide.createIcons();
+
+  // ---- Attachment removal ----
+  document.querySelectorAll('#attachments .att .x').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const chip = btn.closest('.att');
+      chip.style.transition = 'opacity 180ms, transform 200ms';
+      chip.style.opacity = '0';
+      chip.style.transform = 'scale(0.85)';
+      setTimeout(() => chip.remove(), 200);
+    });
+  });
+
+  // ---- Char count ----
+  const composer = document.getElementById('composer');
+  const charcount = document.getElementById('charcount');
+  function updateCount() {
+    const n = composer.innerText.length;
+    charcount.textContent = n + ' / 4000';
+  }
+  composer.addEventListener('input', updateCount);
+  updateCount();
+
+  // ---- Model selector ----
+  const host = document.getElementById('model-host');
+  const trig = document.getElementById('model-trigger');
+  const pop  = document.getElementById('model-pop');
+  const label = document.getElementById('model-label');
+  let isOpen = false;
+  function toggle(force) {
+    isOpen = force !== undefined ? force : !isOpen;
+    host.classList.toggle('open', isOpen);
+  }
+  trig.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
+  document.addEventListener('click', (e) => { if (isOpen && !host.contains(e.target)) toggle(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggle(false); });
+  pop.querySelectorAll('.ms-row').forEach(row => {
+    row.addEventListener('click', (e) => {
+      e.stopPropagation();
+      pop.querySelectorAll('.ms-row').forEach(r => r.classList.remove('selected'));
+      row.classList.add('selected');
+      label.textContent = row.dataset.label;
+      toggle(false);
+    });
+  });
+
+  // ---- Send button feedback ----
+  document.getElementById('send').addEventListener('click', () => {
+    composer.innerText = '';
+    updateCount();
+    document.querySelectorAll('#attachments .att').forEach(c => c.remove());
+  });
+</script>
+</body>
+</html>

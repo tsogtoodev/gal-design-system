@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:20px;min-height:100vh;box-sizing:border-box}
+  .frame{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:16px;box-shadow:var(--elev-1);padding:6px;display:flex;flex-direction:column;gap:6px;}
+  .fh{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;gap:10px;}
+  .fh .t{font:600 14px/1.2 var(--font-sans);color:var(--fg-1);}
+  .ibtn{width:24px;height:24px;border:0;background:transparent;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;}
+  .ibtn:hover{background:rgba(15,15,15,0.05);color:var(--fg-1);}
+  .ibtn svg{width:14px;height:14px;}
+  .sub{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:14px;}
+  .ml{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .ff{display:flex;align-items:center;gap:10px;padding:8px 10px 8px;}
+  .ff .meta{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);white-space:nowrap;}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font:500 12px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 140ms;white-space:nowrap;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn svg{width:12px;height:12px;flex-shrink:0;}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;}
+  .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .pill.success{background:var(--success-soft);color:var(--success);}
+  .pill.info{background:var(--info-soft);color:var(--info);}
+  .pill.warn{background:var(--warning-soft);color:var(--warning);}
+  .pill.danger{background:var(--danger-soft);color:var(--danger);}
+  .pill.neutral{background:var(--bg-surface-2);color:var(--fg-2);border:1px solid var(--border);}
+  .pill.neutral::before{display:none;}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="fh">
+    <span class="t">Workflow</span>
+    <span class="pill info" style="margin-left:auto;">RUNNING · STEP 3</span>
+  </div>
+  <div class="sub" style="padding:0;">
+    <!-- Step list with branches -->
+    <div style="padding:14px;display:flex;flex-direction:column;gap:0;">
+      <!-- Step 1 -->
+      <div class="wf-step done">
+        <div class="wf-rail"><span class="dot"></span><span class="bar"></span></div>
+        <div class="wf-body">
+          <div class="wf-head">
+            <span class="ml" style="color:var(--fg-3);">USER INPUT</span>
+            <span style="flex:1;"></span>
+            <span class="pill success">DONE</span>
+          </div>
+          <div class="wf-title">Refactor auth middleware</div>
+        </div>
+      </div>
+      <!-- Step 2 -->
+      <div class="wf-step done">
+        <div class="wf-rail"><span class="dot"></span><span class="bar"></span></div>
+        <div class="wf-body">
+          <div class="wf-head">
+            <span class="ml">TOOL CALL</span>
+            <span style="flex:1;"></span>
+            <span class="ml" style="color:var(--fg-3);">142 RESULTS</span>
+          </div>
+          <div class="wf-title">grep_search("requireRole")</div>
+        </div>
+      </div>
+      <!-- Step 3 (running) -->
+      <div class="wf-step running">
+        <div class="wf-rail"><span class="dot pulse"></span><span class="bar"></span></div>
+        <div class="wf-body">
+          <div class="wf-head">
+            <span class="ml" style="color:var(--info);">AGENT</span>
+            <span style="flex:1;"></span>
+            <span class="pill info">RUNNING</span>
+          </div>
+          <div class="wf-title">Synthesize three-layer refactor</div>
+          <div class="wf-sub">Reading 4 files, drafting requireRole() helper…</div>
+        </div>
+      </div>
+      <!-- Step 4 (queued) -->
+      <div class="wf-step pending">
+        <div class="wf-rail"><span class="dot"></span><span class="bar"></span></div>
+        <div class="wf-body">
+          <div class="wf-head">
+            <span class="ml">REVIEW</span>
+            <span style="flex:1;"></span>
+            <span class="pill neutral">QUEUED</span>
+          </div>
+          <div class="wf-title">Human approval gate</div>
+        </div>
+      </div>
+      <!-- Step 5 -->
+      <div class="wf-step pending">
+        <div class="wf-rail"><span class="dot"></span></div>
+        <div class="wf-body">
+          <div class="wf-head">
+            <span class="ml">TOOL CALL</span>
+            <span style="flex:1;"></span>
+            <span class="ml" style="color:var(--fg-3);">DRAFT PR</span>
+          </div>
+          <div class="wf-title">create_pull_request(branch, summary)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ff">
+    <span class="meta">AGENT WORKFLOW · 5 STEPS</span>
+    <span style="flex:1;"></span>
+    <button class="btn btn-ghost"><i data-lucide="square"></i> Stop</button>
+    <button class="btn btn-outline"><i data-lucide="pause"></i> Pause</button>
+  </div>
+</div>
+<style>
+  .wf-step{display:flex;gap:14px;align-items:stretch;}
+  .wf-rail{display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:4px;}
+  .wf-rail .dot{width:12px;height:12px;border-radius:50%;background:var(--bg-surface);border:1.5px solid var(--border-strong);position:relative;}
+  .wf-step.done .dot{background:var(--success);border-color:var(--success);}
+  .wf-step.done .dot::after{content:'';position:absolute;inset:1.5px;border-radius:50%;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M3 6.5L5 8.5L9 4' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/contain no-repeat;}
+  .wf-step.running .dot{background:var(--info);border-color:var(--info);}
+  .wf-step.running .dot.pulse{box-shadow:0 0 0 0 rgba(37,99,235,0.4);animation:pulse 1.5s infinite;}
+  @keyframes pulse{50%{box-shadow:0 0 0 6px rgba(37,99,235,0);}100%{box-shadow:0 0 0 0 rgba(37,99,235,0);}}
+  .wf-rail .bar{flex:1;width:1.5px;background:var(--border);margin:4px 0;min-height:14px;}
+  .wf-step.done .bar{background:var(--success);}
+  .wf-body{flex:1;min-width:0;padding-bottom:14px;}
+  .wf-head{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+  .wf-title{font:500 13px/1.3 var(--font-sans);color:var(--fg-1);font-family:var(--font-mono);font-weight:500;}
+  .wf-step.pending .wf-title{color:var(--fg-3);}
+  .wf-sub{font-size:11px;color:var(--fg-2);margin-top:3px;}
+</style>
+<script>if(window.lucide)lucide.createIcons();</script></body></html>

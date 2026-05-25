@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:20px;min-height:100vh;box-sizing:border-box}
+  .frame{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:16px;box-shadow:var(--elev-1);padding:6px;display:flex;flex-direction:column;gap:6px;}
+  .fh{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;gap:10px;}
+  .fh .t{font:600 14px/1.2 var(--font-sans);color:var(--fg-1);}
+  .ibtn{width:24px;height:24px;border:0;background:transparent;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;}
+  .ibtn:hover{background:rgba(15,15,15,0.05);color:var(--fg-1);}
+  .ibtn svg{width:14px;height:14px;}
+  .sub{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:14px;}
+  .ml{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .ff{display:flex;align-items:center;gap:10px;padding:8px 10px 8px;}
+  .ff .meta{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);white-space:nowrap;}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font:500 12px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 140ms;white-space:nowrap;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn svg{width:12px;height:12px;flex-shrink:0;}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;}
+  .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .pill.success{background:var(--success-soft);color:var(--success);}
+  .pill.info{background:var(--info-soft);color:var(--info);}
+  .pill.warn{background:var(--warning-soft);color:var(--warning);}
+  .pill.danger{background:var(--danger-soft);color:var(--danger);}
+  .pill.neutral{background:var(--bg-surface-2);color:var(--fg-2);border:1px solid var(--border);}
+  .pill.neutral::before{display:none;}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="fh"><span class="t">InlineCitation</span><span class="ml" style="margin-left:auto;">superscript reference</span></div>
+  <div class="sub">
+    <p style="margin:0;font:400 14px/1.7 var(--font-sans);color:var(--fg-1);">
+      Q4 deployment latency improved by 38%<span class="cite">1</span> across all regions. The root cause was a stale cache invalidation in the session lookup<span class="cite">2</span>, which is now patched with the new <code style="font-family:var(--font-mono);font-size:12px;background:var(--bg-surface-2);padding:1px 5px;border-radius:3px;">requireRole()</code> helper<span class="cite hover-open">3</span>.
+
+      <span class="cite-card">
+        <div style="display:flex;gap:10px;">
+          <span style="width:30px;height:30px;border-radius:6px;background:var(--accent-soft);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="file-text" style="width:14px;height:14px;"></i></span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:12px;font-weight:600;">Q4 Deployment Report</div>
+            <div style="font-size:11px;color:var(--fg-2);line-height:1.4;margin-top:2px;">Internal · 12/31/2025 · 5 pages · cited section §3.2</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--border-dashed);font-size:11px;color:var(--fg-2);line-height:1.5;">
+          "Caching the JWT verification step reduced p95 latency from 312ms to 194ms."
+        </div>
+      </span>
+    </p>
+  </div>
+  <div class="ff"><span class="meta">3 SOURCES · HOVER FOR PREVIEW</span></div>
+</div>
+<style>
+  .cite{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;background:var(--accent-soft);color:var(--accent);font:600 10px/1 var(--font-sans);margin:0 2px;cursor:pointer;vertical-align:1px;}
+  .cite:hover{background:var(--accent);color:white;}
+  .hover-open{position:relative;}
+  .cite-card{position:absolute;top:calc(100% + 6px);right:0;width:260px;background:var(--bg-surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--elev-2);padding:12px;z-index:10;}
+  .hover-open ~ .cite-card{display:none;}
+  /* fallback: always show the example card */
+</style>
+<script>if(window.lucide)lucide.createIcons();</script></body></html>

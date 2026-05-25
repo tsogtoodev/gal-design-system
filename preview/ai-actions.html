@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:20px;min-height:100vh;box-sizing:border-box}
+  .frame{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:16px;box-shadow:var(--elev-1);padding:6px;display:flex;flex-direction:column;gap:6px;}
+  .fh{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;gap:10px;}
+  .fh .t{font:600 14px/1.2 var(--font-sans);color:var(--fg-1);}
+  .ibtn{width:24px;height:24px;border:0;background:transparent;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;}
+  .ibtn:hover{background:rgba(15,15,15,0.05);color:var(--fg-1);}
+  .ibtn svg{width:14px;height:14px;}
+  .sub{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:14px;}
+  .ml{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .ff{display:flex;align-items:center;gap:10px;padding:8px 10px 8px;}
+  .ff .meta{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);white-space:nowrap;}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font:500 12px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 140ms;white-space:nowrap;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn svg{width:12px;height:12px;flex-shrink:0;}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;}
+  .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .pill.success{background:var(--success-soft);color:var(--success);}
+  .pill.info{background:var(--info-soft);color:var(--info);}
+  .pill.warn{background:var(--warning-soft);color:var(--warning);}
+  .pill.danger{background:var(--danger-soft);color:var(--danger);}
+  .pill.neutral{background:var(--bg-surface-2);color:var(--fg-2);border:1px solid var(--border);}
+  .pill.neutral::before{display:none;}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="fh"><span class="t">Actions</span><span class="ml" style="margin-left:auto;">on-message action row</span></div>
+  <div class="sub" style="padding:14px;">
+    <p style="margin:0 0 12px;font-size:13px;color:var(--fg-2);">Hover state shown on first row — actions reveal on message hover or always for accessibility.</p>
+    <div style="display:flex;gap:4px;padding-top:8px;border-top:1px solid var(--border);">
+      <button class="ibtn" title="Retry" style="background:var(--bg-surface-2);color:var(--fg-1);"><i data-lucide="refresh-cw"></i></button>
+      <button class="ibtn" title="Copy"><i data-lucide="copy"></i></button>
+      <button class="ibtn" title="Share"><i data-lucide="share-2"></i></button>
+      <button class="ibtn" title="Good"><i data-lucide="thumbs-up"></i></button>
+      <button class="ibtn" title="Bad"><i data-lucide="thumbs-down"></i></button>
+      <span style="flex:1;"></span>
+      <button class="ibtn" title="Speak"><i data-lucide="volume-2"></i></button>
+      <button class="ibtn" title="More"><i data-lucide="more-horizontal"></i></button>
+    </div>
+    <div style="margin-top:18px;display:flex;gap:6px;flex-wrap:wrap;">
+      <button class="btn btn-outline" style="padding:5px 10px;font-size:11px;"><i data-lucide="refresh-cw"></i> Regenerate</button>
+      <button class="btn btn-outline" style="padding:5px 10px;font-size:11px;"><i data-lucide="git-fork"></i> Branch</button>
+      <button class="btn btn-outline" style="padding:5px 10px;font-size:11px;"><i data-lucide="edit-3"></i> Edit</button>
+      <button class="btn btn-outline" style="padding:5px 10px;font-size:11px;"><i data-lucide="flag"></i> Report</button>
+    </div>
+  </div>
+  <div class="ff"><span class="meta">ICON ROW · LABELED ROW</span></div>
+</div>
+<script>if(window.lucide)lucide.createIcons();</script></body></html>

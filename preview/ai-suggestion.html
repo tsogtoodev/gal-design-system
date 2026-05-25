@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:20px;min-height:100vh;box-sizing:border-box}
+  .frame{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:16px;box-shadow:var(--elev-1);padding:6px;display:flex;flex-direction:column;gap:6px;}
+  .fh{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;gap:10px;}
+  .fh .t{font:600 14px/1.2 var(--font-sans);color:var(--fg-1);}
+  .ibtn{width:24px;height:24px;border:0;background:transparent;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;}
+  .ibtn:hover{background:rgba(15,15,15,0.05);color:var(--fg-1);}
+  .ibtn svg{width:14px;height:14px;}
+  .sub{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;padding:14px;}
+  .ml{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .ff{display:flex;align-items:center;gap:10px;padding:8px 10px 8px;}
+  .ff .meta{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);white-space:nowrap;}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font:500 12px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 140ms;white-space:nowrap;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn svg{width:12px;height:12px;flex-shrink:0;}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;}
+  .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .pill.success{background:var(--success-soft);color:var(--success);}
+  .pill.info{background:var(--info-soft);color:var(--info);}
+  .pill.warn{background:var(--warning-soft);color:var(--warning);}
+  .pill.danger{background:var(--danger-soft);color:var(--danger);}
+  .pill.neutral{background:var(--bg-surface-2);color:var(--fg-2);border:1px solid var(--border);}
+  .pill.neutral::before{display:none;}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="fh"><span class="t">Suggestion</span><span class="ml" style="margin-left:auto;">recommended next prompts</span></div>
+  <div class="sub">
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <button class="sug">
+        <i data-lucide="zap"></i>
+        <span>Run the full test suite</span>
+      </button>
+      <button class="sug">
+        <i data-lucide="file-text"></i>
+        <span>Write a PR description with breaking changes</span>
+      </button>
+      <button class="sug">
+        <i data-lucide="search"></i>
+        <span>Find every callsite that uses the old auth helper</span>
+      </button>
+      <button class="sug">
+        <i data-lucide="git-branch"></i>
+        <span>Create a branch and open a draft PR</span>
+      </button>
+    </div>
+    <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:6px;">
+      <span class="ml" style="margin-right:6px;align-self:center;">CHIPS</span>
+      <button class="chip">Explain</button>
+      <button class="chip">Summarize</button>
+      <button class="chip">Refactor</button>
+      <button class="chip">Add tests</button>
+      <button class="chip">Translate to Python</button>
+    </div>
+  </div>
+  <div class="ff"><span class="meta">CARDS · CHIPS</span></div>
+</div>
+<style>
+  .sug{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:10px;background:var(--bg-surface);font:500 13px/1 var(--font-sans);color:var(--fg-1);cursor:pointer;text-align:left;transition:background 140ms,border-color 140ms;}
+  .sug:hover{background:var(--bg-surface-2);border-color:var(--border-strong);}
+  .sug svg{width:14px;height:14px;color:var(--accent);flex-shrink:0;}
+  .chip{padding:5px 12px;border-radius:999px;background:var(--bg-surface);border:1px solid var(--border-strong);font:500 12px/1 var(--font-sans);color:var(--fg-1);cursor:pointer;transition:background 140ms;}
+  .chip:hover{background:var(--bg-surface-2);}
+</style>
+<script>if(window.lucide)lucide.createIcons();</script></body></html>

@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:20px;min-height:100vh;box-sizing:border-box}
+  .frame{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:16px;box-shadow:var(--elev-1);padding:6px;display:flex;flex-direction:column;gap:6px;}
+  .fh{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;}
+  .fh .t{font:600 14px/1.2 var(--font-sans);color:var(--fg-1);}
+  .sub{background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .ml{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .ff{display:flex;align-items:center;gap:10px;padding:8px 10px 8px;}
+  .ff .meta{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);white-space:nowrap;}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font:500 12px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 140ms;white-space:nowrap;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+  .btn svg{width:12px;height:12px;flex-shrink:0;}
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;}
+  .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .pill.info{background:var(--info-soft);color:var(--info);}
+  .pill.success{background:var(--success-soft);color:var(--success);}
+
+  /* ===== Reasoning panel ===== */
+  .rsn{display:flex;flex-direction:column;}
+  .rsn-head{
+    width:100%;display:flex;align-items:center;gap:10px;
+    padding:12px 14px;
+    background:transparent;border:0;cursor:pointer;text-align:left;
+    transition:background 140ms;
+  }
+  .rsn-head:hover{background:var(--bg-surface-2);}
+  .rsn-icon{
+    width:24px;height:24px;border-radius:6px;
+    background:var(--bg-surface-2);color:var(--fg-3);
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:background 200ms,color 200ms;flex-shrink:0;
+  }
+  .rsn-icon svg{width:14px;height:14px;}
+  .rsn.running .rsn-icon{background:var(--accent-soft);color:var(--accent);}
+  .rsn.running .rsn-icon svg{animation:pulse 1.4s ease-in-out infinite;}
+  @keyframes pulse{50%{opacity:0.4;}}
+
+  .rsn-title{font:500 13px/1.3 var(--font-sans);color:var(--fg-1);flex:1;min-width:0;}
+  .rsn-title .timer{color:var(--fg-3);font-family:var(--font-mono);font-size:11px;letter-spacing:0.04em;margin-left:6px;}
+  .rsn-chev{width:14px;height:14px;color:var(--fg-3);transition:transform 280ms cubic-bezier(.2,.7,.2,1);flex-shrink:0;}
+  .rsn.open .rsn-chev{transform:rotate(180deg);}
+
+  /* Collapse via grid-template-rows trick */
+  .rsn-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows 360ms cubic-bezier(.2,.7,.2,1);}
+  .rsn-body > .rsn-clip{overflow:hidden;min-height:0;}
+  .rsn.open .rsn-body{grid-template-rows:1fr;}
+  .rsn-pad{
+    padding:0 16px 14px 50px;
+    font:400 12px/1.6 var(--font-sans);color:var(--fg-2);font-style:italic;
+    opacity:0;transform:translateY(-4px);
+    transition:opacity 220ms cubic-bezier(.2,.7,.2,1) 60ms,transform 280ms cubic-bezier(.2,.7,.2,1) 60ms;
+    border-top:1px dashed var(--border-dashed);
+    padding-top:12px;
+    margin-top:0;
+  }
+  .rsn.open .rsn-pad{opacity:1;transform:none;}
+  .rsn-pad code{font-style:normal;font-family:var(--font-mono);font-size:11px;background:var(--bg-surface-2);padding:1px 5px;border-radius:3px;color:var(--fg-1);}
+  .rsn-pad .step{display:block;margin-top:6px;}
+  .rsn-pad .step:first-child{margin-top:0;}
+  .rsn-pad .step::before{
+    content:counter(s, decimal-leading-zero);
+    counter-increment:s;
+    display:inline-block;
+    width:22px;margin-left:-28px;
+    font-style:normal;font-family:var(--font-mono);font-size:10px;
+    letter-spacing:0.1em;color:var(--fg-3);
+    vertical-align:1px;
+  }
+  .rsn-pad{counter-reset:s;}
+
+  /* Cursor */
+  .cur{display:inline-block;width:5px;height:12px;background:var(--accent);margin-left:1px;vertical-align:-1px;animation:blink 1.1s infinite;}
+  @keyframes blink{50%{opacity:0;}}
+
+  /* Toolbar */
+  .toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px 4px;}
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <div class="fh">
+    <span class="t">Reasoning</span>
+    <span class="ml" style="margin-left:auto;">click headers to toggle · auto-opens while streaming</span>
+  </div>
+
+  <!-- ITEM 1: streaming -->
+  <div class="sub rsn open running" id="rsn-1">
+    <button class="rsn-head">
+      <span class="rsn-icon"><i data-lucide="brain"></i></span>
+      <span class="rsn-title">Reasoning <span class="timer" id="t1">8s</span></span>
+      <span class="pill info">RUNNING</span>
+      <i data-lucide="chevron-down" class="rsn-chev"></i>
+    </button>
+    <div class="rsn-body">
+      <div class="rsn-clip">
+        <div class="rsn-pad" id="stream-content">
+          <span class="step">The user wants a refactor plan. I should split this into observable concerns: token verification, session lookup, and RBAC.</span>
+          <span class="step">Each layer should be independently testable. Let me check the existing middleware structure before answering…</span>
+          <span class="step">Looking at <code>src/api/auth.ts</code>, I see the JWT decode and claims check are intertwined. Splitting these will allow…<span class="cur"></span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM 2: settled -->
+  <div class="sub rsn" id="rsn-2">
+    <button class="rsn-head">
+      <span class="rsn-icon"><i data-lucide="check"></i></span>
+      <span class="rsn-title">Reasoned for 12 seconds</span>
+      <span class="ml">5 STEPS</span>
+      <i data-lucide="chevron-down" class="rsn-chev"></i>
+    </button>
+    <div class="rsn-body">
+      <div class="rsn-clip">
+        <div class="rsn-pad">
+          <span class="step">First, I'll outline what "good" looks like — three pure layers that each do exactly one job.</span>
+          <span class="step">Token verification accepts a public key map and returns claims. No I/O. No dependencies on the request lifecycle.</span>
+          <span class="step">Session lookup is the only stateful piece — I'll wrap it in a 60s LRU so most requests hit cache.</span>
+          <span class="step">RBAC becomes a single helper: <code>requireRole(role)</code> returning a middleware fn. Pure, ergonomic, testable.</span>
+          <span class="step">Finally I'll suggest an incremental migration path so no PR has to touch every route.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn btn-outline" id="toggle-all"><i data-lucide="chevron-down"></i> Expand all</button>
+    <button class="btn btn-ghost" id="restart"><i data-lucide="play"></i> Replay streaming</button>
+    <span style="flex:1;"></span>
+    <span class="ml">CHAIN OF THOUGHT</span>
+  </div>
+</div>
+
+<script>
+  if (window.lucide) lucide.createIcons();
+
+  // ---- Toggle each panel ----
+  document.querySelectorAll('.rsn').forEach(panel => {
+    panel.querySelector('.rsn-head').addEventListener('click', () => {
+      panel.classList.toggle('open');
+      updateToggleAllLabel();
+    });
+  });
+
+  // ---- Expand all / Collapse all ----
+  const toggleBtn = document.getElementById('toggle-all');
+  function updateToggleAllLabel() {
+    const allOpen = [...document.querySelectorAll('.rsn')].every(p => p.classList.contains('open'));
+    toggleBtn.innerHTML = allOpen
+      ? '<i data-lucide="chevron-up"></i> Collapse all'
+      : '<i data-lucide="chevron-down"></i> Expand all';
+    if (window.lucide) lucide.createIcons();
+  }
+  toggleBtn.addEventListener('click', () => {
+    const allOpen = [...document.querySelectorAll('.rsn')].every(p => p.classList.contains('open'));
+    document.querySelectorAll('.rsn').forEach(p => p.classList.toggle('open', !allOpen));
+    updateToggleAllLabel();
+  });
+  updateToggleAllLabel();
+
+  // ---- Streaming animation on the running panel ----
+  const rsn1 = document.getElementById('rsn-1');
+  const content = document.getElementById('stream-content');
+  const timerEl = document.getElementById('t1');
+  let timerId = null, streamId = null;
+  let elapsed = 0;
+  let streamingTimer = null;
+  let streamPhase = 0;
+
+  const FULL_STEPS = [
+    'The user wants a refactor plan. I should split this into observable concerns: token verification, session lookup, and RBAC.',
+    'Each layer should be independently testable. Let me check the existing middleware structure before answering…',
+    'Looking at <code>src/api/auth.ts</code>, I see the JWT decode and claims check are intertwined. Splitting these will allow…',
+  ];
+
+  function startStreaming() {
+    elapsed = 0;
+    streamPhase = 0;
+    content.innerHTML = '';
+    rsn1.classList.add('running','open');
+    rsn1.querySelector('.rsn-title').innerHTML = 'Reasoning <span class="timer" id="t1">0s</span>';
+    rsn1.querySelector('.pill').textContent = 'RUNNING';
+    rsn1.querySelector('.pill').className = 'pill info';
+
+    clearInterval(timerId);
+    clearInterval(streamingTimer);
+
+    timerId = setInterval(() => {
+      elapsed++;
+      const t = rsn1.querySelector('.timer');
+      if (t) t.textContent = elapsed + 's';
+      if (elapsed >= 12) {
+        // finish stream
+        clearInterval(timerId);
+        clearInterval(streamingTimer);
+        rsn1.classList.remove('running');
+        rsn1.querySelector('.rsn-icon').innerHTML = '<i data-lucide="check"></i>';
+        rsn1.querySelector('.rsn-title').innerHTML = 'Reasoned for ' + elapsed + ' seconds';
+        const pill = rsn1.querySelector('.pill');
+        pill.className = 'pill success';
+        pill.textContent = 'DONE';
+        // remove the cursor
+        const cur = content.querySelector('.cur'); if (cur) cur.remove();
+        if (window.lucide) lucide.createIcons();
+      }
+    }, 1000);
+
+    let charIdx = 0;
+    let curStep = '';
+    streamingTimer = setInterval(() => {
+      if (streamPhase >= FULL_STEPS.length) {
+        clearInterval(streamingTimer);
+        return;
+      }
+      const step = FULL_STEPS[streamPhase];
+      curStep += step[charIdx++];
+      // Update last step in content
+      const existing = content.querySelectorAll('.step');
+      // ensure we have a step for current phase
+      while (existing.length <= streamPhase) {
+        const span = document.createElement('span');
+        span.className = 'step';
+        content.appendChild(span);
+      }
+      const all = content.querySelectorAll('.step');
+      all[streamPhase].innerHTML = curStep + '<span class="cur"></span>';
+      if (charIdx >= step.length) {
+        // strip cursor from settled step
+        all[streamPhase].innerHTML = curStep;
+        streamPhase++;
+        charIdx = 0;
+        curStep = '';
+      }
+    }, 24);
+  }
+
+  document.getElementById('restart').addEventListener('click', startStreaming);
+</script>
+</body>
+</html>
