@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Toggle group</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .row{display:flex;align-items:center;gap:14px}
+  .col{display:flex;flex-direction:column;gap:8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Toggle group · click to toggle</div>
+  <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;">
+
+    <!-- Single-select segmented icon group -->
+    <div class="tg" data-multi="false">
+      <button class="active" data-v="left"><i data-lucide="align-left"></i></button>
+      <button data-v="center"><i data-lucide="align-center"></i></button>
+      <button data-v="right"><i data-lucide="align-right"></i></button>
+      <button data-v="justify"><i data-lucide="align-justify"></i></button>
+    </div>
+
+    <!-- Multi-select rich text -->
+    <div class="tg-loose" data-multi="true">
+      <button class="active" data-v="bold"><i data-lucide="bold"></i></button>
+      <button class="active" data-v="italic"><i data-lucide="italic"></i></button>
+      <button data-v="underline"><i data-lucide="underline"></i></button>
+      <button data-v="strike"><i data-lucide="strikethrough"></i></button>
+    </div>
+
+  </div>
+  <div class="label" style="margin-top:14px;" id="tg-readout">SELECTED · LEFT · BOLD ITALIC</div>
+</div>
+<style>
+  .tg{display:inline-flex;border:1px solid var(--border-strong);border-radius:10px;overflow:hidden;}
+  .tg > button{border:0;background:transparent;padding:9px 14px;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;}
+  .tg > button + button{border-left:1px solid var(--border);}
+  .tg > button:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+  .tg > button.active{background:var(--bg-surface-2);color:var(--fg-1);}
+
+  .tg-loose{display:inline-flex;gap:4px;}
+  .tg-loose > button{border:1px solid var(--border-strong);background:var(--bg-surface);padding:6px 10px;border-radius:8px;cursor:pointer;color:var(--fg-2);transition:all 140ms;}
+  .tg-loose > button:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+  .tg-loose > button.active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-soft-2);}
+
+  .tg svg, .tg-loose svg{width:14px;height:14px;}
+</style>
+<script>
+  function readout() {
+    const align = document.querySelector('.tg .active')?.dataset.v || 'none';
+    const txt = [...document.querySelectorAll('.tg-loose .active')].map(b => b.dataset.v).join(' ') || 'none';
+    document.getElementById('tg-readout').textContent = 'SELECTED · ' + align.toUpperCase() + ' · ' + txt.toUpperCase();
+  }
+  document.querySelectorAll('.tg button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.tg button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    readout();
+  }));
+  document.querySelectorAll('.tg-loose button').forEach(b => b.addEventListener('click', () => {
+    b.classList.toggle('active');
+    readout();
+  }));
+  lucide.createIcons();
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

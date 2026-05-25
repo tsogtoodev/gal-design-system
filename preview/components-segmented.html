@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Segmented control</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 18px 20px;
+    box-shadow: var(--elev-1);
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  /* ===== Segmented control =====
+     A pill-shaped track with a single sliding "indicator" element that
+     animates between buttons. The active state is purely visual; the
+     buttons themselves only carry a `data-active` flag for color. */
+  .seg {
+    position: relative;
+    display: inline-flex;
+    padding: 3px;
+    background: var(--bg-surface-2);
+    border-radius: 999px;
+    isolation: isolate;
+  }
+
+  .seg .seg-indicator {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 0;
+    background: var(--bg-surface);
+    border-radius: 999px;
+    box-shadow: var(--elev-1);
+    transition:
+      transform 380ms cubic-bezier(.2,.7,.2,1),
+      width    380ms cubic-bezier(.2,.7,.2,1);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .seg > button {
+    position: relative;
+    z-index: 1;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 0;
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-2);
+    cursor: pointer;
+    transition: color 220ms cubic-bezier(.2,.7,.2,1);
+    white-space: nowrap;
+  }
+  .seg > button:hover:not([data-active="true"]) {
+    color: var(--fg-1);
+  }
+  .seg > button[data-active="true"] {
+    color: var(--fg-1);
+  }
+  .seg > button:focus-visible {
+    outline: 0;
+    box-shadow: var(--elev-focus);
+  }
+
+  .row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+
+  .readout {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--fg-2);
+  }
+  .readout b { color: var(--fg-1); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Segmented · indicator slides between options</div>
+
+  <div class="row">
+    <div class="seg" data-seg="range">
+      <span class="seg-indicator"></span>
+      <button data-active="true">Today</button>
+      <button>7D</button>
+      <button>1M</button>
+      <button>3M</button>
+      <button>6M</button>
+      <button>1Y</button>
+      <button>All</button>
+    </div>
+
+    <div class="seg" data-seg="billing">
+      <span class="seg-indicator"></span>
+      <button data-active="true">Monthly</button>
+      <button>Yearly</button>
+    </div>
+  </div>
+
+  <div class="readout">
+    Showing data for <b id="seg-val">Today</b> · billed <b id="seg-billing">monthly</b>
+  </div>
+</div>
+
+<script>
+  // Position the indicator under the active button, including window resize.
+  function positionIndicator(seg) {
+    const active = seg.querySelector('[data-active="true"]');
+    const indicator = seg.querySelector('.seg-indicator');
+    if (!active || !indicator) return;
+    indicator.style.width = active.offsetWidth + 'px';
+    indicator.style.transform = 'translateX(' + active.offsetLeft + 'px)';
+  }
+
+  function activate(seg, btn) {
+    seg.querySelectorAll('button').forEach(b => b.dataset.active = 'false');
+    btn.dataset.active = 'true';
+    positionIndicator(seg);
+  }
+
+  document.querySelectorAll('.seg').forEach(seg => {
+    // Place the indicator under whatever starts as active.
+    // We rAF twice so layout has settled before measuring.
+    requestAnimationFrame(() => requestAnimationFrame(() => positionIndicator(seg)));
+
+    seg.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activate(seg, btn);
+        const v = btn.textContent.trim();
+        if (seg.dataset.seg === 'range')   document.getElementById('seg-val').textContent = v;
+        if (seg.dataset.seg === 'billing') document.getElementById('seg-billing').textContent = v.toLowerCase();
+      });
+    });
+  });
+
+  window.addEventListener('resize', () => {
+    document.querySelectorAll('.seg').forEach(positionIndicator);
+  });
+  // Re-measure after fonts load (mono font shifts width)
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => document.querySelectorAll('.seg').forEach(positionIndicator));
+  }
+</script>
+</body>
+</html>

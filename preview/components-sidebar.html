@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sidebar</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&display=swap">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    place-items: start center;
+  }
+
+  /* ===== Stage tile (one per theme) ===== */
+  .demo {
+    width: 100%;
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: stretch;
+    box-sizing: border-box;
+    min-height: 620px;
+  }
+  .demo.light { background: #F4F4F4; }
+  .demo.dark  { background: #0B0B0C; }
+
+  /* ===== Sidebar shell ===== */
+  .sb {
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    transition: width 320ms cubic-bezier(.2,.7,.2,1);
+    flex-shrink: 0;
+  }
+  .demo.light .sb {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(15,15,15,0.05);
+  }
+  .demo.dark .sb {
+    background: #141416;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .sb.expanded  { width: 244px; }
+  .sb.collapsed { width: 56px; }
+
+  /* ============ HEAD ============ */
+  .sb-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 12px 6px;
+  }
+  .sb-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .sb-brand img {
+    width: 22px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+  .demo.dark .sb-brand img { filter: brightness(0) invert(1); }
+  .sb-wordmark {
+    font-family: 'Bricolage Grotesque', var(--font-sans);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .demo.light .sb-wordmark { color: var(--fg-1); }
+  .demo.dark  .sb-wordmark { color: #FAFAFA; }
+  .sb.collapsed .sb-wordmark { display: none; }
+
+  .sb-collapse {
+    width: 26px; height: 26px;
+    border: 0; background: transparent;
+    border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background 140ms, color 140ms;
+  }
+  .demo.light .sb-collapse { color: var(--fg-3); }
+  .demo.dark  .sb-collapse { color: rgba(255,255,255,0.5); }
+  .demo.light .sb-collapse:hover { background: var(--bg-surface-2); color: var(--fg-1); }
+  .demo.dark  .sb-collapse:hover { background: rgba(255,255,255,0.06); color: #FAFAFA; }
+  .sb.collapsed .sb-collapse { display: none; }
+  .sb.collapsed .sb-head { justify-content: center; padding: 12px 0 6px; }
+
+  /* ============ SEARCH ============ */
+  .sb-search {
+    margin: 4px 10px 10px;
+    display: flex; align-items: center; gap: 8px;
+    height: 32px;
+    padding: 0 9px;
+    border-radius: 8px;
+    transition: background 140ms;
+    cursor: text;
+  }
+  .demo.light .sb-search { background: var(--bg-surface-2); border: 1px solid var(--border); }
+  .demo.dark  .sb-search { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+  .sb-search:hover { filter: brightness(0.98); }
+  .sb-search svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .demo.light .sb-search svg { color: var(--fg-3); }
+  .demo.dark  .sb-search svg { color: rgba(255,255,255,0.5); }
+  .sb-search input {
+    flex: 1; border: 0; outline: 0; background: transparent;
+    font: 400 12.5px/1 var(--font-sans);
+    min-width: 0;
+  }
+  .demo.light .sb-search input { color: var(--fg-1); }
+  .demo.dark  .sb-search input { color: #FAFAFA; }
+  .demo.light .sb-search input::placeholder { color: var(--fg-3); }
+  .demo.dark  .sb-search input::placeholder { color: rgba(255,255,255,0.5); }
+  .sb-search .kbd > span {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-left: 2px;
+  }
+  .demo.light .sb-search .kbd > span {
+    background: var(--bg-surface); border: 1px solid var(--border); color: var(--fg-3);
+  }
+  .demo.dark .sb-search .kbd > span {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5);
+  }
+
+  /* Collapsed: search becomes 32px icon-only square */
+  .sb.collapsed .sb-search {
+    margin: 4px 12px 10px;
+    width: 32px; height: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+  .sb.collapsed .sb-search input,
+  .sb.collapsed .sb-search .kbd { display: none; }
+
+  /* ============ NAV ============ */
+  .sb-nav { display: flex; flex-direction: column; gap: 1px; padding: 0 10px; }
+
+  .sb-item {
+    width: 100%;
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 9px;
+    border: 0; background: transparent;
+    border-radius: 7px;
+    font: 500 13px/1 var(--font-sans);
+    cursor: pointer;
+    text-align: left;
+    transition: background 140ms, color 140ms;
+    position: relative;
+    min-height: 32px;
+    box-sizing: border-box;
+  }
+  .demo.light .sb-item { color: var(--fg-2); }
+  .demo.dark  .sb-item { color: rgba(255,255,255,0.65); }
+  .demo.light .sb-item:hover { background: var(--bg-surface-2); color: var(--fg-1); }
+  .demo.dark  .sb-item:hover { background: rgba(255,255,255,0.05); color: #FAFAFA; }
+
+  .sb-item.active {
+    background: var(--bg-surface);
+    color: var(--fg-1);
+    box-shadow: inset 0 0 0 1px var(--border);
+  }
+  .demo.dark .sb-item.active {
+    background: rgba(255,255,255,0.06);
+    color: #FAFAFA;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  }
+
+  .sb-item .ic {
+    width: 18px; height: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .sb-item .ic svg { width: 16px; height: 16px; }
+  .sb-item .label-text {
+    flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .sb-item .badge {
+    background: #EE294E;
+    color: white;
+    font: 500 10px/1 var(--font-sans);
+    padding: 2px 6px;
+    border-radius: 999px;
+    min-width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* Collapsed item */
+  .sb.collapsed .sb-nav { padding: 0 12px; }
+  .sb.collapsed .sb-item {
+    padding: 0;
+    width: 32px; height: 32px;
+    margin: 0 auto;
+    justify-content: center;
+  }
+  .sb.collapsed .sb-item .label-text { display: none; }
+  .sb.collapsed .sb-item .badge {
+    position: absolute;
+    top: -2px; right: -4px;
+    padding: 1px 4px;
+    font-size: 9px;
+    min-width: 12px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  .demo.light .sb.collapsed .sb-item .badge { border-color: var(--bg-surface); }
+  .demo.dark  .sb.collapsed .sb-item .badge { border-color: #141416; }
+
+  /* ============ DIVIDER ============ */
+  .sb-div {
+    height: 1px;
+    margin: 8px 14px;
+  }
+  .demo.light .sb-div { background: var(--border); }
+  .demo.dark  .sb-div { background: rgba(255,255,255,0.06); }
+
+  /* ============ SECTION LABEL ============ */
+  .sb-section {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .demo.light .sb-section { color: var(--fg-3); }
+  .demo.dark  .sb-section { color: rgba(255,255,255,0.45); }
+  .sb-section .add {
+    width: 18px; height: 18px;
+    border: 0; background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background 140ms, color 140ms;
+  }
+  .demo.light .sb-section .add { color: var(--fg-3); }
+  .demo.dark  .sb-section .add { color: rgba(255,255,255,0.5); }
+  .demo.light .sb-section .add:hover { background: var(--bg-surface-2); color: var(--fg-1); }
+  .demo.dark  .sb-section .add:hover { background: rgba(255,255,255,0.06); color: #FAFAFA; }
+  .sb-section .add svg { width: 12px; height: 12px; }
+
+  /* Collapsed: section becomes just the + chip */
+  .sb.collapsed .sb-section { padding: 4px 0; justify-content: center; }
+  .sb.collapsed .sb-section .section-label { display: none; }
+  .sb.collapsed .sb-section .add {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+  }
+  .demo.light .sb.collapsed .sb-section .add { border: 1px dashed var(--border-strong); }
+  .demo.dark  .sb.collapsed .sb-section .add { border: 1px dashed rgba(255,255,255,0.16); }
+  .sb.collapsed .sb-section .add svg { width: 12px; height: 12px; }
+
+  /* ============ TEAM ============ */
+  .av { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; flex-shrink: 0; display: block; }
+  .demo.light .av { background-color: var(--bg-surface-3); }
+  .demo.dark  .av { background-color: rgba(255,255,255,0.06); }
+
+  .sb-team .sb-item .label-text { font-weight: 500; font-size: 12.5px; }
+
+  /* Signal bars */
+  .signal {
+    display: inline-flex; align-items: flex-end; gap: 2px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+  .signal > span {
+    width: 3px;
+    border-radius: 1px;
+  }
+  .signal > span:nth-child(1) { height: 5px; }
+  .signal > span:nth-child(2) { height: 8px; }
+  .signal > span:nth-child(3) { height: 12px; }
+
+  /* light dim */
+  .demo.light .signal > span { background: var(--fg-4); }
+  .demo.dark  .signal > span { background: rgba(255,255,255,0.18); }
+
+  .signal.low > span:nth-child(1) { background: #EE294E; }
+  .signal.mid > span:nth-child(-n+2) { background: #F4C430; }
+  .signal.high > span { background: #1FB456; }
+
+  .sb.collapsed .sb-team .sb-item .signal { display: none; }
+
+  /* ============ BOTTOM ============ */
+  .sb-spacer { flex: 1; min-height: 16px; }
+  .sb-bottom { display: flex; flex-direction: column; gap: 1px; padding: 0 10px; }
+  .sb.collapsed .sb-bottom { padding: 0 12px; }
+
+  .sb-user {
+    margin: 8px 10px 10px;
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px;
+    border-radius: 9px;
+    transition: background 140ms;
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    width: calc(100% - 20px);
+    text-align: left;
+    box-sizing: border-box;
+  }
+  .demo.light .sb-user { background: var(--bg-surface-2); }
+  .demo.dark  .sb-user { background: rgba(255,255,255,0.04); }
+  .demo.light .sb-user:hover { background: var(--bg-surface-3); }
+  .demo.dark  .sb-user:hover { background: rgba(255,255,255,0.07); }
+
+  .sb-user .av-wrap { position: relative; flex-shrink: 0; }
+  .sb-user .av { width: 26px; height: 26px; object-fit: cover; }
+  .sb-user .av-status {
+    position: absolute;
+    bottom: -1px; right: -1px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #EE294E;
+    border: 2px solid var(--bg-surface);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: white;
+  }
+  .demo.light .sb-user .av-status { border-color: var(--bg-surface-2); }
+  .demo.dark  .sb-user .av-status { border-color: #1A1A1D; }
+  .sb-user .av-status svg { width: 6px; height: 6px; stroke-width: 4; }
+
+  .sb-user .who { flex: 1; min-width: 0; }
+  .sb-user .who .name {
+    font: 600 12.5px/1.2 var(--font-sans);
+    color: var(--fg-1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .demo.dark .sb-user .who .name { color: #FAFAFA; }
+  .sb-user .who .role {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+    margin-top: 2px;
+  }
+  .demo.dark .sb-user .who .role { color: rgba(255,255,255,0.45); }
+  .sb-user .chev {
+    flex-shrink: 0;
+    color: var(--fg-3);
+    transition: transform 220ms cubic-bezier(.2,.7,.2,1);
+  }
+  .demo.dark .sb-user .chev { color: rgba(255,255,255,0.5); }
+  .sb-user.open .chev { transform: rotate(180deg); }
+  .sb-user .chev svg { width: 14px; height: 14px; }
+
+  /* Collapsed user */
+  .sb.collapsed .sb-user {
+    margin: 8px auto 10px;
+    padding: 0;
+    width: 32px; height: 32px;
+    background: transparent !important;
+    border-radius: 50%;
+    justify-content: center;
+  }
+  .sb.collapsed .sb-user .who,
+  .sb.collapsed .sb-user .chev { display: none; }
+  .sb.collapsed .sb-user .av { width: 30px; height: 30px; object-fit: cover; }
+  .sb.collapsed .sb-user .av-status { width: 11px; height: 11px; bottom: 0; right: 0; }
+
+  /* ============ TOOLTIPS (collapsed) ============ */
+  .sb-item, .sb-search {
+    position: relative;
+  }
+  .tt {
+    position: absolute;
+    left: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px) scale(0.94);
+    transform-origin: left center;
+    background: #0F0F10;
+    color: #FAFAFA;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font: 500 12px/1 var(--font-sans);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 160ms cubic-bezier(.2,.7,.2,1), transform 200ms cubic-bezier(.2,.7,.2,1);
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .demo.dark .tt { background: #1F1F23; }
+  .sb.collapsed .sb-item:hover .tt,
+  .sb.collapsed .sb-search:hover .tt { opacity: 1; transform: translateY(-50%) translateX(0) scale(1); }
+</style>
+</head>
+<body>
+
+<!-- ===================== LIGHT VARIANT ===================== -->
+<div class="demo light">
+  <!-- Expanded -->
+  <aside class="sb expanded">
+    <div class="sb-head">
+      <div class="sb-brand">
+        <img src="../assets/logo.png" alt="Gal">
+        <span class="sb-wordmark">Gal</span>
+      </div>
+      <button class="sb-collapse" aria-label="Collapse"><i data-lucide="panel-left-close"></i></button>
+    </div>
+
+    <div class="sb-search">
+      <i data-lucide="search"></i>
+      <input placeholder="Search…">
+      <span class="kbd"><span>⌘</span><span>F</span></span>
+    </div>
+
+    <nav class="sb-nav">
+      <button class="sb-item active"><span class="ic"><i data-lucide="target"></i></span><span class="label-text">Focus</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="layout-dashboard"></i></span><span class="label-text">Dashboard</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="list-checks"></i></span><span class="label-text">Tasks</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="calendar-days"></i></span><span class="label-text">Schedule</span></button>
+    </nav>
+
+    <div class="sb-div"></div>
+
+    <nav class="sb-nav">
+      <button class="sb-item"><span class="ic"><i data-lucide="inbox"></i></span><span class="label-text">Inbox</span><span class="badge">6</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="trending-up"></i></span><span class="label-text">Analytics</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="more-horizontal"></i></span><span class="label-text">More</span></button>
+    </nav>
+
+    <div class="sb-section">
+      <span class="section-label">My team</span>
+      <button class="add" aria-label="Add member"><i data-lucide="plus"></i></button>
+    </div>
+    <div class="sb-nav sb-team">
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=47" alt=""><span class="label-text">Olivia Bennett</span><span class="signal low"><span></span><span></span><span></span></span></button>
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=12" alt=""><span class="label-text">Daniel Morgan</span><span class="signal mid"><span></span><span></span><span></span></span></button>
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=33" alt=""><span class="label-text">Ethan Reynolds</span><span class="signal high"><span></span><span></span><span></span></span></button>
+    </div>
+
+    <div class="sb-spacer"></div>
+
+    <nav class="sb-bottom">
+      <button class="sb-item"><span class="ic"><i data-lucide="settings"></i></span><span class="label-text">Settings</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="help-circle"></i></span><span class="label-text">Help center</span></button>
+    </nav>
+
+    <button class="sb-user">
+      <span class="av-wrap">
+        <img class="av" src="https://i.pravatar.cc/60?img=7" alt="">
+        <span class="av-status"><i data-lucide="minus"></i></span>
+      </span>
+      <div class="who">
+        <div class="name">James Carter</div>
+        <div class="role">Admin</div>
+      </div>
+      <span class="chev"><i data-lucide="chevron-down"></i></span>
+    </button>
+  </aside>
+
+  <!-- Collapsed -->
+  <aside class="sb collapsed">
+    <div class="sb-head">
+      <div class="sb-brand"><img src="../assets/logo.png" alt="Gal"></div>
+    </div>
+
+    <div class="sb-search">
+      <i data-lucide="search"></i>
+      <span class="tt">Search</span>
+    </div>
+
+    <nav class="sb-nav">
+      <button class="sb-item active"><span class="ic"><i data-lucide="target"></i></span><span class="tt">Focus</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="layout-dashboard"></i></span><span class="tt">Dashboard</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="list-checks"></i></span><span class="tt">Tasks</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="calendar-days"></i></span><span class="tt">Schedule</span></button>
+    </nav>
+
+    <div class="sb-div"></div>
+
+    <nav class="sb-nav">
+      <button class="sb-item"><span class="ic"><i data-lucide="inbox"></i></span><span class="badge">6</span><span class="tt">Inbox</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="trending-up"></i></span><span class="tt">Analytics</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="more-horizontal"></i></span><span class="tt">More</span></button>
+    </nav>
+
+    <div class="sb-section"><button class="add" aria-label="Add member"><i data-lucide="plus"></i></button></div>
+    <div class="sb-nav sb-team">
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=47" alt=""><span class="tt">Olivia Bennett</span></button>
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=12" alt=""><span class="tt">Daniel Morgan</span></button>
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=33" alt=""><span class="tt">Ethan Reynolds</span></button>
+    </div>
+
+    <div class="sb-spacer"></div>
+
+    <nav class="sb-bottom">
+      <button class="sb-item"><span class="ic"><i data-lucide="settings"></i></span><span class="tt">Settings</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="help-circle"></i></span><span class="tt">Help center</span></button>
+    </nav>
+
+    <button class="sb-user">
+      <span class="av-wrap">
+        <img class="av" src="https://i.pravatar.cc/60?img=7" alt="">
+        <span class="av-status"><i data-lucide="minus"></i></span>
+      </span>
+    </button>
+  </aside>
+</div>
+
+<!-- ===================== DARK VARIANT ===================== -->
+<div class="demo dark">
+  <aside class="sb expanded">
+    <div class="sb-head">
+      <div class="sb-brand">
+        <img src="../assets/logo.png" alt="Gal">
+        <span class="sb-wordmark">Gal</span>
+      </div>
+      <button class="sb-collapse" aria-label="Collapse"><i data-lucide="panel-left-close"></i></button>
+    </div>
+
+    <div class="sb-search">
+      <i data-lucide="search"></i>
+      <input placeholder="Search…">
+      <span class="kbd"><span>⌘</span><span>F</span></span>
+    </div>
+
+    <nav class="sb-nav">
+      <button class="sb-item active"><span class="ic"><i data-lucide="target"></i></span><span class="label-text">Focus</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="layout-dashboard"></i></span><span class="label-text">Dashboard</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="list-checks"></i></span><span class="label-text">Tasks</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="calendar-days"></i></span><span class="label-text">Schedule</span></button>
+    </nav>
+
+    <div class="sb-div"></div>
+
+    <nav class="sb-nav">
+      <button class="sb-item"><span class="ic"><i data-lucide="inbox"></i></span><span class="label-text">Inbox</span><span class="badge">6</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="trending-up"></i></span><span class="label-text">Analytics</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="more-horizontal"></i></span><span class="label-text">More</span></button>
+    </nav>
+
+    <div class="sb-section">
+      <span class="section-label">My team</span>
+      <button class="add" aria-label="Add member"><i data-lucide="plus"></i></button>
+    </div>
+    <div class="sb-nav sb-team">
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=47" alt=""><span class="label-text">Olivia Bennett</span><span class="signal low"><span></span><span></span><span></span></span></button>
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=12" alt=""><span class="label-text">Daniel Morgan</span><span class="signal mid"><span></span><span></span><span></span></span></button>
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=33" alt=""><span class="label-text">Ethan Reynolds</span><span class="signal high"><span></span><span></span><span></span></span></button>
+    </div>
+
+    <div class="sb-spacer"></div>
+
+    <nav class="sb-bottom">
+      <button class="sb-item"><span class="ic"><i data-lucide="settings"></i></span><span class="label-text">Settings</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="help-circle"></i></span><span class="label-text">Help center</span></button>
+    </nav>
+
+    <button class="sb-user">
+      <span class="av-wrap">
+        <img class="av" src="https://i.pravatar.cc/60?img=7" alt="">
+        <span class="av-status"><i data-lucide="minus"></i></span>
+      </span>
+      <div class="who">
+        <div class="name">James Carter</div>
+        <div class="role">Admin</div>
+      </div>
+      <span class="chev"><i data-lucide="chevron-down"></i></span>
+    </button>
+  </aside>
+
+  <aside class="sb collapsed">
+    <div class="sb-head"><div class="sb-brand"><img src="../assets/logo.png" alt="Gal"></div></div>
+    <div class="sb-search"><i data-lucide="search"></i><span class="tt">Search</span></div>
+
+    <nav class="sb-nav">
+      <button class="sb-item active"><span class="ic"><i data-lucide="target"></i></span><span class="tt">Focus</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="layout-dashboard"></i></span><span class="tt">Dashboard</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="list-checks"></i></span><span class="tt">Tasks</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="calendar-days"></i></span><span class="tt">Schedule</span></button>
+    </nav>
+
+    <div class="sb-div"></div>
+
+    <nav class="sb-nav">
+      <button class="sb-item"><span class="ic"><i data-lucide="inbox"></i></span><span class="badge">6</span><span class="tt">Inbox</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="trending-up"></i></span><span class="tt">Analytics</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="more-horizontal"></i></span><span class="tt">More</span></button>
+    </nav>
+
+    <div class="sb-section"><button class="add" aria-label="Add member"><i data-lucide="plus"></i></button></div>
+    <div class="sb-nav sb-team">
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=47" alt=""><span class="tt">Olivia Bennett</span></button>
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=12" alt=""><span class="tt">Daniel Morgan</span></button>
+      <button class="sb-item"><img class="av" src="https://i.pravatar.cc/60?img=33" alt=""><span class="tt">Ethan Reynolds</span></button>
+    </div>
+
+    <div class="sb-spacer"></div>
+
+    <nav class="sb-bottom">
+      <button class="sb-item"><span class="ic"><i data-lucide="settings"></i></span><span class="tt">Settings</span></button>
+      <button class="sb-item"><span class="ic"><i data-lucide="help-circle"></i></span><span class="tt">Help center</span></button>
+    </nav>
+
+    <button class="sb-user">
+      <span class="av-wrap">
+        <img class="av" src="https://i.pravatar.cc/60?img=7" alt="">
+        <span class="av-status"><i data-lucide="minus"></i></span>
+      </span>
+    </button>
+  </aside>
+</div>
+
+<script>
+  if (window.lucide) lucide.createIcons();
+
+  // Interactivity
+  document.querySelectorAll('.sb').forEach(sb => {
+    sb.querySelectorAll('.sb-nav .sb-item').forEach(item => {
+      item.addEventListener('click', () => {
+        sb.querySelectorAll('.sb-nav .sb-item').forEach(x => x.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+    const collapseBtn = sb.querySelector('.sb-collapse');
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', () => {
+        sb.classList.remove('expanded');
+        sb.classList.add('collapsed');
+      });
+    }
+    const brand = sb.querySelector('.sb-brand');
+    if (brand) {
+      brand.addEventListener('click', () => {
+        if (sb.classList.contains('collapsed')) {
+          sb.classList.remove('collapsed');
+          sb.classList.add('expanded');
+        }
+      });
+    }
+    const user = sb.querySelector('.sb-user');
+    if (user) user.addEventListener('click', () => user.classList.toggle('open'));
+  });
+</script>
+</body>
+</html>

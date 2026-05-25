@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Pagination</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms cubic-bezier(.2,.7,.2,1);}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Pagination · click pages</div>
+  <div class="pg">
+    <span class="pg-info" id="pg-info"></span>
+    <div class="pg-controls">
+      <button class="pg-btn" id="pg-prev"><i data-lucide="chevron-left" style="width:12px;height:12px;"></i> Prev</button>
+      <div class="pg-nums" id="pg-nums"></div>
+      <button class="pg-btn" id="pg-next">Next <i data-lucide="chevron-right" style="width:12px;height:12px;"></i></button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pg{display:flex;align-items:center;justify-content:space-between;}
+  .pg-info{font-size:13px;color:var(--fg-2);}
+  .pg-controls{display:flex;align-items:center;gap:4px;}
+  .pg-btn{height:32px;display:inline-flex;align-items:center;gap:4px;padding:0 10px;border-radius:8px;border:1px solid var(--border-strong);background:var(--bg-surface);font:500 12px/1 var(--font-sans);color:var(--fg-1);cursor:pointer;transition:background 140ms;}
+  .pg-btn:hover:not(:disabled){background:var(--bg-surface-2);}
+  .pg-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .pg-nums{display:flex;gap:2px;margin:0 4px;}
+  .pg-num{min-width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;font-size:13px;font-variant-numeric:tabular-nums;background:transparent;border:0;color:var(--fg-1);cursor:pointer;transition:background 140ms;padding:0;}
+  .pg-num:hover:not(.active):not(.gap){background:var(--bg-surface-2);}
+  .pg-num.active{background:var(--fg-1);color:var(--bg-surface);font-weight:500;}
+  .pg-num.gap{color:var(--fg-3);cursor:default;}
+</style>
+<script>
+  const TOTAL = 13, SIZE = 20, COUNT = 248;
+  let page = 3;
+  function render() {
+    document.getElementById('pg-info').textContent = 'Showing ' + ((page-1)*SIZE + 1) + ' – ' + Math.min(page*SIZE, COUNT) + ' of ' + COUNT;
+    const nums = [];
+    for (let i = 1; i <= TOTAL; i++) {
+      if (i === 1 || i === TOTAL || Math.abs(i - page) <= 1) nums.push(i);
+      else if (nums[nums.length-1] !== '…') nums.push('…');
+    }
+    document.getElementById('pg-nums').innerHTML = nums.map(n =>
+      n === '…' ? '<span class="pg-num gap">…</span>' : '<button class="pg-num ' + (n===page?'active':'') + '" data-p="' + n + '">' + n + '</button>'
+    ).join('');
+    document.querySelectorAll('.pg-num:not(.gap)').forEach(b => b.addEventListener('click', () => { page = parseInt(b.dataset.p, 10); render(); }));
+    document.getElementById('pg-prev').disabled = page === 1;
+    document.getElementById('pg-next').disabled = page === TOTAL;
+  }
+  document.getElementById('pg-prev').addEventListener('click', () => { if (page > 1) { page--; render(); } });
+  document.getElementById('pg-next').addEventListener('click', () => { if (page < TOTAL) { page++; render(); } });
+  render();
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

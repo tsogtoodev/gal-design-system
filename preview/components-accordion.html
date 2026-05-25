@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Accordion</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .meta{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);text-transform:none;letter-spacing:0;}
+
+  .acc{display:flex;flex-direction:column;gap:10px;}
+  .acc-item{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--elev-1);overflow:hidden;}
+  .acc-head{width:100%;display:flex;align-items:center;gap:12px;padding:14px 18px;border:0;background:transparent;cursor:pointer;text-align:left;transition:background 180ms cubic-bezier(.2,.7,.2,1);}
+  .acc-head:hover{background:var(--bg-surface-2);}
+  .acc-head .num{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);min-width:24px;}
+  .acc-head .title{font:600 14px/1.3 var(--font-sans);color:var(--fg-1);flex:1;}
+  .acc-head .sub{color:var(--fg-2);font-weight:400;margin-left:8px;}
+  .acc-head .right{display:flex;align-items:center;gap:12px;color:var(--fg-3);white-space:nowrap;}
+  .mono-label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .acc-head .chev{width:16px;height:16px;color:var(--fg-3);transition:transform 280ms cubic-bezier(.2,.7,.2,1);}
+  .acc-item.open .acc-head .chev{transform:rotate(180deg);}
+
+  /* === Smooth collapse using grid-template-rows trick ===
+     The direct grid child carries overflow:hidden + min-height:0 so it can collapse.
+     Padding lives on an INNER wrapper (.acc-pad) — putting padding directly on the
+     grid child would inflate the closed track because padding stays even when
+     content-box height drops to 0. */
+  .acc-body{display:grid;grid-template-rows:0fr;overflow:hidden;transition:grid-template-rows 360ms cubic-bezier(.2,.7,.2,1);}
+  .acc-body > *{overflow:hidden;min-height:0;}
+  .acc-item.open .acc-body{grid-template-rows:1fr;}
+  .acc-pad{padding:0 18px 18px;opacity:0;transform:translateY(-4px);transition:opacity 220ms cubic-bezier(.2,.7,.2,1) 80ms,transform 280ms cubic-bezier(.2,.7,.2,1) 80ms;}
+  .acc-item.open .acc-pad{opacity:1;transform:none;}
+
+  .inner{background:var(--bg-surface-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .inner-zone{padding:14px 16px;}
+  .inner-zone + .inner-zone{border-top:1px dashed var(--border-dashed);}
+  .zone-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+
+  .kv{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:13px;}
+  .kv + .kv{border-top:1px solid var(--border);}
+  .kv .k{color:var(--fg-2);}
+  .kv .v{color:var(--fg-1);font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+
+  .branch-row{display:flex;align-items:center;gap:10px;padding:10px 0;}
+  .ic{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .ic.orange{background:var(--accent-soft);color:var(--accent);}
+  .ic.green{background:var(--success-soft);color:var(--success);}
+  .ic svg{width:14px;height:14px;}
+
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;}
+  .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;}
+  .pill.success{background:var(--success-soft);color:var(--success);}
+  .pill.neutral{background:var(--bg-surface-3);color:var(--fg-2);}
+  .pill.neutral::before{display:none;}
+</style>
+</head>
+<body>
+
+<div class="acc">
+
+  <div class="acc-item">
+    <button class="acc-head">
+      <span class="num">01</span>
+      <div class="title">Trigger conditions <span class="sub">— Fires on user registration</span></div>
+      <div class="right">
+        <span class="mono-label">USER ACTIVITY</span>
+        <i data-lucide="chevron-down" class="chev"></i>
+      </div>
+    </button>
+    <div class="acc-body"><div><div class="acc-pad">
+      <div class="inner">
+        <div class="inner-zone">
+          <div class="zone-label"><span class="mono-label">SOURCE</span><span class="meta">1 active</span></div>
+          <div class="kv"><span class="k">Webhook URL</span><span class="v">/hooks/signup</span></div>
+          <div class="kv"><span class="k">Method</span><span class="v">POST</span></div>
+          <div class="kv"><span class="k">Authentication</span><span class="v">Bearer</span></div>
+        </div>
+      </div>
+    </div></div></div>
+  </div>
+
+  <div class="acc-item open">
+    <button class="acc-head">
+      <span class="num">02</span>
+      <div class="title">Conditional logic <span class="sub">— If user is VIP</span></div>
+      <div class="right">
+        <span class="mono-label">LOGIC / CONDITIONS</span>
+        <i data-lucide="chevron-down" class="chev"></i>
+      </div>
+    </button>
+    <div class="acc-body"><div><div class="acc-pad">
+      <div class="inner">
+        <div class="inner-zone">
+          <div class="zone-label"><span class="mono-label">CRITERIA</span><span class="meta">2 active</span></div>
+          <div class="kv"><span class="k">Plan</span><span class="v">VIP · ENTERPRISE</span></div>
+          <div class="kv"><span class="k">Signup source</span><span class="v">utm_source = direct</span></div>
+          <div class="kv"><span class="k">Estimated match</span><span class="v">~14% of users</span></div>
+        </div>
+        <div class="inner-zone">
+          <div class="zone-label"><span class="mono-label">BRANCHES</span><span class="pill success">ACTIVE</span></div>
+          <div class="branch-row">
+            <span class="ic green"><i data-lucide="check"></i></span>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;">Yes — VIP path</div><div style="font-size:12px;color:var(--fg-2);">Add subscriber to Mailchimp VIP audience</div></div>
+            <span class="pill neutral">3 STEPS</span>
+          </div>
+          <div class="branch-row" style="border-top:1px solid var(--border);">
+            <span class="ic orange"><i data-lucide="x"></i></span>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;">No — standard path</div><div style="font-size:12px;color:var(--fg-2);">Add to default audience, send welcome email</div></div>
+            <span class="pill neutral">2 STEPS</span>
+          </div>
+        </div>
+      </div>
+    </div></div></div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-head">
+      <span class="num">03</span>
+      <div class="title">Actions <span class="sub">— 4 configured</span></div>
+      <div class="right">
+        <span class="mono-label">USER MGMT / COMM</span>
+        <i data-lucide="chevron-down" class="chev"></i>
+      </div>
+    </button>
+    <div class="acc-body"><div><div class="acc-pad">
+      <div class="inner">
+        <div class="inner-zone">
+          <div class="zone-label"><span class="mono-label">CONFIGURED STEPS</span><span class="meta">4 total</span></div>
+          <div class="kv"><span class="k">Send welcome email</span><span class="v">ACTIVE</span></div>
+          <div class="kv"><span class="k">Add to Mailchimp</span><span class="v">ACTIVE</span></div>
+          <div class="kv"><span class="k">Notify Slack #signups</span><span class="v">ACTIVE</span></div>
+          <div class="kv"><span class="k">Tag in CRM</span><span class="v">PAUSED</span></div>
+        </div>
+      </div>
+    </div></div></div>
+  </div>
+
+  <div class="acc-item">
+    <button class="acc-head">
+      <span class="num">04</span>
+      <div class="title">Notifications <span class="sub">— Slack + Email</span></div>
+      <div class="right">
+        <span class="mono-label">COMMUNICATION</span>
+        <i data-lucide="chevron-down" class="chev"></i>
+      </div>
+    </button>
+    <div class="acc-body"><div><div class="acc-pad">
+      <div class="inner">
+        <div class="inner-zone">
+          <div class="zone-label"><span class="mono-label">CHANNELS</span></div>
+          <div class="kv"><span class="k">Slack #signups</span><span class="v">ENABLED</span></div>
+          <div class="kv"><span class="k">Email digest</span><span class="v">DAILY</span></div>
+        </div>
+      </div>
+    </div></div></div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.acc-head').forEach(h => h.addEventListener('click', () => {
+    const item = h.closest('.acc-item');
+    item.classList.toggle('open');
+  }));
+  if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>

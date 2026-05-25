@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Command palette</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms cubic-bezier(.2,.7,.2,1);white-space:nowrap;}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+  .icon-btn{width:28px;height:28px;border:0;background:transparent;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;}
+  .icon-btn:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+  .row{display:flex;align-items:center;gap:10px;}
+</style>
+</head>
+<body>
+<div class="card" style="text-align:center;">
+  <div class="label" style="margin-bottom:14px;">Command · click or press <span class="kbd-static">⌘K</span></div>
+  <button class="btn btn-outline" id="cmd-trigger"><i data-lucide="search"></i> Search…</button>
+</div>
+
+<div class="cmd-backdrop" id="cmd-backdrop"></div>
+<div class="cmd-root" id="cmd-root">
+  <div class="cmd-modal">
+    <div class="cmd-search">
+      <i data-lucide="search" style="width:16px;height:16px;color:var(--fg-3);"></i>
+      <input id="cmd-input" placeholder="Type a command or search…" />
+      <span class="kbd">ESC</span>
+    </div>
+    <div class="cmd-results" id="cmd-results"></div>
+    <div class="cmd-foot">
+      <span><span class="kbd">↑↓</span> Navigate</span>
+      <span><span class="kbd">↵</span> Select</span>
+      <span style="margin-left:auto;"><span class="kbd">ESC</span> Close</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .kbd, .kbd-static{font-family:var(--font-mono);font-size:10px;padding:2px 5px;background:var(--bg-surface-2);border:1px solid var(--border);border-radius:4px;color:var(--fg-3);}
+  .cmd-backdrop{position:fixed;inset:0;background:rgba(15,15,15,0.4);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity 240ms cubic-bezier(.2,.7,.2,1);z-index:50;}
+  .cmd-backdrop.open{opacity:1;pointer-events:auto;}
+  .cmd-root{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:center;padding-top:15vh;z-index:51;pointer-events:none;}
+  .cmd-modal{width:540px;max-width:90vw;background:var(--bg-surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--elev-3);overflow:hidden;opacity:0;transform:translateY(-12px) scale(0.97);transition:opacity 240ms cubic-bezier(.2,.7,.2,1),transform 280ms cubic-bezier(.2,.7,.2,1);pointer-events:auto;}
+  .cmd-root.open .cmd-modal{opacity:1;transform:none;}
+  .cmd-search{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);}
+  .cmd-search input{flex:1;border:0;outline:0;font:400 14px/1 var(--font-sans);background:transparent;color:var(--fg-1);box-shadow:none;}
+  .cmd-search input:focus, .cmd-search input:focus-visible{outline:0;box-shadow:none;border:0;}
+  .cmd-results{padding:6px 8px;max-height:340px;overflow-y:auto;}
+  .cmd-group{padding:6px 8px;font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3);}
+  .cmd-item{width:100%;display:flex;align-items:center;gap:10px;padding:8px 10px;border:0;border-radius:6px;background:transparent;color:var(--fg-1);font:400 13px/1.2 var(--font-sans);cursor:pointer;text-align:left;}
+  .cmd-item svg{width:14px;height:14px;color:var(--fg-3);}
+  .cmd-item.hl{background:var(--bg-surface-2);}
+  .cmd-item.hl svg{color:var(--accent);}
+  .cmd-item .meta{margin-left:auto;font-size:11px;color:var(--fg-3);font-family:var(--font-mono);}
+  .cmd-item mark{background:var(--accent-soft);color:var(--accent);font-weight:600;padding:0 1px;border-radius:2px;}
+  .cmd-empty{padding:32px 12px;text-align:center;font-size:13px;color:var(--fg-3);}
+  .cmd-foot{display:flex;gap:14px;padding:10px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--fg-3);}
+  .cmd-foot span{display:inline-flex;align-items:center;gap:5px;}
+</style>
+<script>
+  const COMMANDS = [
+    {g:'Suggestions',icon:'rocket',label:'Create new deployment',meta:'⌘N'},
+    {g:'Suggestions',icon:'git-branch',label:'New workflow',meta:''},
+    {g:'Suggestions',icon:'bar-chart-3',label:'View deployment history',meta:''},
+    {g:'Suggestions',icon:'globe',label:'Open deployment domains',meta:''},
+    {g:'Navigation',icon:'layout-grid',label:'Go to Overview',meta:'G O'},
+    {g:'Navigation',icon:'git-branch',label:'Go to Workflows',meta:'G W'},
+    {g:'Navigation',icon:'bar-chart-3',label:'Go to Competitors',meta:'G C'},
+    {g:'Navigation',icon:'settings',label:'Go to Settings',meta:'G S'},
+    {g:'Recent',icon:'clock',label:'main-8f3c2a1',meta:'25m ago'},
+    {g:'Recent',icon:'clock',label:'Refactor auth middleware',meta:'1h ago'},
+    {g:'Recent',icon:'clock',label:'Fix dashboard latency',meta:'3h ago'},
+    {g:'Account',icon:'user',label:'Sign out',meta:''},
+  ];
+
+  const root = document.getElementById('cmd-root');
+  const back = document.getElementById('cmd-backdrop');
+  const input = document.getElementById('cmd-input');
+  const results = document.getElementById('cmd-results');
+  let highlighted = 0;
+  let filtered = COMMANDS;
+
+  function open() { root.classList.add('open'); back.classList.add('open'); setTimeout(() => input.focus(), 80); render(); }
+  function close() { root.classList.remove('open'); back.classList.remove('open'); input.value = ''; }
+
+  function escapeHtml(s){return s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+  function highlightMatch(label, q) {
+    if (!q) return escapeHtml(label);
+    const i = label.toLowerCase().indexOf(q.toLowerCase());
+    if (i < 0) return escapeHtml(label);
+    return escapeHtml(label.slice(0,i)) + '<mark>' + escapeHtml(label.slice(i,i+q.length)) + '</mark>' + escapeHtml(label.slice(i+q.length));
+  }
+
+  function render() {
+    const q = input.value.trim();
+    filtered = q ? COMMANDS.filter(c => c.label.toLowerCase().includes(q.toLowerCase())) : COMMANDS;
+    if (!filtered.length) {
+      results.innerHTML = '<div class="cmd-empty">No results for "'+escapeHtml(q)+'"</div>';
+      return;
+    }
+    highlighted = Math.min(highlighted, filtered.length - 1);
+    if (highlighted < 0) highlighted = 0;
+    let html = '', lastG = '';
+    filtered.forEach((c, i) => {
+      if (c.g !== lastG) { html += '<div class="cmd-group">'+c.g+'</div>'; lastG = c.g; }
+      html += '<button class="cmd-item '+(i===highlighted?'hl':'')+'" data-idx="'+i+'"><i data-lucide="'+c.icon+'"></i><span>'+highlightMatch(c.label,q)+'</span>'+(c.meta?'<span class="meta">'+c.meta+'</span>':'')+'</button>';
+    });
+    results.innerHTML = html;
+    lucide.createIcons();
+    results.querySelectorAll('.cmd-item').forEach(b => b.addEventListener('mouseenter', () => { highlighted = parseInt(b.dataset.idx, 10); render(); }));
+    results.querySelectorAll('.cmd-item').forEach(b => b.addEventListener('click', () => { close(); }));
+  }
+
+  document.getElementById('cmd-trigger').addEventListener('click', open);
+  back.addEventListener('click', close);
+  input.addEventListener('input', () => { highlighted = 0; render(); });
+  document.addEventListener('keydown', e => {
+    if ((e.key==='k' || e.key==='K') && (e.metaKey || e.ctrlKey)) { e.preventDefault(); root.classList.contains('open') ? close() : open(); return; }
+    if (!root.classList.contains('open')) return;
+    if (e.key==='Escape') close();
+    if (e.key==='ArrowDown') { e.preventDefault(); highlighted = Math.min(filtered.length - 1, highlighted + 1); render(); }
+    if (e.key==='ArrowUp')   { e.preventDefault(); highlighted = Math.max(0, highlighted - 1); render(); }
+    if (e.key==='Enter')     { close(); }
+  });
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

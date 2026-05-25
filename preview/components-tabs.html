@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Tabs</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .row{display:flex;align-items:center;gap:14px}
+  .col{display:flex;flex-direction:column;gap:8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Tabs · click to switch</div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="editor">Editor</button>
+    <button class="tab" data-tab="runs">Runs</button>
+    <button class="tab" data-tab="settings">Settings <span class="tab-badge">3</span></button>
+    <button class="tab" data-tab="logs">Logs</button>
+    <span class="tab-indicator" id="tab-ind"></span>
+  </div>
+  <div class="tab-panels">
+    <div class="tab-panel active" data-panel="editor">Drag and drop nodes from the panel to build your workflow.</div>
+    <div class="tab-panel" data-panel="runs">9 historical runs over the past 30 days. Last run: 25m ago.</div>
+    <div class="tab-panel" data-panel="settings">3 pending changes need attention before publishing.</div>
+    <div class="tab-panel" data-panel="logs">No new errors. 142 events captured today.</div>
+  </div>
+</div>
+
+<style>
+  .tabs{position:relative;border-bottom:1px solid var(--border);display:flex;gap:24px;}
+  .tab{border:0;background:transparent;padding:10px 2px;font:500 13px/1 var(--font-sans);color:var(--fg-3);cursor:pointer;margin-bottom:-1px;transition:color 180ms cubic-bezier(.2,.7,.2,1);position:relative;display:inline-flex;align-items:center;gap:6px;}
+  .tab.active{color:var(--fg-1);}
+  .tab-badge{font-family:var(--font-mono);font-size:10px;background:var(--accent-soft);color:var(--accent);padding:1px 6px;border-radius:999px;letter-spacing:0.08em;}
+  .tab-indicator{position:absolute;bottom:-1px;height:2px;background:var(--accent);transition:left 280ms cubic-bezier(.2,.7,.2,1),width 280ms cubic-bezier(.2,.7,.2,1);}
+  .tab-panels{padding:14px 2px 0;}
+  .tab-panel{display:none;color:var(--fg-2);font-size:13px;animation:fade 240ms cubic-bezier(.2,.7,.2,1);}
+  .tab-panel.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+</style>
+<script>
+  function moveIndicator() {
+    const a = document.querySelector('.tab.active');
+    const ind = document.getElementById('tab-ind');
+    const r = a.getBoundingClientRect();
+    const p = a.parentElement.getBoundingClientRect();
+    ind.style.left = (r.left - p.left) + 'px';
+    ind.style.width = r.width + 'px';
+  }
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector('[data-panel="'+t.dataset.tab+'"]').classList.add('active');
+    moveIndicator();
+  }));
+  requestAnimationFrame(() => requestAnimationFrame(moveIndicator));
+  window.addEventListener('resize', moveIndicator);
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

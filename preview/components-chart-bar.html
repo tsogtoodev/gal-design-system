@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Bar chart</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms cubic-bezier(.2,.7,.2,1);}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+</style>
+</head>
+<body>
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <h2 style="font-size:16px;font-weight:600;margin:0;">Weekly activity</h2>
+    <span class="label">Last 7 days · hover bars</span>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-tt" id="tt"><div class="tt-label" id="tt-label"></div><div class="tt-value" id="tt-value"></div></div>
+    <svg width="100%" height="200" viewBox="0 0 480 200" preserveAspectRatio="xMidYMid meet" id="chart-svg">
+      <line x1="40" y1="170" x2="470" y2="170" stroke="var(--border)"/>
+      <line x1="40" y1="120" x2="470" y2="120" stroke="var(--border)" stroke-dasharray="2 4"/>
+      <line x1="40" y1="70"  x2="470" y2="70"  stroke="var(--border)" stroke-dasharray="2 4"/>
+      <line x1="40" y1="20"  x2="470" y2="20"  stroke="var(--border)" stroke-dasharray="2 4"/>
+      <text x="32" y="173" font-family="JetBrains Mono" font-size="10" fill="#9A9AA1" text-anchor="end">0</text>
+      <text x="32" y="123" font-family="JetBrains Mono" font-size="10" fill="#9A9AA1" text-anchor="end">50</text>
+      <text x="32" y="73" font-family="JetBrains Mono" font-size="10" fill="#9A9AA1" text-anchor="end">100</text>
+      <text x="32" y="23" font-family="JetBrains Mono" font-size="10" fill="#9A9AA1" text-anchor="end">150</text>
+    </svg>
+  </div>
+</div>
+<style>
+  .chart-wrap{position:relative;}
+  .chart-tt{position:absolute;background:var(--fg-1);color:var(--bg-surface);padding:6px 10px;border-radius:6px;font-size:11px;pointer-events:none;opacity:0;transform:translate(-50%,-100%) translateY(-4px) scale(0.94);transition:opacity 160ms cubic-bezier(.2,.7,.2,1),transform 200ms cubic-bezier(.2,.7,.2,1);z-index:5;white-space:nowrap;}
+  .chart-tt.open{opacity:1;transform:translate(-50%,-100%) translateY(-8px) scale(1);}
+  .chart-tt .tt-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#A6A6AD;}
+  .chart-tt .tt-value{font-weight:600;font-variant-numeric:tabular-nums;margin-top:1px;}
+  .bar{cursor:pointer;transition:filter 140ms,opacity 140ms;}
+  .bar:hover{filter:brightness(0.92);}
+  .bar.dim{opacity:0.5;}
+</style>
+<script>
+  const DATA = [
+    {d:'Mon',v:80},{d:'Tue',v:55},{d:'Wed',v:95},{d:'Thu',v:40},
+    {d:'Fri',v:110},{d:'Sat',v:70},{d:'Sun',v:125},
+  ];
+  const svg = document.getElementById('chart-svg');
+  const tt = document.getElementById('tt');
+  const wrap = document.querySelector('.chart-wrap');
+  const maxBar = Math.max.apply(null, DATA.map(d => d.v));
+
+  DATA.forEach((d, i) => {
+    const x = 60 + i * 58;
+    const h = d.v;
+    const y = 170 - h;
+    const isBest = d.v === maxBar;
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', 34);
+    rect.setAttribute('height', h);
+    rect.setAttribute('rx', 6);
+    rect.setAttribute('fill', isBest ? '#F5642B' : '#D9D9DE');
+    rect.classList.add('bar');
+    rect.dataset.i = i;
+    svg.appendChild(rect);
+
+    const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    t.setAttribute('x', x + 17);
+    t.setAttribute('y', 188);
+    t.setAttribute('font-family', 'JetBrains Mono');
+    t.setAttribute('font-size', '10');
+    t.setAttribute('fill', '#9A9AA1');
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('letter-spacing', '0.06em');
+    t.textContent = d.d.toUpperCase();
+    svg.appendChild(t);
+  });
+
+  const bars = svg.querySelectorAll('.bar');
+  function showTip(i, ev) {
+    const d = DATA[i];
+    document.getElementById('tt-label').textContent = d.d.toUpperCase();
+    document.getElementById('tt-value').textContent = d.v + ' uses';
+    const rect = ev.target.getBoundingClientRect();
+    const cR = wrap.getBoundingClientRect();
+    tt.style.left = (rect.left - cR.left + rect.width/2) + 'px';
+    tt.style.top  = (rect.top  - cR.top) + 'px';
+    tt.classList.add('open');
+    bars.forEach((b, j) => b.classList.toggle('dim', j !== i));
+  }
+  function hideTip() { tt.classList.remove('open'); bars.forEach(b => b.classList.remove('dim')); }
+  bars.forEach(b => {
+    b.addEventListener('mouseenter', e => showTip(parseInt(b.dataset.i,10), e));
+    b.addEventListener('mouseleave', hideTip);
+  });
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Drawer / Sheet</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms cubic-bezier(.2,.7,.2,1);white-space:nowrap;}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+  .icon-btn{width:28px;height:28px;border:0;background:transparent;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;}
+  .icon-btn:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+  .row{display:flex;align-items:center;gap:10px;}
+</style>
+</head>
+<body>
+<div class="card" style="text-align:center;">
+  <div class="label" style="margin-bottom:14px;">Drawer · click to open</div>
+  <button class="btn btn-outline" id="open-drawer"><i data-lucide="sliders-horizontal"></i> Open filters</button>
+</div>
+
+<div class="dr-backdrop" id="dr-backdrop"></div>
+<aside class="dr-sheet" id="drawer" aria-label="Filters">
+  <div class="dr-head">
+    <h2>Filters</h2>
+    <button class="icon-btn" id="dr-close" aria-label="Close"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
+  </div>
+  <div class="dr-body">
+    <div class="label" style="margin-bottom:8px;">Brand</div>
+    <div class="chip-row" id="brand-chips">
+      <button class="chip">Stacklane</button>
+      <button class="chip selected">Attio</button>
+      <button class="chip">Salesforce</button>
+      <button class="chip">Monday</button>
+      <button class="chip">Zendesk</button>
+    </div>
+
+    <div class="label" style="margin-top:18px;margin-bottom:8px;">Date</div>
+    <div class="chip-row" id="date-chips">
+      <button class="chip">Last 7d</button>
+      <button class="chip selected">Last 30d</button>
+      <button class="chip">Last 90d</button>
+      <button class="chip">Custom…</button>
+    </div>
+
+    <div class="label" style="margin-top:18px;margin-bottom:8px;">Visibility</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--fg-2);padding:8px 0;">
+      <span>Above 50%</span>
+      <button class="t-toggle on"></button>
+    </div>
+  </div>
+  <div class="dr-foot">
+    <button class="btn btn-ghost" id="dr-clear">Clear all</button>
+    <button class="btn btn-primary" id="dr-apply">Apply <span id="apply-count" style="background:rgba(255,255,255,0.2);padding:1px 6px;border-radius:999px;font-size:11px;font-family:var(--font-mono);margin-left:4px;">2</span></button>
+  </div>
+</aside>
+
+<style>
+  .dr-backdrop{position:fixed;inset:0;background:rgba(15,15,15,0.4);opacity:0;pointer-events:none;transition:opacity 280ms cubic-bezier(.2,.7,.2,1);z-index:50;}
+  .dr-backdrop.open{opacity:1;pointer-events:auto;}
+  .dr-sheet{position:fixed;top:0;right:0;bottom:0;width:380px;background:var(--bg-surface);border-left:1px solid var(--border);box-shadow:var(--elev-3);transform:translateX(100%);transition:transform 320ms cubic-bezier(.2,.7,.2,1);z-index:51;display:flex;flex-direction:column;}
+  .dr-sheet.open{transform:none;}
+  .dr-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border);}
+  .dr-head h2{font-size:16px;font-weight:600;margin:0;}
+  .dr-body{flex:1;padding:18px 20px;overflow-y:auto;}
+  .dr-foot{display:flex;justify-content:space-between;gap:8px;padding:14px 20px;border-top:1px solid var(--border);}
+
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{padding:6px 12px;border-radius:999px;border:1px solid var(--border-strong);background:var(--bg-surface);font:500 12px/1 var(--font-sans);color:var(--fg-1);cursor:pointer;transition:background 140ms,color 140ms,border-color 140ms;}
+  .chip:hover{background:var(--bg-surface-2);}
+  .chip.selected{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-soft-2);}
+
+  .t-toggle{width:36px;height:20px;border:0;padding:0;border-radius:999px;background:var(--bg-surface-3);position:relative;cursor:pointer;transition:background 180ms;}
+  .t-toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:white;box-shadow:0 1px 2px rgba(0,0,0,0.15);transition:transform 200ms cubic-bezier(.2,.7,.2,1);}
+  .t-toggle.on{background:var(--accent);}
+  .t-toggle.on::after{transform:translateX(16px);}
+</style>
+<script>
+  const drb = document.getElementById('dr-backdrop'), dr = document.getElementById('drawer');
+  document.getElementById('open-drawer').addEventListener('click', () => { drb.classList.add('open'); dr.classList.add('open'); });
+  const close = () => { drb.classList.remove('open'); dr.classList.remove('open'); };
+  document.getElementById('dr-close').addEventListener('click', close);
+  drb.addEventListener('click', close);
+  document.addEventListener('keydown', e => { if (e.key==='Escape') close(); });
+
+  function bindChips(id, single = false) {
+    document.querySelectorAll('#'+id+' .chip').forEach(c => c.addEventListener('click', () => {
+      if (single) {
+        document.querySelectorAll('#'+id+' .chip').forEach(x => x.classList.remove('selected'));
+        c.classList.add('selected');
+      } else c.classList.toggle('selected');
+      updateCount();
+    }));
+  }
+  function updateCount() {
+    const n = document.querySelectorAll('.dr-body .chip.selected').length + (document.querySelector('.t-toggle.on') ? 1 : 0);
+    document.getElementById('apply-count').textContent = n;
+  }
+  bindChips('brand-chips'); bindChips('date-chips', true);
+  document.querySelectorAll('.t-toggle').forEach(b => b.addEventListener('click', () => { b.classList.toggle('on'); updateCount(); }));
+  document.getElementById('dr-clear').addEventListener('click', () => {
+    document.querySelectorAll('.dr-body .chip.selected').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.t-toggle').forEach(b => b.classList.remove('on'));
+    updateCount();
+  });
+  document.getElementById('dr-apply').addEventListener('click', close);
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

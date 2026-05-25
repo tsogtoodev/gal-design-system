@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Categorical colors</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 20px 22px;
+    box-shadow: var(--elev-1);
+  }
+  .row { display: flex; align-items: center; gap: 12px; }
+  .col { display: flex; flex-direction: column; gap: 8px; }
+  .label { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+  .swatch { width: 64px; height: 64px; border-radius: 10px; border: 1px solid var(--border); }
+  .swatch.sm { width: 40px; height: 40px; border-radius: 8px; }
+  .name { font-size: 13px; font-weight: 500; color: var(--fg-1); }
+  .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Categorical · charts only</div>
+  <div style="display:grid; grid-template-columns: repeat(6, 1fr); gap: 10px;">
+    
+    <div class="col" style="gap:6px; align-items:center;">
+      <div style="background:#F5642B; width:48px; height:48px; border-radius:50%;"></div>
+      <div class="name">Orange</div>
+      <div class="meta">#F5642B</div>
+    </div>
+    <div class="col" style="gap:6px; align-items:center;">
+      <div style="background:#2563EB; width:48px; height:48px; border-radius:50%;"></div>
+      <div class="name">Blue</div>
+      <div class="meta">#2563EB</div>
+    </div>
+    <div class="col" style="gap:6px; align-items:center;">
+      <div style="background:#8B5CF6; width:48px; height:48px; border-radius:50%;"></div>
+      <div class="name">Violet</div>
+      <div class="meta">#8B5CF6</div>
+    </div>
+    <div class="col" style="gap:6px; align-items:center;">
+      <div style="background:#F43F5E; width:48px; height:48px; border-radius:50%;"></div>
+      <div class="name">Rose</div>
+      <div class="meta">#F43F5E</div>
+    </div>
+    <div class="col" style="gap:6px; align-items:center;">
+      <div style="background:#14B8A6; width:48px; height:48px; border-radius:50%;"></div>
+      <div class="name">Teal</div>
+      <div class="meta">#14B8A6</div>
+    </div>
+    <div class="col" style="gap:6px; align-items:center;">
+      <div style="background:#D97706; width:48px; height:48px; border-radius:50%;"></div>
+      <div class="name">Amber</div>
+      <div class="meta">#D97706</div>
+    </div>
+  </div>
+  <div style="height:1px; border-top:1px dashed var(--border-dashed); margin:16px 0 14px;"></div>
+  <div style="display:flex; height:10px; border-radius:999px; overflow:hidden;">
+    <div style="background:#F5642B; flex: 1.6;"></div>
+    <div style="background:#2563EB; flex: 0.9;"></div>
+    <div style="background:#F43F5E; flex: 0.6;"></div>
+    <div style="background:#8B5CF6; flex: 0.3;"></div>
+    <div style="background:var(--bg-surface-3); flex: 0.6;"></div>
+  </div>
+</div>
+</body>
+</html>

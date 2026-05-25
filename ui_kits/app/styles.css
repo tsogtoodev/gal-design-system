@@ -1,0 +1,245 @@
+/* App-specific styles — supplements colors_and_type.css */
+
+.gal-app {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+  background: var(--bg-stage);
+  background-image: var(--stage-pattern);
+}
+
+.gal-app.collapsed { grid-template-columns: 64px 1fr; }
+
+/* === Sidebar === */
+.gal-sidebar {
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+}
+.dark .gal-sidebar { background: #0F0F11; }
+
+.gal-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 4px 4px;
+  margin-bottom: 6px;
+}
+.gal-brand {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 15px;
+  color: var(--fg-1);
+}
+.gal-brand img { width: 26px; height: 36px; object-fit: contain; }
+.gal-collapse-btn {
+  border: 0; background: transparent; padding: 6px; border-radius: 8px;
+  color: var(--fg-3); cursor: pointer; transition: background var(--motion) var(--ease), color var(--motion) var(--ease);
+}
+.gal-collapse-btn:hover { background: var(--bg-surface-2); color: var(--fg-1); }
+
+.gal-search {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+.gal-search svg { width: 14px; height: 14px; color: var(--fg-3); }
+.gal-search input { flex: 1; border: 0; outline: 0; background: transparent; font: 400 13px/1 var(--font-sans); color: var(--fg-1); }
+.gal-kbd { font-family: var(--font-mono); font-size: 10px; padding: 2px 5px; background: var(--bg-surface-2); border: 1px solid var(--border); border-radius: 4px; color: var(--fg-3); }
+
+.gal-nav-section {
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--fg-3); padding: 14px 8px 6px;
+}
+.gal-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 10px;
+  font: 500 14px/1 var(--font-sans);
+  color: var(--fg-2);
+  cursor: pointer;
+  border: 0; background: transparent; width: 100%; text-align: left;
+  transition: background var(--motion) var(--ease), color var(--motion) var(--ease);
+}
+.gal-nav-item:hover { background: var(--bg-surface-2); color: var(--fg-1); }
+.gal-nav-item.active {
+  background: var(--bg-surface-2);
+  color: var(--fg-1);
+}
+.gal-nav-item svg { width: 18px; height: 18px; color: inherit; }
+.gal-nav-item .badge {
+  margin-left: auto; background: var(--danger); color: white; font: 500 10px/1 var(--font-sans);
+  padding: 3px 6px; border-radius: 999px; min-width: 18px; text-align: center;
+}
+
+/* Collapsed-icon rail */
+.gal-app.collapsed .gal-sidebar-head,
+.gal-app.collapsed .gal-search,
+.gal-app.collapsed .gal-nav-section,
+.gal-app.collapsed .gal-nav-item span:not(.badge) { display: none; }
+.gal-app.collapsed .gal-nav-item { justify-content: center; padding: 9px; }
+.gal-app.collapsed .gal-brand-collapsed { display:flex; align-items:center; justify-content:center; padding: 6px 0 16px; }
+
+.gal-credit {
+  margin-top: auto; padding: 12px 8px 4px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--fg-3);
+}
+.gal-credit-bar {
+  height: 4px; background: var(--bg-surface-2); border-radius: 999px; margin-top: 6px; overflow: hidden;
+}
+.gal-credit-bar > div { height: 100%; background: var(--success); width: 26%; border-radius: 999px; }
+
+/* === Topbar === */
+.gal-topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 28px 0;
+}
+.gal-breadcrumb {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--fg-3);
+}
+.gal-breadcrumb .current { color: var(--fg-1); }
+.gal-breadcrumb svg { width: 14px; height: 14px; }
+
+/* === Content === */
+.gal-content {
+  padding: 18px 28px 40px;
+}
+
+/* === Card === */
+.gal-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--elev-1);
+}
+.gal-card-pad { padding: 20px 22px; }
+.gal-card-title { display: flex; align-items: center; justify-content: space-between; }
+
+/* === Stat tile === */
+.gal-stat {
+  padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.gal-stat-label { display: flex; align-items: center; gap: 8px; color: var(--fg-2); font-size: 12px; }
+.gal-stat-label svg { width: 14px; height: 14px; color: var(--fg-3); }
+.gal-stat-value { font: 600 22px/1 var(--font-sans); font-variant-numeric: tabular-nums; }
+.gal-stat-row { display: flex; justify-content: space-between; align-items: flex-end; }
+
+/* === Pill / Badge === */
+.gal-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.gal-pill.dot::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.gal-pill.success { background: var(--success-soft); color: var(--success); }
+.gal-pill.danger  { background: var(--danger-soft); color: var(--danger); }
+.gal-pill.warning { background: var(--warning-soft); color: var(--warning); }
+.gal-pill.info    { background: var(--info-soft); color: var(--info); }
+.gal-pill.neutral { background: var(--bg-surface-2); color: var(--fg-2); border: 1px solid var(--border); }
+.gal-pill.bare    { background: transparent; color: var(--fg-2); border: 1px solid var(--border-strong); }
+
+/* === Button === */
+.gal-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 14px; border-radius: 999px;
+  font: 500 13px/1 var(--font-sans);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background var(--motion) var(--ease), color var(--motion) var(--ease), box-shadow var(--motion) var(--ease);
+}
+.gal-btn svg { width: 14px; height: 14px; }
+.gal-btn-primary { background: var(--accent); color: white; }
+.gal-btn-primary:hover { background: var(--accent-hover); }
+.gal-btn-secondary { background: var(--fg-1); color: var(--bg-surface); }
+.gal-btn-outline { background: var(--bg-surface); color: var(--fg-1); border-color: var(--border-strong); }
+.gal-btn-outline:hover { background: var(--bg-surface-2); }
+.gal-btn-ghost { background: transparent; color: var(--fg-2); }
+.gal-btn-ghost:hover { background: var(--bg-surface-2); color: var(--fg-1); }
+.gal-btn-icon { padding: 8px; }
+
+/* === Field === */
+.gal-field {
+  display: flex; align-items: center;
+  height: 40px; padding: 0 12px; gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  font: 400 14px/1 var(--font-sans);
+  color: var(--fg-1);
+}
+.gal-field input, .gal-field select {
+  flex: 1; border: 0; outline: 0; background: transparent; font: inherit; color: inherit;
+}
+.gal-field svg { width: 16px; height: 16px; color: var(--fg-3); }
+.gal-field-label { font: 500 13px/1 var(--font-sans); color: var(--fg-2); margin-bottom: 8px; display: block; }
+
+/* === Toggle === */
+.gal-toggle { width: 36px; height: 20px; border-radius: 999px; background: var(--bg-surface-3); position: relative; cursor: pointer; transition: background var(--motion) var(--ease); border: 0; padding: 0; }
+.gal-toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.15); transition: transform var(--motion) var(--ease); }
+.gal-toggle.on { background: var(--accent); }
+.gal-toggle.on::after { transform: translateX(16px); }
+
+/* === Segmented === */
+.gal-seg { display: inline-flex; padding: 3px; background: var(--bg-surface-2); border-radius: 999px; gap: 2px; }
+.gal-seg > button {
+  padding: 6px 14px; border-radius: 999px; border: 0; background: transparent;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--fg-2); cursor: pointer; transition: background var(--motion) var(--ease), color var(--motion) var(--ease);
+}
+.gal-seg > button.active { background: var(--bg-surface); color: var(--fg-1); box-shadow: var(--elev-1); }
+.gal-seg > button:hover:not(.active) { color: var(--fg-1); }
+
+/* === Avatar === */
+.gal-av { width: 32px; height: 32px; border-radius: 50%; background-size: cover; background-position: center; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font: 500 12px/1 var(--font-sans); }
+
+/* === Workflow nodes === */
+.wf-node {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 12px 14px;
+  min-width: 280px;
+  display: flex; align-items: center; gap: 10px;
+  position: relative;
+}
+.wf-node-icon { width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
+.wf-node-title { font: 500 14px/1.2 var(--font-sans); color: var(--fg-1); }
+.wf-node-sub   { font: 400 12px/1.2 var(--font-sans); color: var(--fg-2); margin-top: 3px; }
+
+/* dashed divider helper */
+.dashed { border-top: 1px dashed var(--border-dashed); }
+
+/* Workflow node frame labels — never wrap */
+.wf-node + *, .wf-frame-labels { white-space: nowrap; }
+.wf-frame-labels { display: flex; justify-content: space-between; margin-bottom: 6px; padding: 0 6px; }
+
+/* table */
+.gal-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.gal-table th { text-align: left; font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.gal-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--fg-1); }
+.gal-table tr:last-child td { border-bottom: 0; }
+.gal-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.gal-table .pos { color: var(--success); }
+.gal-table .neg { color: var(--danger); }
+
+/* dot indicator */
+.dot-color { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+/* equalizer */
+.eq { display: flex; align-items: center; gap: 2px; height: 36px; }
+.eq > div { width: 3px; border-radius: 2px; }

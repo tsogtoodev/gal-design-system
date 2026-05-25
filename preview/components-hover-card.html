@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hover card</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 18px 20px;
+    box-shadow: var(--elev-1);
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  /* ===== Hover card ===== */
+  .hc-host {
+    position: relative;
+    display: inline-block;
+    vertical-align: baseline;
+  }
+  .hc-trigger {
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    font-weight: 500;
+  }
+
+  .hc-card {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 300px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--elev-2);
+    padding: 14px;
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+    transform-origin: top left;
+    pointer-events: none;
+    transition:
+      opacity 200ms cubic-bezier(.2,.7,.2,1),
+      transform 240ms cubic-bezier(.2,.7,.2,1);
+    z-index: 10;
+  }
+  .hc-host.open .hc-card,
+  .hc-host:hover .hc-card,
+  .hc-host:focus-within .hc-card {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  /* Bridge — invisible filler covering the gap between trigger and card so
+     the user can move the cursor from trigger → card without the card closing. */
+  .hc-host::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    pointer-events: none;
+  }
+  .hc-host:hover::after,
+  .hc-host.open::after,
+  .hc-host:focus-within::after { pointer-events: auto; }
+
+  /* Card content */
+  .hc-row { display: flex; align-items: center; gap: 12px; }
+  .hc-av {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background-size: cover; background-position: center;
+    flex-shrink: 0;
+  }
+  .hc-name {
+    font: 600 14px/1.2 var(--font-sans);
+    color: var(--fg-1);
+  }
+  .hc-meta {
+    font: 400 12px/1 var(--font-sans);
+    color: var(--fg-3);
+    margin-top: 4px;
+  }
+  .hc-bio {
+    font: 400 12px/1.5 var(--font-sans);
+    color: var(--fg-2);
+    margin: 12px 0 0;
+  }
+  .hc-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 10px;
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .hc-stats b { color: var(--fg-1); font-weight: 600; }
+
+  /* Demo prose */
+  .prose {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--fg-2);
+    max-width: 640px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Hover card · hover or focus the mention</div>
+
+  <p class="prose">
+    Latest feedback flagged by
+    <span class="hc-host" tabindex="0">
+      <span class="hc-trigger">@daniel</span>
+      <span class="hc-card" role="dialog" aria-label="Daniel Morgan profile">
+        <span class="hc-row">
+          <span class="hc-av" style="background-image:url('https://i.pravatar.cc/120?img=12');"></span>
+          <span>
+            <span class="hc-name" style="display:block;">Daniel Morgan</span>
+            <span class="hc-meta" style="display:block;">@daniel · ClickUp</span>
+          </span>
+        </span>
+        <p class="hc-bio">PM at ClickUp. Joined 2y ago. Active across feature requests, latency reports and competitor research.</p>
+        <span class="hc-stats" style="display:flex;">
+          <span><b>13</b> quotes</span>
+          <span><b>6</b> features</span>
+          <span><b>23</b> bugs</span>
+        </span>
+      </span>
+    </span>
+    — covering latency spikes and rate-limit inconsistencies. Reply or assign to a teammate when you have a moment.
+    Also worth a look:
+    <span class="hc-host" tabindex="0">
+      <span class="hc-trigger">@olivia</span>
+      <span class="hc-card" role="dialog" aria-label="Olivia Bennett profile">
+        <span class="hc-row">
+          <span class="hc-av" style="background-image:url('https://i.pravatar.cc/120?img=47');"></span>
+          <span>
+            <span class="hc-name" style="display:block;">Olivia Bennett</span>
+            <span class="hc-meta" style="display:block;">@olivia · Product</span>
+          </span>
+        </span>
+        <p class="hc-bio">Product designer focused on workflows and onboarding. Filed 4 new tickets this week.</p>
+        <span class="hc-stats" style="display:flex;">
+          <span><b>8</b> quotes</span>
+          <span><b>11</b> features</span>
+          <span><b>5</b> bugs</span>
+        </span>
+      </span>
+    </span>
+    raised a related thread two days ago.
+  </p>
+</div>
+
+<script>
+  // Pointer-based open/close with a small close delay so the cursor can travel
+  // from trigger to card without the card disappearing mid-move.
+  document.querySelectorAll('.hc-host').forEach(host => {
+    let closeTimer = null;
+    const open  = () => { clearTimeout(closeTimer); host.classList.add('open'); };
+    const close = () => { closeTimer = setTimeout(() => host.classList.remove('open'), 160); };
+    host.addEventListener('mouseenter', open);
+    host.addEventListener('mouseleave', close);
+    host.addEventListener('focusin', open);
+    host.addEventListener('focusout', close);
+  });
+  if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>

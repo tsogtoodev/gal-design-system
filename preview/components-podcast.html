@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Podcast player</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    place-items: start center;
+  }
+
+  /* ===== Stage tile (one per theme) ===== */
+  .stage {
+    width: 100%;
+    min-height: 520px;
+    border-radius: 18px;
+    padding: 28px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  }
+  .stage.light {
+    background: #F4F4F4;
+    background-image: repeating-linear-gradient(-75deg, transparent 0, transparent 28px, rgba(15,15,15,0.025) 28px, rgba(15,15,15,0.025) 29px);
+    color: #0F0F10;
+  }
+  .stage.dark {
+    background: #0B0B0C;
+    background-image: repeating-linear-gradient(-75deg, transparent 0, transparent 28px, rgba(255,255,255,0.025) 28px, rgba(255,255,255,0.025) 29px);
+    color: #FAFAFA;
+  }
+  /* Dashed grid cross on stage */
+  .stage::before, .stage::after {
+    content: '';
+    position: absolute;
+    background-repeat: no-repeat;
+    pointer-events: none;
+  }
+
+  .stage-foot {
+    position: absolute;
+    left: 16px; right: 16px; bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  .stage-foot .who { display: inline-flex; align-items: center; gap: 8px; }
+  .stage-foot .who .av { width: 20px; height: 20px; border-radius: 50%; background-size: cover; background-position: center; background-color: rgba(127,127,127,0.2); }
+  .stage.light .stage-foot { color: rgba(15,15,15,0.5); }
+  .stage.dark  .stage-foot { color: rgba(255,255,255,0.4); }
+
+  /* ===== Player frame (outer card, sub-card anatomy) ===== */
+  .player {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    margin: 60px auto 0;
+    border-radius: 14px;
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  .stage.light .player {
+    background: #FBFBFB;
+    border: 1px solid rgba(15,15,15,0.06);
+    box-shadow: 0 4px 18px rgba(15,15,15,0.04);
+  }
+  .stage.dark .player {
+    background: #181818;
+    border: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+  }
+
+  /* Header */
+  .ph-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 8px 8px;
+  }
+  .ph-head .title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .ph-head .actions { display: inline-flex; gap: 4px; }
+  .icon-btn {
+    width: 24px; height: 24px;
+    border: 0; background: transparent;
+    border-radius: 5px;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background 140ms, color 140ms;
+  }
+  .stage.light .icon-btn { color: rgba(15,15,15,0.55); }
+  .stage.dark  .icon-btn { color: rgba(255,255,255,0.6); }
+  .stage.light .icon-btn:hover { background: rgba(15,15,15,0.05); color: #0F0F10; }
+  .stage.dark  .icon-btn:hover { background: rgba(255,255,255,0.06); color: #FAFAFA; }
+  .icon-btn svg { width: 14px; height: 14px; }
+
+  /* Inner sub-card */
+  .ph-sub {
+    border-radius: 12px;
+    padding: 18px 22px 14px;
+  }
+  .stage.light .ph-sub {
+    background: #FFFFFF;
+    border: 1px solid rgba(15,15,15,0.05);
+  }
+  .stage.dark .ph-sub {
+    background: #1F1F1F;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+
+  /* Meta row */
+  .ph-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .stage.light .ph-meta-row { color: rgba(15,15,15,0.55); }
+  .stage.dark  .ph-meta-row { color: rgba(255,255,255,0.5); }
+
+  /* Title row */
+  .ph-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 6px;
+  }
+  .ph-title {
+    font: 600 22px/1.2 var(--font-sans);
+    letter-spacing: -0.01em;
+    flex: 1;
+    min-width: 0;
+  }
+  .stage.light .ph-title { color: #0F0F10; }
+  .stage.dark  .ph-title { color: #FAFAFA; }
+
+  .follow-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1px solid;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 140ms, color 140ms;
+  }
+  .follow-pill svg { width: 11px; height: 11px; }
+  .stage.light .follow-pill { color: rgba(15,15,15,0.7); border-color: rgba(15,15,15,0.15); }
+  .stage.dark  .follow-pill { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.16); }
+  .stage.light .follow-pill:hover { background: rgba(15,15,15,0.04); }
+  .stage.dark  .follow-pill:hover { background: rgba(255,255,255,0.05); }
+  .follow-pill.followed { background: #F5642B; color: white; border-color: #F5642B; }
+
+  /* Rating row */
+  .ph-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .ph-rating .stars { color: #F5642B; display: inline-flex; align-items: center; gap: 4px; }
+  .ph-rating .stars svg { width: 14px; height: 14px; }
+  .ph-rating .rate {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--fg-1);
+  }
+  .stage.dark .ph-rating .rate { color: #FAFAFA; }
+  .ph-rating .dim { letter-spacing: 0.02em; }
+  .stage.light .ph-rating .dim { color: rgba(15,15,15,0.45); }
+  .stage.dark  .ph-rating .dim { color: rgba(255,255,255,0.45); }
+  .ph-rating .sep {
+    margin: 0 2px;
+  }
+  .stage.light .ph-rating .sep { color: rgba(15,15,15,0.4); }
+  .stage.dark  .ph-rating .sep { color: rgba(255,255,255,0.4); }
+  .stage.light .ph-rating .tag { color: rgba(15,15,15,0.5); }
+  .stage.dark  .ph-rating .tag { color: rgba(255,255,255,0.5); }
+
+  /* Player row */
+  .ph-player {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 22px;
+  }
+  .play-pill {
+    width: 56px; height: 36px;
+    border-radius: 999px;
+    border: 1px solid;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 140ms;
+  }
+  .stage.light .play-pill { border-color: rgba(15,15,15,0.15); }
+  .stage.dark  .play-pill { border-color: rgba(255,255,255,0.18); }
+  .stage.light .play-pill:hover { background: rgba(15,15,15,0.04); }
+  .stage.dark  .play-pill:hover { background: rgba(255,255,255,0.05); }
+  .play-pill .bar {
+    width: 4px; height: 14px;
+    border-radius: 1.5px;
+    background: #F5642B;
+  }
+  .play-pill.playing .play-icon { display: none; }
+  .play-pill:not(.playing) .pause-icon { display: none; }
+  .play-pill .play-icon {
+    width: 0; height: 0;
+    border-left: 10px solid #F5642B;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    margin-left: 3px;
+  }
+
+  /* Waveform */
+  .wave {
+    flex: 1;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .wave .bar {
+    flex: 1;
+    border-radius: 1px;
+    background: currentColor;
+    min-width: 1.5px;
+  }
+  .stage.light .wave { color: rgba(15,15,15,0.18); }
+  .stage.dark  .wave { color: rgba(255,255,255,0.18); }
+  .wave .bar.played {
+    background: #F5642B;
+    opacity: 0.85;
+  }
+  .wave .bar.head {
+    background: #F5642B;
+    opacity: 1;
+    width: 2.5px;
+    flex: none;
+  }
+
+  /* Timecode row */
+  .ph-time {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  .stage.light .ph-time { color: rgba(15,15,15,0.55); }
+  .stage.dark  .ph-time { color: rgba(255,255,255,0.5); }
+  .ph-time .left { letter-spacing: 0.12em; text-transform: uppercase; }
+
+  /* Toolbar (outside sub-card, on frame) */
+  .ph-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px 6px;
+    gap: 12px;
+  }
+  .ph-toolbar .group { display: inline-flex; align-items: center; gap: 4px; }
+  .ph-toolbar .speed {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0 8px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+  .stage.light .ph-toolbar .speed { color: rgba(15,15,15,0.6); }
+  .stage.dark  .ph-toolbar .speed { color: rgba(255,255,255,0.6); }
+  .ph-toolbar .divider {
+    width: 1px;
+    height: 14px;
+  }
+  .stage.light .ph-toolbar .divider { background: rgba(15,15,15,0.12); }
+  .stage.dark  .ph-toolbar .divider { background: rgba(255,255,255,0.12); }
+  .ph-toolbar .vol {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .vol-slider {
+    width: 80px;
+    height: 4px;
+    border-radius: 999px;
+    position: relative;
+    cursor: pointer;
+  }
+  .stage.light .vol-slider { background: rgba(15,15,15,0.12); }
+  .stage.dark  .vol-slider { background: rgba(255,255,255,0.14); }
+  .vol-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: #F5642B;
+    border-radius: 999px;
+    width: 70%;
+  }
+  .vol-thumb {
+    position: absolute;
+    top: 50%; left: 70%;
+    transform: translate(-50%, -50%);
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: #F5642B;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  }
+</style>
+</head>
+<body>
+
+<!-- DARK VARIANT -->
+<div class="stage dark">
+  <div class="player">
+    <div class="ph-head">
+      <span class="title">Podcast</span>
+      <div class="actions">
+        <button class="icon-btn" aria-label="Expand"><i data-lucide="maximize-2"></i></button>
+        <button class="icon-btn" aria-label="Close"><i data-lucide="x"></i></button>
+      </div>
+    </div>
+
+    <div class="ph-sub">
+      <div class="ph-meta-row">
+        <span>Planet Money</span>
+        <span>12/31/2025</span>
+      </div>
+
+      <div class="ph-title-row">
+        <div class="ph-title">Indicators of the Year</div>
+        <button class="follow-pill"><i data-lucide="user-plus"></i> Follow</button>
+      </div>
+
+      <div class="ph-rating">
+        <span class="stars"><i data-lucide="star"></i></span>
+        <span class="rate">4.6</span>
+        <span class="dim">(30k)</span>
+        <span class="sep">/</span>
+        <span class="tag">Business</span>
+        <span class="sep">/</span>
+        <span class="tag">Updated daily</span>
+      </div>
+
+      <div class="ph-player">
+        <button class="play-pill playing" aria-label="Pause">
+          <span class="play-icon"></span>
+          <span class="bar pause-icon"></span>
+          <span class="bar pause-icon"></span>
+        </button>
+        <div class="wave" id="wave-dark"></div>
+      </div>
+
+      <div class="ph-time">
+        <span>05:12 / 18:15</span>
+        <span class="left">11 min left</span>
+      </div>
+    </div>
+
+    <div class="ph-toolbar">
+      <div class="group">
+        <button class="icon-btn" aria-label="More"><i data-lucide="more-vertical"></i></button>
+        <button class="icon-btn" aria-label="Save"><i data-lucide="bookmark"></i></button>
+        <button class="icon-btn" aria-label="Share"><i data-lucide="share-2"></i></button>
+        <button class="icon-btn" aria-label="Copy link"><i data-lucide="link"></i></button>
+        <button class="icon-btn" aria-label="Embed"><i data-lucide="code"></i></button>
+      </div>
+      <div class="group">
+        <button class="speed">1×</button>
+        <span class="divider"></span>
+        <div class="vol">
+          <button class="icon-btn" aria-label="Mute"><i data-lucide="volume-2"></i></button>
+          <div class="vol-slider"><div class="vol-fill"></div><div class="vol-thumb"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage-foot">
+    <span class="who">
+      <span class="av" style="background-image:url('https://i.pravatar.cc/60?img=12')"></span>
+      @disarto_max
+    </span>
+    <span>Podcast player</span>
+  </div>
+</div>
+
+<!-- LIGHT VARIANT -->
+<div class="stage light">
+  <div class="player">
+    <div class="ph-head">
+      <span class="title">Podcast</span>
+      <div class="actions">
+        <button class="icon-btn" aria-label="Expand"><i data-lucide="maximize-2"></i></button>
+        <button class="icon-btn" aria-label="Close"><i data-lucide="x"></i></button>
+      </div>
+    </div>
+
+    <div class="ph-sub">
+      <div class="ph-meta-row">
+        <span>Planet Money</span>
+        <span>12/31/2025</span>
+      </div>
+
+      <div class="ph-title-row">
+        <div class="ph-title">Indicators of the Year</div>
+        <button class="follow-pill"><i data-lucide="user-plus"></i> Follow</button>
+      </div>
+
+      <div class="ph-rating">
+        <span class="stars"><i data-lucide="star"></i></span>
+        <span class="rate">4.6</span>
+        <span class="dim">(30k)</span>
+        <span class="sep">/</span>
+        <span class="tag">Business</span>
+        <span class="sep">/</span>
+        <span class="tag">Updated daily</span>
+      </div>
+
+      <div class="ph-player">
+        <button class="play-pill playing" aria-label="Pause">
+          <span class="play-icon"></span>
+          <span class="bar pause-icon"></span>
+          <span class="bar pause-icon"></span>
+        </button>
+        <div class="wave" id="wave-light"></div>
+      </div>
+
+      <div class="ph-time">
+        <span>05:12 / 18:15</span>
+        <span class="left">11 min left</span>
+      </div>
+    </div>
+
+    <div class="ph-toolbar">
+      <div class="group">
+        <button class="icon-btn" aria-label="More"><i data-lucide="more-vertical"></i></button>
+        <button class="icon-btn" aria-label="Save"><i data-lucide="bookmark"></i></button>
+        <button class="icon-btn" aria-label="Share"><i data-lucide="share-2"></i></button>
+        <button class="icon-btn" aria-label="Copy link"><i data-lucide="link"></i></button>
+        <button class="icon-btn" aria-label="Embed"><i data-lucide="code"></i></button>
+      </div>
+      <div class="group">
+        <button class="speed">1×</button>
+        <span class="divider"></span>
+        <div class="vol">
+          <button class="icon-btn" aria-label="Mute"><i data-lucide="volume-2"></i></button>
+          <div class="vol-slider"><div class="vol-fill"></div><div class="vol-thumb"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage-foot">
+    <span class="who">
+      <span class="av" style="background-image:url('https://i.pravatar.cc/60?img=12')"></span>
+      @disarto_max
+    </span>
+    <span>Podcast player</span>
+  </div>
+</div>
+
+<script>
+  if (window.lucide) lucide.createIcons();
+
+  /**
+   * Render a single waveform pattern with played/remaining states and a
+   * vertical playhead bar. Heights follow a deterministic pseudorandom
+   * curve modulated by sin() so the wave looks musical, not noisy.
+   */
+  function renderWave(el, count, playheadIdx) {
+    let s = 13;
+    const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    let html = '';
+    for (let i = 0; i < count; i++) {
+      const env = 0.45 + 0.55 * Math.abs(Math.sin(i * 0.13) + Math.sin(i * 0.31) * 0.5);
+      const noise = 0.35 + rnd() * 0.65;
+      const h = Math.max(3, Math.round(env * noise * 70));
+      const isHead = i === playheadIdx;
+      const cls = isHead ? 'head' : (i < playheadIdx ? 'played' : '');
+      const style = isHead ? '' : 'height:' + h + 'px;';
+      html += '<div class="bar ' + cls + '" style="' + style + '"></div>';
+    }
+    el.innerHTML = html;
+  }
+
+  function fitWave(el) {
+    const w = el.clientWidth;
+    const count = Math.max(40, Math.floor(w / 4));
+    const playhead = Math.floor(count * 0.36);
+    renderWave(el, count, playhead);
+  }
+  fitWave(document.getElementById('wave-dark'));
+  fitWave(document.getElementById('wave-light'));
+  new ResizeObserver(() => {
+    fitWave(document.getElementById('wave-dark'));
+    fitWave(document.getElementById('wave-light'));
+  }).observe(document.getElementById('wave-dark'));
+
+  // Toggle play/pause
+  document.querySelectorAll('.play-pill').forEach(btn => {
+    btn.addEventListener('click', () => btn.classList.toggle('playing'));
+  });
+  // Toggle follow
+  document.querySelectorAll('.follow-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.classList.toggle('followed');
+      btn.innerHTML = btn.classList.contains('followed')
+        ? '<i data-lucide="check"></i> Following'
+        : '<i data-lucide="user-plus"></i> Follow';
+      if (window.lucide) lucide.createIcons();
+    });
+  });
+</script>
+</body>
+</html>

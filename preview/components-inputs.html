@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Inputs</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg-stage); background-image: var(--stage-pattern); padding: 24px; min-height: 100vh; box-sizing: border-box; }
+  .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px 22px; box-shadow: var(--elev-1); }
+  .label { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+  .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.04em; }
+  .row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+
+  /* Buttons */
+  .btn { display:inline-flex; align-items:center; gap:6px; padding: 9px 14px; border-radius:999px; font: 500 13px/1 var(--font-sans); cursor:pointer; border:1px solid transparent; transition: background var(--motion) var(--ease), color var(--motion) var(--ease), box-shadow var(--motion) var(--ease); }
+  .btn svg { width: 14px; height: 14px; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary { background: var(--fg-1); color: white; }
+  .btn-secondary:hover { background: #2a2a30; }
+  .btn-outline { background: var(--bg-surface); color: var(--fg-1); border-color: var(--border-strong); }
+  .btn-outline:hover { background: var(--bg-surface-2); }
+  .btn-ghost { background: transparent; color: var(--fg-2); }
+  .btn-ghost:hover { background: var(--bg-surface-2); color: var(--fg-1); }
+  .btn-icon { padding: 8px; }
+
+  /* Pills */
+  .pill { display:inline-flex; align-items:center; gap:6px; padding: 4px 10px; border-radius:999px; font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; }
+  .pill-success { background: var(--success-soft); color: var(--success); }
+  .pill-danger  { background: var(--danger-soft); color: var(--danger); }
+  .pill-warning { background: var(--warning-soft); color: var(--warning); }
+  .pill-info    { background: var(--info-soft); color: var(--info); }
+  .pill-neutral { background: var(--bg-surface-2); color: var(--fg-2); border:1px solid var(--border); }
+
+  /* Inputs */
+  .field { display:flex; align-items:center; height: 40px; padding: 0 12px; gap:8px; border:1px solid var(--border-strong); border-radius:10px; background:var(--bg-surface); font: 400 14px/1 var(--font-sans); color:var(--fg-1); min-width: 220px; transition: border-color 140ms cubic-bezier(.2,.7,.2,1), box-shadow 140ms cubic-bezier(.2,.7,.2,1); }
+  .field svg { width: 16px; height: 16px; color: var(--fg-3); }
+  .field input { border:0; outline:0 !important; background:transparent; font:inherit; color:inherit; flex:1; box-shadow:none !important; padding:0; margin:0; }
+  .field input:focus, .field input:focus-visible { outline: 0 !important; box-shadow: none !important; }
+  .field:focus-within, .field-focus { border-color: var(--accent); box-shadow: var(--elev-focus); }
+
+  /* Toggle */
+  .toggle { width:36px; height:20px; border-radius:999px; background: var(--bg-surface-3); position:relative; cursor:pointer; transition: background var(--motion) var(--ease); }
+  .toggle::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background: white; box-shadow: 0 1px 2px rgba(0,0,0,0.15); transition: transform var(--motion) var(--ease); }
+  .toggle.on { background: var(--accent); }
+  .toggle.on::after { transform: translateX(16px); }
+
+  /* Checkbox */
+  .cb { width:18px; height:18px; border-radius:6px; border:1.5px solid var(--border-strong); display:inline-flex; align-items:center; justify-content:center; }
+  .cb.on { background: var(--accent); border-color: var(--accent); color:white; }
+  .cb.on svg { width:12px; height:12px; }
+
+  /* Segmented */
+  .seg { display:inline-flex; padding:3px; background: var(--bg-surface-2); border-radius:999px; gap:2px; }
+  .seg > div { padding: 6px 14px; border-radius:999px; font: 500 12px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-2); cursor:pointer; }
+  .seg > div.active { background: var(--bg-surface); color: var(--fg-1); box-shadow: var(--elev-1); }
+
+  /* Avatar */
+  .av { width:36px; height:36px; border-radius:50%; background: var(--violet-soft); display:inline-flex; align-items:center; justify-content:center; font: 500 13px/1 var(--font-sans); color: var(--violet); }
+  .av-stack { display:inline-flex; }
+  .av-stack > * { margin-left: -10px; border:2px solid var(--bg-surface); }
+  .av-stack > *:first-child { margin-left: 0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Inputs</div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+    <div class="field">
+      <i data-lucide="search"></i>
+      <input placeholder="Search" value="">
+      <span style="display:inline-flex; gap:2px;">
+        <span style="font-family:var(--font-mono); font-size:10px; padding:2px 6px; background:var(--bg-surface-2); border:1px solid var(--border); border-radius:4px; color:var(--fg-3);">⌘</span>
+        <span style="font-family:var(--font-mono); font-size:10px; padding:2px 6px; background:var(--bg-surface-2); border:1px solid var(--border); border-radius:4px; color:var(--fg-3);">K</span>
+      </span>
+    </div>
+    <div class="field field-focus">
+      <input placeholder="John Doe" value="John Doe">
+    </div>
+    <div class="field">
+      <i data-lucide="link"></i>
+      <input placeholder="example.com">
+    </div>
+    <div class="field select-host" id="lang-select">
+      <span class="select-value" id="lang-val" style="flex:1; color:var(--fg-1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">English</span>
+      <i data-lucide="chevron-down" class="select-chev"></i>
+      <div class="select-pop" id="lang-pop" role="listbox">
+        <button class="select-opt selected" role="option" data-v="English"><span>English</span><i data-lucide="check"></i></button>
+        <button class="select-opt" role="option" data-v="Mongolian"><span>Mongolian</span><i data-lucide="check"></i></button>
+        <button class="select-opt" role="option" data-v="Japanese"><span>Japanese</span><i data-lucide="check"></i></button>
+        <button class="select-opt" role="option" data-v="German"><span>German</span><i data-lucide="check"></i></button>
+        <button class="select-opt" role="option" data-v="Français"><span>Français</span><i data-lucide="check"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* === Select dropdown === */
+  .select-host { position: relative; cursor: pointer; user-select: none; }
+  .select-host .select-chev { transition: transform 220ms cubic-bezier(.2,.7,.2,1); }
+  .select-host.open .select-chev { transform: rotate(180deg); }
+  .select-host.open { border-color: var(--accent); box-shadow: var(--elev-focus); }
+  .select-pop {
+    position: absolute;
+    top: calc(100% + 6px); left: 0; right: 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--elev-2);
+    padding: 6px;
+    display: flex; flex-direction: column; gap: 1px;
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+    transform-origin: top center;
+    pointer-events: none;
+    transition: opacity 200ms cubic-bezier(.2,.7,.2,1), transform 240ms cubic-bezier(.2,.7,.2,1);
+    z-index: 20;
+  }
+  .select-host.open .select-pop { opacity: 1; transform: none; pointer-events: auto; }
+  .select-opt {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px;
+    border: 0; background: transparent;
+    border-radius: 6px;
+    font: 500 13px/1 var(--font-sans);
+    color: var(--fg-1);
+    cursor: pointer;
+    text-align: left;
+    transition: background 100ms;
+  }
+  .select-opt:hover { background: var(--bg-surface-2); }
+  .select-opt > span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .select-opt svg { width: 14px; height: 14px; color: var(--accent); opacity: 0; transition: opacity 140ms; }
+  .select-opt.selected svg { opacity: 1; }
+</style>
+
+<script>
+  // Native lucide icon pass for static markup
+  if (window.lucide) lucide.createIcons();
+
+  // Custom select interactivity
+  const host = document.getElementById('lang-select');
+  const pop  = document.getElementById('lang-pop');
+  const val  = document.getElementById('lang-val');
+  let isOpen = false;
+  function toggle(force) {
+    isOpen = force !== undefined ? force : !isOpen;
+    host.classList.toggle('open', isOpen);
+  }
+  host.addEventListener('click', (e) => {
+    if (e.target.closest('.select-opt')) return;
+    e.stopPropagation();
+    toggle();
+  });
+  document.addEventListener('click', (e) => { if (isOpen && !host.contains(e.target)) toggle(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggle(false); });
+  pop.querySelectorAll('.select-opt').forEach(opt => opt.addEventListener('click', (e) => {
+    e.stopPropagation();
+    pop.querySelectorAll('.select-opt').forEach(x => x.classList.remove('selected'));
+    opt.classList.add('selected');
+    val.textContent = opt.dataset.v;
+    toggle(false);
+  }));
+</script>
+</body>
+</html>

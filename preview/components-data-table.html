@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Data table</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--elev-1);overflow:hidden;}
+
+  /* Unified small button — used for View, Prev, Next */
+  .btn-sm{
+    display:inline-flex;align-items:center;gap:6px;
+    height:28px;padding:0 10px;
+    border-radius:8px;
+    border:1px solid var(--border-strong);
+    background:var(--bg-surface);
+    font:500 12px/1 var(--font-sans);
+    color:var(--fg-1);
+    cursor:pointer;
+    transition:background 140ms;
+    white-space:nowrap;
+  }
+  .btn-sm:hover:not(:disabled){background:var(--bg-surface-2);}
+  .btn-sm:disabled{opacity:0.4;cursor:not-allowed;}
+  .btn-sm svg{width:12px;height:12px;flex-shrink:0;}
+
+  /* ============ Head ============ */
+  .dt-head{
+    padding:14px 18px;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .dt-head h2{font-size:16px;font-weight:600;margin:0;}
+  .dt-tools{display:flex;gap:8px;align-items:center;}
+
+  .dt-search{
+    display:flex;align-items:center;gap:8px;
+    height:28px;padding:0 10px;
+    border:1px solid var(--border-strong);
+    border-radius:8px;
+    transition:border-color 140ms,box-shadow 140ms;
+  }
+  .dt-search:focus-within{border-color:var(--accent);box-shadow:var(--elev-focus);}
+  .dt-search input{
+    border:0;outline:0;background:transparent;
+    font:400 12px/1 var(--font-sans);
+    color:var(--fg-1);
+    width:140px;
+    box-shadow:none;
+  }
+  .dt-search input:focus,
+  .dt-search input:focus-visible{outline:0;box-shadow:none;border:0;}
+  .dt-search svg{width:14px;height:14px;color:var(--fg-3);flex-shrink:0;}
+
+  /* ============ Table ============ */
+  .dt-scroll{
+    /* Lets the table itself remain at a sensible min-width on narrow cards
+       without breaking the truncation rules on individual headers. */
+    width:100%;
+    overflow-x:auto;
+  }
+  .dt{
+    width:100%;
+    border-collapse:collapse;
+    font-variant-numeric:tabular-nums;
+    table-layout:fixed;       /* required for th text-overflow:ellipsis */
+  }
+  .dt th, .dt td{
+    padding:10px 14px;
+    border-bottom:1px solid var(--border);
+    box-sizing:border-box;
+  }
+  .dt th{
+    text-align:left;
+    font-family:var(--font-mono);font-size:11px;font-weight:500;
+    color:var(--fg-3);
+    letter-spacing:0.12em;text-transform:uppercase;
+    background:var(--bg-surface);
+  }
+  .dt th.num{text-align:right;}
+  .dt td{font-size:13px;}
+  .dt td.num{text-align:right;}
+
+  /* ---- Header inner: keeps label + sort icon paired, lets label ellipsize ---- */
+  .th-inner{
+    display:flex;align-items:center;gap:6px;
+    min-width:0;
+    color:inherit;
+    cursor:pointer;
+    user-select:none;
+    background:transparent;border:0;padding:0;
+    font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;
+    width:100%;
+    text-align:left;
+  }
+  .dt th.num .th-inner{justify-content:flex-end;}
+  .th-label{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    min-width:0;
+    flex:1 1 auto;
+  }
+  .dt th.num .th-label{flex:0 1 auto;}
+  .th-inner svg{
+    width:11px;height:11px;
+    color:var(--fg-3);
+    flex-shrink:0;
+    transition:color 140ms,transform 200ms cubic-bezier(.2,.7,.2,1);
+  }
+  .dt th.sortable .th-inner:hover{color:var(--fg-1);}
+  .dt th.sortable .th-inner:hover svg{color:var(--fg-2);}
+  .dt th.sortable.active{color:var(--fg-1);}
+  .dt th.sortable.active svg{color:var(--accent);}
+  .dt th.sortable.active.desc svg{transform:rotate(180deg);}
+
+  /* ---- Body rows ---- */
+  .dt tbody tr{transition:background 100ms;cursor:pointer;}
+  .dt tbody tr:hover{background:var(--bg-surface-2);}
+  .dt tbody tr.selected{background:var(--bg-surface-2);}
+  .dt td.cell-truncate{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .dt td .commit{font-family:var(--font-mono);}
+  .dt td .msg{color:var(--fg-3);margin-left:4px;}
+
+  .dt-check{
+    width:14px;height:14px;
+    border:1.5px solid var(--border-strong);
+    background:transparent;border-radius:4px;
+    cursor:pointer;padding:0;
+    display:inline-flex;align-items:center;justify-content:center;
+    color:white;transition:all 120ms;flex-shrink:0;
+  }
+  .dt-check[data-state="on"]{background:var(--accent);border-color:var(--accent);}
+  .dt-check[data-state="on"]::after{content:'✓';font-size:9px;}
+
+  /* ---- Status pill ---- */
+  .pill{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:3px 9px;border-radius:999px;
+    font-family:var(--font-mono);font-size:11px;font-weight:500;
+    letter-spacing:0.12em;text-transform:uppercase;
+    white-space:nowrap;
+  }
+  .pill::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .pill.success{background:var(--success-soft);color:var(--success);}
+  .pill.info{background:var(--info-soft);color:var(--info);}
+  .pill.danger{background:var(--danger-soft);color:var(--danger);}
+
+  /* ============ Foot ============ */
+  .dt-foot{
+    padding:10px 18px;
+    display:flex;justify-content:space-between;align-items:center;
+    gap:10px;
+    font-size:12px;color:var(--fg-2);
+    border-top:1px solid var(--border);
+  }
+  .dt-foot .pager{display:flex;gap:6px;}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- ============ Head ============ -->
+  <div class="dt-head">
+    <h2>Deployments</h2>
+    <div class="dt-tools">
+      <div class="dt-search">
+        <i data-lucide="search"></i>
+        <input id="dt-q" placeholder="Filter…" autocomplete="off">
+      </div>
+      <button class="btn-sm">
+        <i data-lucide="sliders-horizontal"></i>
+        View
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ Table ============ -->
+  <div class="dt-scroll">
+    <table class="dt">
+      <colgroup>
+        <col style="width: 40px;">                 <!-- checkbox -->
+        <col>                                      <!-- commit (flex) -->
+        <col style="width: 120px;">                <!-- status -->
+        <col style="width: 110px;">                <!-- env -->
+        <col style="width: 100px;">                <!-- duration -->
+        <col style="width: 110px;">                <!-- created -->
+      </colgroup>
+      <thead>
+        <tr>
+          <th><button class="dt-check master" data-state="off" aria-label="Select all"></button></th>
+          <th class="sortable" data-k="commit">
+            <button class="th-inner">
+              <span class="th-label">Commit · Message</span>
+              <i data-lucide="arrow-up-down"></i>
+            </button>
+          </th>
+          <th>
+            <span class="th-inner">
+              <span class="th-label">Status</span>
+            </span>
+          </th>
+          <th class="sortable" data-k="env">
+            <button class="th-inner">
+              <span class="th-label">Environment</span>
+              <i data-lucide="arrow-up-down"></i>
+            </button>
+          </th>
+          <th class="num sortable" data-k="duration">
+            <button class="th-inner">
+              <span class="th-label">Duration</span>
+              <i data-lucide="arrow-up-down"></i>
+            </button>
+          </th>
+          <th class="num sortable" data-k="created">
+            <button class="th-inner">
+              <span class="th-label">Created</span>
+              <i data-lucide="arrow-up-down"></i>
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="dt-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ============ Foot ============ -->
+  <div class="dt-foot">
+    <span id="dt-count">0 of 4 row(s) selected.</span>
+    <div class="pager">
+      <button class="btn-sm">
+        <i data-lucide="chevron-left"></i>
+        Prev
+      </button>
+      <button class="btn-sm">
+        Next
+        <i data-lucide="chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ROWS = [
+    {id:1, commit:'8f3c2a1', message:'Track error events to web analytics', status:'ready',    env:'Preview',    duration:747, created:25, durStr:'12m 27s', createdStr:'25m ago'},
+    {id:2, commit:'72ab991', message:'Refactor auth middleware',            status:'building', env:'Production', duration:494, created:60, durStr:'8m 14s',  createdStr:'1h ago'},
+    {id:3, commit:'441cde0', message:'Fix dashboard latency',               status:'ready',    env:'Production', duration:542, created:180,durStr:'9m 02s',  createdStr:'3h ago'},
+    {id:4, commit:'33ef218', message:'Add competitor leaderboard',          status:'failed',   env:'Preview',    duration:131, created:300,durStr:'2m 11s',  createdStr:'5h ago'},
+  ];
+  const PILL = { ready:'success', building:'info', failed:'danger' };
+  const sel = new Set([1]);
+  let sortKey = null, sortDir = 1;
+  const tbody = document.getElementById('dt-body');
+
+  function rowHtml(r) {
+    return '<tr class="' + (sel.has(r.id) ? 'selected' : '') + '" data-id="' + r.id + '">' +
+      '<td><button class="dt-check" data-state="' + (sel.has(r.id)?'on':'off') + '" aria-label="Select"></button></td>' +
+      '<td class="cell-truncate"><span class="commit">' + r.commit + '</span><span class="msg">/ ' + r.message + '</span></td>' +
+      '<td><span class="pill ' + PILL[r.status] + '">' + r.status.toUpperCase() + '</span></td>' +
+      '<td class="cell-truncate" style="color:var(--fg-2);">' + r.env + '</td>' +
+      '<td class="num">' + r.durStr + '</td>' +
+      '<td class="num" style="color:var(--fg-2);">' + r.createdStr + '</td>' +
+    '</tr>';
+  }
+
+  function render(filter) {
+    filter = filter || '';
+    const q = filter.toLowerCase();
+    let rows = ROWS.filter(r => !q || r.commit.includes(q) || r.message.toLowerCase().includes(q));
+    if (sortKey) rows = rows.slice().sort((a,b) => {
+      const va = a[sortKey], vb = b[sortKey];
+      if (typeof va === 'number') return (va - vb) * sortDir;
+      return String(va).localeCompare(String(vb)) * sortDir;
+    });
+    tbody.innerHTML = rows.map(rowHtml).join('');
+    tbody.querySelectorAll('.dt-check').forEach(c => c.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = parseInt(c.closest('tr').dataset.id, 10);
+      if (sel.has(id)) sel.delete(id); else sel.add(id);
+      render(document.getElementById('dt-q').value);
+    }));
+    tbody.querySelectorAll('tr').forEach(r => r.addEventListener('click', () => {
+      const id = parseInt(r.dataset.id, 10);
+      if (sel.has(id)) sel.delete(id); else sel.add(id);
+      render(document.getElementById('dt-q').value);
+    }));
+    updateCount();
+    lucide.createIcons();
+  }
+
+  function updateCount() {
+    document.getElementById('dt-count').textContent = sel.size + ' of ' + ROWS.length + ' row(s) selected.';
+    const master = document.querySelector('.dt-check.master');
+    master.dataset.state = sel.size === ROWS.length ? 'on' : 'off';
+  }
+
+  document.querySelectorAll('th.sortable').forEach(th => th.addEventListener('click', () => {
+    const k = th.dataset.k;
+    sortDir = (sortKey === k) ? -sortDir : 1;
+    sortKey = k;
+    document.querySelectorAll('th.sortable').forEach(x => { x.classList.remove('active','desc'); });
+    th.classList.add('active');
+    if (sortDir === -1) th.classList.add('desc');
+    render(document.getElementById('dt-q').value);
+  }));
+  document.querySelector('.dt-check.master').addEventListener('click', () => {
+    if (sel.size === ROWS.length) sel.clear(); else ROWS.forEach(r => sel.add(r.id));
+    render(document.getElementById('dt-q').value);
+  });
+  document.getElementById('dt-q').addEventListener('input', e => render(e.target.value));
+  render();
+
+  if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>

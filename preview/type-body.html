@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Type · Body</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg-stage); background-image: var(--stage-pattern); padding: 24px; min-height: 100vh; box-sizing: border-box; }
+  .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px 22px; box-shadow: var(--elev-1); }
+  .row { display: flex; align-items: center; gap: 12px; }
+  .col { display: flex; flex-direction: column; gap: 8px; }
+  .label { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+  .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Body scale · Geist</div>
+  <div style="display:grid; grid-template-columns: 1fr auto; gap:10px 24px; align-items:baseline;">
+    <div style="font: 500 14px/1.45 var(--font-sans);">Daniel Morgan · primary cell, names, item titles</div>
+    <div class="meta">body strong · 14 / 500</div>
+    <div style="font: 400 14px/1.45 var(--font-sans);">Add user to Mailchimp audience — secondary descriptive copy.</div>
+    <div class="meta">body · 14 / 400</div>
+    <div style="font: 400 13px/1.4 var(--font-sans); color: var(--fg-2);">Best for individuals & small teams.</div>
+    <div class="meta">small · 13 / 400</div>
+    <div style="font: 400 12px/1.35 var(--font-sans); color: var(--fg-2);">Confirm sign-ins with a temporary verification code.</div>
+    <div class="meta">caption · 12 / 400</div>
+  </div>
+</div>
+</body>
+</html>

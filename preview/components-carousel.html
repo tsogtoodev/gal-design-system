@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Carousel</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms cubic-bezier(.2,.7,.2,1);}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:12px;">Carousel · click arrows or dots</div>
+  <div class="cr">
+    <button class="cr-arrow" id="cr-prev"><i data-lucide="chevron-left" style="width:14px;height:14px;"></i></button>
+    <div class="cr-viewport">
+      <div class="cr-track" id="cr-track"></div>
+    </div>
+    <button class="cr-arrow" id="cr-next"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button>
+  </div>
+  <div class="cr-dots" id="cr-dots"></div>
+</div>
+
+<style>
+  .cr{display:flex;align-items:center;gap:12px;}
+  .cr-viewport{flex:1;overflow:hidden;border-radius:12px;}
+  .cr-track{display:flex;gap:12px;transition:transform 480ms cubic-bezier(.2,.7,.2,1);}
+  .cr-slide{flex:0 0 calc(33.333% - 8px);height:140px;border-radius:12px;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;font-weight:600;color:white;}
+  .cr-slide .sub{font-size:11px;font-weight:400;opacity:0.85;margin-top:2px;}
+  .cr-arrow{width:36px;height:36px;border-radius:50%;border:1px solid var(--border-strong);background:var(--bg-surface);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:var(--fg-1);transition:background 140ms,opacity 140ms;flex-shrink:0;}
+  .cr-arrow:hover:not(:disabled){background:var(--bg-surface-2);}
+  .cr-arrow:disabled{opacity:0.3;cursor:not-allowed;}
+  .cr-dots{display:flex;justify-content:center;gap:6px;margin-top:14px;}
+  .cr-dot{width:6px;height:6px;border-radius:999px;border:0;background:var(--fg-4);cursor:pointer;padding:0;transition:width 240ms cubic-bezier(.2,.7,.2,1),background 240ms;}
+  .cr-dot.active{width:18px;background:var(--accent);}
+</style>
+<script>
+  const SLIDES = [
+    {bg:'linear-gradient(135deg,#F5642B,#C84715)', label:'Slide 1', sub:'Recently deployed'},
+    {bg:'linear-gradient(135deg,#2563EB,#1E40AF)', label:'Slide 2', sub:'Building now'},
+    {bg:'linear-gradient(135deg,#16A34A,#14532D)', label:'Slide 3', sub:'Ready for review'},
+    {bg:'linear-gradient(135deg,#8B5CF6,#5B21B6)', label:'Slide 4', sub:'Pending checks'},
+    {bg:'linear-gradient(135deg,#F43F5E,#9F1239)', label:'Slide 5', sub:'Archived'},
+    {bg:'linear-gradient(135deg,#0F0F10,#404045)', label:'Slide 6', sub:'Draft'},
+  ];
+  const PER_PAGE = 3;
+  const PAGES = Math.ceil(SLIDES.length / PER_PAGE);
+  let page = 0;
+
+  const track = document.getElementById('cr-track');
+  track.innerHTML = SLIDES.map(s => '<div class="cr-slide" style="background:' + s.bg + ';">' + s.label + '<div class="sub">' + s.sub + '</div></div>').join('');
+
+  function render() {
+    track.style.transform = 'translateX(calc(-' + (page * 100) + '% - ' + (page * 12) + 'px))';
+    document.getElementById('cr-dots').innerHTML = Array.from({length:PAGES}).map((_, i) =>
+      '<button class="cr-dot ' + (i===page?'active':'') + '" data-i="' + i + '"></button>').join('');
+    document.querySelectorAll('.cr-dot').forEach(d => d.addEventListener('click', () => { page = parseInt(d.dataset.i, 10); render(); }));
+    document.getElementById('cr-prev').disabled = page === 0;
+    document.getElementById('cr-next').disabled = page === PAGES - 1;
+  }
+  document.getElementById('cr-prev').addEventListener('click', () => { if (page > 0) { page--; render(); }});
+  document.getElementById('cr-next').addEventListener('click', () => { if (page < PAGES - 1) { page++; render(); }});
+  render();
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

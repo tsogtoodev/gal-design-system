@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Shadows</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 28px 22px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 22px;
+    box-shadow: var(--elev-1);
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.04em; }
+  .name { font-size: 13px; font-weight: 500; color: var(--fg-1); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 22px;
+    margin-top: 18px;
+  }
+  .tile { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .swatch {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    width: 100%;
+    height: 80px;
+    border-radius: 12px;
+  }
+
+  /* ===== Soft (default) — for resting surfaces ===== */
+  .sh-0 { box-shadow: none; }
+  .sh-1 { box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04); }
+  .sh-2 { box-shadow: 0 2px 4px rgba(0,0,0,0.05), 0 12px 32px rgba(0,0,0,0.06); }
+  .sh-3 { box-shadow: 0 4px 8px rgba(0,0,0,0.06), 0 24px 48px rgba(0,0,0,0.08); }
+
+  /* ===== Sharp — tight, defined contact shadows ===== */
+  .sh-sharp-1 {
+    box-shadow:
+      0 0 0 1px rgba(15,15,15,0.06),
+      0 2px 0 0 rgba(15,15,15,0.05);
+  }
+  .sh-sharp-2 {
+    box-shadow:
+      0 0 0 1px rgba(15,15,15,0.06),
+      0 1px 0 0 rgba(15,15,15,0.04),
+      0 4px 0 -1px rgba(15,15,15,0.04),
+      0 6px 12px -4px rgba(15,15,15,0.10);
+  }
+  .sh-sharp-3 {
+    box-shadow:
+      0 0 0 1px rgba(15,15,15,0.08),
+      0 2px 0 0 rgba(15,15,15,0.06),
+      0 6px 0 -2px rgba(15,15,15,0.05),
+      0 12px 24px -8px rgba(15,15,15,0.18);
+  }
+  .sh-press {
+    box-shadow:
+      inset 0 1px 2px rgba(15,15,15,0.10),
+      0 0 0 1px rgba(15,15,15,0.06);
+    background: var(--bg-surface-2);
+  }
+
+  /* ===== Glow / focus ring ===== */
+  .sh-focus {
+    box-shadow: 0 0 0 3px rgba(245,100,43,0.20), 0 0 0 1px var(--accent);
+  }
+  .sh-success {
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.18), 0 0 0 1px rgba(22,163,74,0.4);
+  }
+  .sh-danger {
+    box-shadow: 0 0 0 3px rgba(220,38,38,0.18), 0 0 0 1px rgba(220,38,38,0.4);
+  }
+
+  .sec-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-top: 22px;
+  }
+  .sec-head .meta { text-transform: none; letter-spacing: 0; font-family: var(--font-sans); font-size: 12px; color: var(--fg-2); }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- === Soft elevation === -->
+  <div class="label">Soft elevation · resting surfaces</div>
+  <div class="grid">
+    <div class="tile"><div class="swatch sh-0"></div><div class="name">elev-0</div><div class="meta">flat</div></div>
+    <div class="tile"><div class="swatch sh-1"></div><div class="name">elev-1</div><div class="meta">card</div></div>
+    <div class="tile"><div class="swatch sh-2"></div><div class="name">elev-2</div><div class="meta">popover</div></div>
+    <div class="tile"><div class="swatch sh-3"></div><div class="name">elev-3</div><div class="meta">modal</div></div>
+    <div class="tile"><div class="swatch sh-press" style="background:var(--bg-surface-2);"></div><div class="name">pressed</div><div class="meta">inner</div></div>
+    <div class="tile"></div>
+  </div>
+
+  <!-- === Sharp elevation === -->
+  <div class="sec-head">
+    <span class="label">Sharp elevation · defined contact</span>
+    <span class="meta">crisp 1px hairlines stacked with tight offsets — for keyboards, kbd chips, neo-skeu buttons.</span>
+  </div>
+  <div class="grid">
+    <div class="tile"><div class="swatch sh-sharp-1"></div><div class="name">sharp-1</div><div class="meta">key · pill</div></div>
+    <div class="tile"><div class="swatch sh-sharp-2"></div><div class="name">sharp-2</div><div class="meta">button</div></div>
+    <div class="tile"><div class="swatch sh-sharp-3"></div><div class="name">sharp-3</div><div class="meta">cta · hero</div></div>
+    <div class="tile">
+      <div class="swatch" style="
+        background:var(--accent);
+        border-color:var(--accent-press);
+        box-shadow:0 0 0 1px var(--accent-press), 0 2px 0 0 var(--accent-press), 0 6px 0 -2px rgba(200,71,21,0.6), 0 12px 24px -8px rgba(200,71,21,0.5);">
+      </div>
+      <div class="name">accent-sharp</div><div class="meta">primary CTA</div>
+    </div>
+    <div class="tile">
+      <div class="swatch" style="
+        background:#0F0F10;
+        border-color:#000;
+        box-shadow:0 0 0 1px #000, 0 2px 0 0 #000, 0 6px 0 -2px rgba(0,0,0,0.5), 0 12px 24px -8px rgba(0,0,0,0.4);">
+      </div>
+      <div class="name">ink-sharp</div><div class="meta">secondary CTA</div>
+    </div>
+    <div class="tile"></div>
+  </div>
+
+  <!-- === In context === -->
+  <div class="sec-head">
+    <span class="label">In context</span>
+    <span class="meta">soft for surfaces · sharp for interactive controls · glow for states.</span>
+  </div>
+  <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 14px;">
+
+    <!-- Sharp kbd row -->
+    <div style="display:flex; align-items:center; justify-content:center; height:80px; background:var(--bg-surface); border:1px solid var(--border); border-radius:12px; box-shadow: var(--elev-1); padding:0 16px;">
+      <span style="display:inline-flex; gap:4px;">
+        <span style="display:inline-block; padding:5px 9px; border-radius:6px; background:var(--bg-surface); border:1px solid var(--border-strong); font-family:var(--font-mono); font-size:12px; box-shadow: 0 1px 0 0 rgba(15,15,15,0.06), inset 0 -1.5px 0 0 rgba(15,15,15,0.04);">⌘</span>
+        <span style="display:inline-block; padding:5px 9px; border-radius:6px; background:var(--bg-surface); border:1px solid var(--border-strong); font-family:var(--font-mono); font-size:12px; box-shadow: 0 1px 0 0 rgba(15,15,15,0.06), inset 0 -1.5px 0 0 rgba(15,15,15,0.04);">K</span>
+      </span>
+    </div>
+
+    <!-- Sharp CTA pill -->
+    <div style="display:flex; align-items:center; justify-content:center; height:80px;">
+      <button style="display:inline-flex; align-items:center; gap:6px; padding:9px 16px; border-radius:999px; background:var(--accent); color:white; font:600 13px/1 var(--font-sans); border:0; cursor:pointer; box-shadow: 0 0 0 1px var(--accent-press), 0 2px 0 0 var(--accent-press), 0 6px 16px -4px rgba(200,71,21,0.5);">
+        Publish changes
+      </button>
+    </div>
+
+    <!-- Focus ring -->
+    <div style="display:flex; align-items:center; justify-content:center; height:80px;">
+      <input style="height:36px; padding:0 12px; border-radius:8px; border:1px solid var(--accent); background:var(--bg-surface); font:400 13px var(--font-sans); color:var(--fg-1); outline:0; box-shadow:var(--elev-focus); width:160px;" value="focused input" />
+    </div>
+
+  </div>
+
+  <!-- === Glow states === -->
+  <div class="sec-head">
+    <span class="label">Glow rings · focus + state</span>
+    <span class="meta">offset 0 spread 3px — same metric as <code style="font-family:var(--font-mono);font-size:11px;">--elev-focus</code>.</span>
+  </div>
+  <div class="grid">
+    <div class="tile"><div class="swatch sh-focus"></div><div class="name">focus</div><div class="meta">orange · 18%</div></div>
+    <div class="tile"><div class="swatch sh-success"></div><div class="name">success</div><div class="meta">green · 18%</div></div>
+    <div class="tile"><div class="swatch sh-danger"></div><div class="name">danger</div><div class="meta">red · 18%</div></div>
+    <div class="tile"></div><div class="tile"></div><div class="tile"></div>
+  </div>
+
+</div>
+
+</body>
+</html>

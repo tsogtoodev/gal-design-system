@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Alerts</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Alerts · click × to dismiss</div>
+  <div id="alert-list" style="display:flex;flex-direction:column;gap:10px;">
+    <div class="alert info">
+      <div class="ic"><i data-lucide="info"></i></div>
+      <div class="body"><h4>Heads up</h4><p>Your trial ends in 3 days. Upgrade to keep your workflows running.</p></div>
+      <button class="alert-close"><i data-lucide="x"></i></button>
+    </div>
+    <div class="alert success">
+      <div class="ic"><i data-lucide="check-circle-2"></i></div>
+      <div class="body"><h4>Deployment ready</h4><p>main-8f3c2a1 went live 25m ago. All checks passed.</p></div>
+      <button class="alert-close"><i data-lucide="x"></i></button>
+    </div>
+    <div class="alert warning">
+      <div class="ic"><i data-lucide="alert-triangle"></i></div>
+      <div class="body"><h4>3 warnings detected</h4><p>Running Checks flagged non-blocking issues. Review before publishing.</p></div>
+      <button class="alert-close"><i data-lucide="x"></i></button>
+    </div>
+    <div class="alert destructive">
+      <div class="ic"><i data-lucide="x-circle"></i></div>
+      <div class="body"><h4>Build failed</h4><p>Module ./src/api/client.ts could not be resolved.</p></div>
+      <button class="alert-close"><i data-lucide="x"></i></button>
+    </div>
+  </div>
+  <button class="btn btn-outline" id="restore" style="margin-top:14px;font-size:12px;display:none;">Restore alerts</button>
+</div>
+<style>
+  .alert{display:flex;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid;align-items:center;transition:opacity 280ms cubic-bezier(.2,.7,.2,1),transform 280ms cubic-bezier(.2,.7,.2,1),margin 280ms cubic-bezier(.2,.7,.2,1),max-height 280ms cubic-bezier(.2,.7,.2,1),padding 280ms cubic-bezier(.2,.7,.2,1);max-height:80px;overflow:hidden;}
+  .alert.dismissed{opacity:0;transform:translateX(20px);max-height:0;padding-top:0;padding-bottom:0;margin-bottom:-10px;}
+  .alert .ic{flex-shrink:0;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;}
+  .alert .ic svg{width:18px;height:18px;}
+  .alert .body{flex:1;}
+  .alert h4{font-size:13px;font-weight:600;margin:0 0 2px;}
+  .alert p{font-size:12px;color:var(--fg-2);margin:0;}
+  .alert.info{background:var(--info-soft);border-color:rgba(37,99,235,0.18);}
+  .alert.info .ic{color:var(--info);}
+  .alert.success{background:var(--success-soft);border-color:rgba(22,163,74,0.18);}
+  .alert.success .ic{color:var(--success);}
+  .alert.warning{background:var(--warning-soft);border-color:rgba(217,119,6,0.18);}
+  .alert.warning .ic{color:var(--warning);}
+  .alert.destructive{background:var(--danger-soft);border-color:rgba(220,38,38,0.18);}
+  .alert.destructive .ic{color:var(--danger);}
+  .alert-close{margin-left:auto;width:22px;height:22px;border:0;background:transparent;border-radius:6px;cursor:pointer;color:inherit;opacity:0.5;display:inline-flex;align-items:center;justify-content:center;transition:opacity 140ms,background 140ms;}
+  .alert-close:hover{opacity:1;background:rgba(0,0,0,0.04);}
+  .alert-close svg{width:12px;height:12px;}
+</style>
+<script>
+  const restore = document.getElementById('restore');
+  const alerts = document.querySelectorAll('.alert');
+  alerts.forEach(a => {
+    a.querySelector('.alert-close').addEventListener('click', () => {
+      a.classList.add('dismissed');
+      setTimeout(() => updateRestoreVisibility(), 50);
+    });
+  });
+  function updateRestoreVisibility() {
+    const allDismissed = [].every.call(alerts, a => a.classList.contains('dismissed'));
+    restore.style.display = allDismissed ? 'inline-flex' : 'none';
+  }
+  restore.addEventListener('click', () => { alerts.forEach(a => a.classList.remove('dismissed')); restore.style.display = 'none'; });
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

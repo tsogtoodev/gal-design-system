@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Calendar / date picker</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .cal {
+    border-radius: 18px;
+    padding: 18px 18px 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .cal.light {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--elev-1);
+  }
+  .cal.dark {
+    background: #141416;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+
+  /* ---- Header ---- */
+  .cal-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .cal-month {
+    font: 600 18px/1.2 var(--font-sans);
+    letter-spacing: -0.01em;
+    margin-right: 4px;
+  }
+  .cal.light .cal-month { color: var(--fg-1); }
+  .cal.dark  .cal-month { color: #FAFAFA; }
+
+  .today-pill {
+    padding: 5px 12px;
+    border-radius: 999px;
+    font: 500 12px/1 var(--font-sans);
+    cursor: pointer;
+    transition: background var(--motion) var(--ease);
+  }
+  .cal.light .today-pill { background: var(--bg-surface); color: var(--fg-1); border: 1px solid var(--border-strong); }
+  .cal.dark  .today-pill { background: transparent; color: #FAFAFA; border: 1px solid rgba(255,255,255,0.14); }
+
+  .nav-btn {
+    width: 24px; height: 24px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; cursor: pointer;
+    border-radius: 6px;
+  }
+  .cal.light .nav-btn { color: var(--fg-2); }
+  .cal.dark  .nav-btn { color: rgba(255,255,255,0.7); }
+
+  .add-btn {
+    width: 36px; height: 36px;
+    margin-left: auto;
+    border-radius: 999px;
+    background: var(--accent);
+    color: white;
+    border: 0;
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background var(--motion) var(--ease);
+  }
+  .add-btn:hover { background: var(--accent-hover); }
+
+  /* ---- Body card (nested inner card with own border) ---- */
+  .cal-body {
+    border-radius: 14px;
+    padding: 12px 10px 14px;
+  }
+  .cal.light .cal-body { background: var(--bg-surface); border: 1px solid var(--border); }
+  .cal.dark  .cal-body { background: #1A1A1D; border: 1px solid rgba(255,255,255,0.06); }
+
+  /* ---- Day-of-week chips ---- */
+  .dow-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+  .dow {
+    text-align: center;
+    padding: 6px 0;
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .cal.light .dow { background: var(--bg-surface-2); color: var(--fg-3); }
+  .cal.dark  .dow { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5); }
+
+  /* ---- Day grid ---- */
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .day {
+    aspect-ratio: 0.85;
+    border-radius: 10px;
+    padding: 7px 8px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .cal.light .day { background: var(--bg-surface-2); border: 1px solid var(--border); }
+  .cal.dark  .day { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05); }
+
+  .day .num {
+    font: 500 13px/1 var(--font-sans);
+    font-variant-numeric: tabular-nums;
+  }
+  .cal.light .day .num { color: var(--fg-1); }
+  .cal.dark  .day .num { color: rgba(255,255,255,0.92); }
+
+  .day.dim .num { opacity: 0.42; }
+
+  .day.today {
+    background: rgba(245, 100, 43, 0.08) !important;
+    border-color: var(--accent) !important;
+  }
+  .day.today .num { color: var(--accent); font-weight: 600; }
+
+  .day .dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  .day .dot.monthly { background: #A78BFA; }
+  .day .dot.yearly  { background: #FACC15; }
+
+  .day .logo {
+    position: absolute;
+    left: 50%;
+    bottom: 8px;
+    transform: translateX(-50%);
+    width: 22px; height: 22px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .day .logo img, .day .logo svg { width: 100%; height: 100%; object-fit: contain; }
+
+  /* ---- Legend / count row inside body ---- */
+  .legend-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 4px 0;
+    margin-top: 8px;
+  }
+  .legend {
+    display: inline-flex; gap: 14px;
+  }
+  .legend-item {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .cal.light .legend-item { color: var(--fg-2); }
+  .cal.dark  .legend-item { color: rgba(255,255,255,0.6); }
+  .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  .count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .cal.light .count { color: var(--fg-2); }
+  .cal.dark  .count { color: rgba(255,255,255,0.6); }
+  .count b { color: inherit; font-weight: 600; }
+  .cal.light .count b { color: var(--fg-1); }
+  .cal.dark  .count b { color: #FAFAFA; }
+  .count .sep { margin: 0 6px; opacity: 0.5; }
+
+  /* ---- Footer toolbar ---- */
+  .cal-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 4px 0;
+  }
+  .tool-group {
+    display: inline-flex; gap: 4px;
+    align-items: center;
+  }
+  .tool-btn {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: transparent;
+    border: 0; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background var(--motion) var(--ease);
+  }
+  .cal.light .tool-btn { color: var(--fg-2); }
+  .cal.dark  .tool-btn { color: rgba(255,255,255,0.6); }
+  .cal.light .tool-btn:hover { background: var(--bg-surface-2); color: var(--fg-1); }
+  .cal.dark  .tool-btn:hover { background: rgba(255,255,255,0.06); color: #FAFAFA; }
+
+  .tool-divider {
+    width: 1px; height: 18px;
+    margin: 0 4px;
+  }
+  .cal.light .tool-divider { background: var(--border-strong); }
+  .cal.dark  .tool-divider { background: rgba(255,255,255,0.12); }
+
+  .total {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+  .cal.light .total { color: var(--fg-2); }
+  .cal.dark  .total { color: rgba(255,255,255,0.6); }
+  .cal.light .total b { color: var(--fg-1); font-weight: 600; letter-spacing: 0; }
+  .cal.dark  .total b { color: #FAFAFA; font-weight: 600; letter-spacing: 0; }
+  .total .label { text-transform: uppercase; margin-right: 6px; }
+</style>
+</head>
+<body>
+
+<!-- ===================== LIGHT VARIANT ===================== -->
+<div class="cal light">
+  <div class="cal-head">
+    <div class="cal-month">January, 2026</div>
+    <button class="today-pill">Today</button>
+    <button class="nav-btn"><i data-lucide="chevron-left" style="width:14px;height:14px;"></i></button>
+    <button class="nav-btn"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button>
+    <button class="add-btn"><i data-lucide="plus" style="width:16px;height:16px;"></i></button>
+  </div>
+
+  <div class="cal-body">
+    <div class="dow-row">
+      <div class="dow">Mon</div><div class="dow">Tue</div><div class="dow">Wed</div>
+      <div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div><div class="dow">Sun</div>
+    </div>
+
+    <div class="day-grid" id="grid-light"></div>
+
+    <div class="legend-row">
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#A78BFA;"></span>Monthly</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#FACC15;"></span>Yearly</span>
+      </div>
+      <div class="count"><b>9</b> Subscriptions <span class="sep">/</span> <b>3</b> New</div>
+    </div>
+  </div>
+
+  <div class="cal-foot">
+    <div class="tool-group">
+      <button class="tool-btn"><i data-lucide="more-vertical" style="width:14px;height:14px;"></i></button>
+      <div class="tool-divider"></div>
+      <button class="tool-btn"><i data-lucide="search" style="width:14px;height:14px;"></i></button>
+      <button class="tool-btn"><i data-lucide="download" style="width:14px;height:14px;"></i></button>
+      <button class="tool-btn"><i data-lucide="sparkles" style="width:14px;height:14px;"></i></button>
+    </div>
+    <div class="total"><span class="label">Monthly total:</span> <b>$156.23</b></div>
+  </div>
+</div>
+
+<!-- ===================== DARK VARIANT ===================== -->
+<div class="cal dark">
+  <div class="cal-head">
+    <div class="cal-month">January, 2026</div>
+    <button class="today-pill">Today</button>
+    <button class="nav-btn"><i data-lucide="chevron-left" style="width:14px;height:14px;"></i></button>
+    <button class="nav-btn"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button>
+    <button class="add-btn"><i data-lucide="plus" style="width:16px;height:16px;"></i></button>
+  </div>
+
+  <div class="cal-body">
+    <div class="dow-row">
+      <div class="dow">Mon</div><div class="dow">Tue</div><div class="dow">Wed</div>
+      <div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div><div class="dow">Sun</div>
+    </div>
+
+    <div class="day-grid" id="grid-dark"></div>
+
+    <div class="legend-row">
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#A78BFA;"></span>Monthly</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#FACC15;"></span>Yearly</span>
+      </div>
+      <div class="count"><b>9</b> Subscriptions <span class="sep">/</span> <b>3</b> New</div>
+    </div>
+  </div>
+
+  <div class="cal-foot">
+    <div class="tool-group">
+      <button class="tool-btn"><i data-lucide="more-vertical" style="width:14px;height:14px;"></i></button>
+      <div class="tool-divider"></div>
+      <button class="tool-btn"><i data-lucide="search" style="width:14px;height:14px;"></i></button>
+      <button class="tool-btn"><i data-lucide="download" style="width:14px;height:14px;"></i></button>
+      <button class="tool-btn"><i data-lucide="sparkles" style="width:14px;height:14px;"></i></button>
+    </div>
+    <div class="total"><span class="label">Monthly total:</span> <b>$156.23</b></div>
+  </div>
+</div>
+
+<script>
+  // Tiny brand glyphs drawn inline — keeps the calendar self-contained.
+  const glyphs = {
+    netflix: '<svg viewBox="0 0 24 24" fill="none"><path d="M5 2v20l3.2-.4V11.5l4.6 10.1L19 22V2l-3.2.4v10.1L11.2 2.4 5 2Z" fill="#E50914"/></svg>',
+    adobe:   '<svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7L3 21V3Zm11 0h7v18l-7-18Zm-3.6 11h3.2L9 18.5 6 21l4.4-7Z" fill="#FA0F00"/></svg>',
+    apple:   '<svg viewBox="0 0 24 24" fill="none"><path d="M16.4 12.5c0-2.4 2-3.6 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.5-.2-2.9.9-3.6.9-.7 0-1.9-.8-3.1-.8-1.6 0-3.1 1-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.5.8 1.2 1.7 2.5 3 2.4 1.2-.1 1.7-.8 3.1-.8 1.5 0 1.9.8 3.2.8 1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.8 1.4-2.8-.1 0-2.9-1-2.9-3.8Zm-2.2-7.3c.7-.9 1.2-2 1-3.2-1.1.1-2.4.7-3.1 1.6-.7.8-1.3 2-1.1 3.2 1.2.1 2.5-.6 3.2-1.6Z" fill="#A6A6AD"/></svg>',
+    slack:   '<svg viewBox="0 0 24 24" fill="none"><path d="M6 14a2 2 0 1 1 0-4h2v2a2 2 0 0 1-2 2Z" fill="#36C5F0"/><path d="M10 14a2 2 0 0 1 4 0v6a2 2 0 1 1-4 0v-6Z" fill="#2EB67D"/><path d="M10 6a2 2 0 0 1 4 0v2h-2a2 2 0 0 1-2-2Z" fill="#ECB22E"/><path d="M14 10a2 2 0 1 1 0-4h6a2 2 0 0 1 0 4h-6Z" fill="#E01E5A"/><path d="M14 14a2 2 0 0 1 0 4v-2h2a2 2 0 0 1-2-2Z" fill="#E01E5A" opacity="0.4"/></svg>',
+    figma:   '<svg viewBox="0 0 24 24" fill="none"><path d="M8 2h4v6H8a3 3 0 1 1 0-6Z" fill="#F24E1E"/><path d="M12 2h4a3 3 0 0 1 0 6h-4V2Z" fill="#FF7262"/><path d="M12 8h4a3 3 0 0 1 0 6h-4V8Z" fill="#A259FF"/><path d="M8 8h4v6H8a3 3 0 1 1 0-6Z" fill="#1ABCFE"/><path d="M8 14h4v3a3 3 0 1 1-4-3Z" fill="#0ACF83"/></svg>',
+    openai:  '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#A78BFA" stroke-width="2" fill="none"/></svg>',
+    notion:  '<svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" fill="#FAFAFA" stroke="#0F0F10" stroke-width="1.5"/><path d="M8 8v8M8 8l8 8M16 8v8" stroke="#0F0F10" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    spotify: '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#1DB954"/><path d="M7 10c3-1 7-1 10 1M8 13c2.5-.8 5.5-.6 8 1M9 16c2-.5 4-.4 6 .8" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  };
+
+  const layout = [
+    // [day, mode, brand, dim, today]
+    { d: 29, dim: true },  { d: 30, dim: true }, { d: 31, dim: true },
+    { d: 1 },
+    { d: 2,  mode: 'monthly', brand: 'netflix' },
+    { d: 3 },
+    { d: 4,  mode: 'monthly', brand: 'openai' },
+
+    { d: 5 }, { d: 6 },
+    { d: 7,  mode: 'monthly', brand: 'adobe' },
+    { d: 8 }, { d: 9 },
+    { d: 10, mode: 'yearly',  brand: 'notion' },
+    { d: 11 },
+
+    { d: 12, mode: 'monthly', brand: 'apple' },
+    { d: 13 }, { d: 14 },
+    { d: 15, mode: 'monthly', brand: 'spotify' },
+    { d: 16, today: true },
+    { d: 17 }, { d: 18 },
+
+    { d: 19 },
+    { d: 20, mode: 'monthly', brand: 'openai' },
+    { d: 21 }, { d: 22 }, { d: 23 }, { d: 24 },
+    { d: 25, mode: 'yearly', brand: 'slack' },
+
+    { d: 26 }, { d: 27 },
+    { d: 28, mode: 'monthly', brand: 'figma' },
+    { d: 29 }, { d: 30 }, { d: 31 },
+    { d: 1, dim: true },
+  ];
+
+  function render(targetId) {
+    const grid = document.getElementById(targetId);
+    grid.innerHTML = layout.map(c => {
+      const classes = ['day'];
+      if (c.dim) classes.push('dim');
+      if (c.today) classes.push('today');
+      return `
+        <div class="${classes.join(' ')}">
+          <div class="num">${c.d}</div>
+          ${c.mode ? `<span class="dot ${c.mode}"></span>` : ''}
+          ${c.brand ? `<span class="logo">${glyphs[c.brand] || ''}</span>` : ''}
+        </div>`;
+    }).join('');
+  }
+  render('grid-light');
+  render('grid-dark');
+
+  if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>

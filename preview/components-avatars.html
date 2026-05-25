@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Avatars</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .meta{font-family:var(--font-mono);font-size:10px;color:var(--fg-3);letter-spacing:0.04em;text-transform:uppercase;}
+  .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .col{display:flex;flex-direction:column;gap:6px;align-items:center;}
+
+  /* base */
+  .av{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;font-family:var(--font-sans);font-weight:500;color:var(--fg-1);overflow:hidden;background-size:cover;background-position:center;flex-shrink:0;}
+  .av.sq{border-radius:8px;}
+  .av-wrap{position:relative;display:inline-flex;}
+
+  /* sizes */
+  .av.xs{width:20px;height:20px;font-size:9px;}
+  .av.sm{width:28px;height:28px;font-size:11px;}
+  .av.md{width:36px;height:36px;font-size:13px;}
+  .av.lg{width:44px;height:44px;font-size:15px;}
+  .av.xl{width:56px;height:56px;font-size:18px;}
+  .av.xxl{width:72px;height:72px;font-size:24px;}
+
+  /* tinted initial variants */
+  .t-1{background:#FFD2D9;color:#B4123F;}
+  .t-2{background:#FFE2C9;color:#A04518;}
+  .t-3{background:#CDEBD3;color:#1A6332;}
+  .t-4{background:#D6D9FF;color:#1E2474;}
+  .t-5{background:#F4D4FF;color:#5F1480;}
+  .t-6{background:#FFE9B3;color:#6B4708;}
+  .t-7{background:#CFF0EE;color:#0E5E58;}
+  .t-8{background:#E6E6E8;color:#0F0F10;}
+
+  /* status dot */
+  .status{position:absolute;bottom:-1px;right:-1px;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg-surface);}
+  .status.online{background:#1FB456;}
+  .status.busy{background:#EE294E;display:inline-flex;align-items:center;justify-content:center;color:white;}
+  .status.busy svg{width:5px;height:5px;stroke-width:3.5;}
+  .status.away{background:#F4C430;}
+  .status.offline{background:var(--fg-4);}
+  /* sized status dots */
+  .av.lg + .status, .av.xl + .status, .av.xxl + .status { width: 12px; height: 12px; }
+  .av.xxl + .status { width: 14px; height: 14px; }
+
+  /* stacks */
+  .av-stack{display:inline-flex;}
+  .av-stack > *{margin-left:-8px;border:2px solid var(--bg-surface);}
+  .av-stack > *:first-child{margin-left:0;}
+  .av-stack.tight > *{margin-left:-10px;}
+
+  /* overflow chip */
+  .av.over{background:var(--fg-1);color:var(--bg-surface);font-family:var(--font-mono);letter-spacing:0.02em;}
+
+  /* loading skeleton */
+  @keyframes shimmer { 0% { background-position: -120px 0; } 100% { background-position: 200px 0; } }
+  .av.skel{background:linear-gradient(90deg,var(--bg-surface-2) 0%,var(--bg-surface-3) 50%,var(--bg-surface-2) 100%);background-size:240px 100%;animation:shimmer 1.4s infinite linear;}
+
+  /* small section divider */
+  .sec{height:1px;background:var(--border);margin:18px 0;border:0;}
+  .sec.dashed{border-top:1px dashed var(--border-dashed);background:transparent;}
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- 1) Sizes -->
+  <div class="label" style="margin-bottom:14px;">Sizes</div>
+  <div class="row" style="gap:24px;align-items:flex-end;">
+    <div class="col"><span class="av xs" style="background-image:url('https://i.pravatar.cc/120?img=7')"></span><span class="meta">XS · 20</span></div>
+    <div class="col"><span class="av sm" style="background-image:url('https://i.pravatar.cc/120?img=12')"></span><span class="meta">SM · 28</span></div>
+    <div class="col"><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=33')"></span><span class="meta">MD · 36</span></div>
+    <div class="col"><span class="av lg" style="background-image:url('https://i.pravatar.cc/120?img=47')"></span><span class="meta">LG · 44</span></div>
+    <div class="col"><span class="av xl" style="background-image:url('https://i.pravatar.cc/120?img=21')"></span><span class="meta">XL · 56</span></div>
+    <div class="col"><span class="av xxl" style="background-image:url('https://i.pravatar.cc/120?img=15')"></span><span class="meta">2XL · 72</span></div>
+  </div>
+
+  <hr class="sec">
+
+  <!-- 2) Photo avatars -->
+  <div class="label" style="margin-bottom:14px;">Photo · circular</div>
+  <div class="row" style="gap:10px;">
+    <span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=7')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=12')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=33')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=47')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=21')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=15')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=5')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=16')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=32')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=11')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=44')"></span><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=8')"></span>
+  </div>
+
+  <hr class="sec">
+
+  <!-- 3) Initials (tinted) -->
+  <div class="label" style="margin-bottom:14px;">Initials · tinted backgrounds</div>
+  <div class="row" style="gap:10px;">
+    <span class="av md t-1">OB</span>
+    <span class="av md t-2">DM</span>
+    <span class="av md t-3">ER</span>
+    <span class="av md t-4">LH</span>
+    <span class="av md t-5">JC</span>
+    <span class="av md t-6">SM</span>
+    <span class="av md t-7">RV</span>
+    <span class="av md t-8">AK</span>
+  </div>
+
+  <hr class="sec">
+
+  <!-- 4) Square / brand chips -->
+  <div class="label" style="margin-bottom:14px;">Square (org / brand)</div>
+  <div class="row" style="gap:10px;">
+    <span class="av md sq t-2">A</span>
+    <span class="av md sq t-3">S</span>
+    <span class="av md sq t-4">C</span>
+    <span class="av md sq t-5">M</span>
+    <span class="av md sq t-6">H</span>
+    <span class="av md sq" style="background-image:url('https://i.pravatar.cc/120?img=64')"></span>
+  </div>
+
+  <hr class="sec">
+
+  <!-- 5) Status indicators -->
+  <div class="label" style="margin-bottom:14px;">Status indicators</div>
+  <div class="row" style="gap:24px;">
+    <div class="col"><div class="av-wrap"><span class="av lg" style="background-image:url('https://i.pravatar.cc/120?img=7')"></span><span class="status online"></span></div><span class="meta">Online</span></div>
+    <div class="col"><div class="av-wrap"><span class="av lg" style="background-image:url('https://i.pravatar.cc/120?img=12')"></span><span class="status busy"><i data-lucide="minus"></i></span></div><span class="meta">Busy / DND</span></div>
+    <div class="col"><div class="av-wrap"><span class="av lg" style="background-image:url('https://i.pravatar.cc/120?img=33')"></span><span class="status away"></span></div><span class="meta">Away</span></div>
+    <div class="col"><div class="av-wrap"><span class="av lg" style="background-image:url('https://i.pravatar.cc/120?img=47')"></span><span class="status offline"></span></div><span class="meta">Offline</span></div>
+  </div>
+
+  <hr class="sec">
+
+  <!-- 6) Stacks -->
+  <div class="label" style="margin-bottom:14px;">Stacks · group preview</div>
+  <div class="row" style="gap:32px;">
+    <div class="col" style="align-items:flex-start;">
+      <span class="av-stack">
+        <span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=7')"></span>
+        <span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=12')"></span>
+        <span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=33')"></span>
+      </span>
+      <span class="meta">3 members</span>
+    </div>
+    <div class="col" style="align-items:flex-start;">
+      <span class="av-stack">
+        <span class="av md t-1">OB</span>
+        <span class="av md t-2">DM</span>
+        <span class="av md t-3">ER</span>
+        <span class="av md t-4">LH</span>
+        <span class="av md over">+16</span>
+      </span>
+      <span class="meta">+16 · 21 total</span>
+    </div>
+    <div class="col" style="align-items:flex-start;">
+      <span class="av-stack tight">
+        <span class="av sm" style="background-image:url('https://i.pravatar.cc/120?img=21')"></span>
+        <span class="av sm" style="background-image:url('https://i.pravatar.cc/120?img=15')"></span>
+        <span class="av sm" style="background-image:url('https://i.pravatar.cc/120?img=5')"></span>
+        <span class="av sm" style="background-image:url('https://i.pravatar.cc/120?img=16')"></span>
+        <span class="av sm" style="background-image:url('https://i.pravatar.cc/120?img=32')"></span>
+        <span class="av sm over">+4</span>
+      </span>
+      <span class="meta">SM stack · viewers</span>
+    </div>
+  </div>
+
+  <hr class="sec">
+
+  <!-- 7) States: fallback / loading / missing -->
+  <div class="label" style="margin-bottom:14px;">Edge cases</div>
+  <div class="row" style="gap:24px;">
+    <div class="col"><span class="av md t-8" style="color:var(--fg-3);"><i data-lucide="user" style="width:18px;height:18px;"></i></span><span class="meta">Fallback</span></div>
+    <div class="col"><span class="av md skel"></span><span class="meta">Loading</span></div>
+    <div class="col"><span class="av md t-3">?</span><span class="meta">Unknown</span></div>
+    <div class="col"><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=64');outline:2px solid var(--accent);outline-offset:2px;"></span><span class="meta">Selected</span></div>
+  </div>
+
+  <hr class="sec dashed">
+
+  <!-- 8) In context: user row -->
+  <div class="label" style="margin-bottom:14px;">In context · list rows</div>
+  <div style="display:flex;flex-direction:column;gap:2px;">
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 4px;">
+      <div class="av-wrap"><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=47')"></span><span class="status online"></span></div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:500;">Olivia Bennett</div><div style="font-size:11px;color:var(--fg-3);">PRODUCT · ACTIVE NOW</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 4px;border-top:1px solid var(--border);">
+      <div class="av-wrap"><span class="av md t-2">DM</span><span class="status busy"><i data-lucide="minus"></i></span></div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:500;">Daniel Morgan</div><div style="font-size:11px;color:var(--fg-3);">CLICKUP · IN A CALL</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:8px 4px;border-top:1px solid var(--border);">
+      <div class="av-wrap"><span class="av md" style="background-image:url('https://i.pravatar.cc/120?img=33')"></span><span class="status away"></span></div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:500;">Ethan Reynolds</div><div style="font-size:11px;color:var(--fg-3);">DESIGN · AWAY 15M</div></div>
+    </div>
+  </div>
+
+</div>
+<script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>

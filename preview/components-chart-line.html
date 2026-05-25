@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Line chart</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+</style>
+</head>
+<body>
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <h2 style="font-size:16px;font-weight:600;margin:0;">Visibility score</h2>
+    <span class="label">Last 30 days · hover the chart</span>
+  </div>
+  <div class="chart-wrap">
+    <div class="chart-tt" id="tt">
+      <div class="tt-label" id="tt-label"></div>
+      <div class="tt-value" id="tt-value"></div>
+    </div>
+    <svg width="100%" height="200" viewBox="0 0 480 200" id="svg">
+      <line x1="40" y1="170" x2="470" y2="170" stroke="var(--border)"/>
+      <line x1="40" y1="120" x2="470" y2="120" stroke="var(--border)" stroke-dasharray="2 4"/>
+      <line x1="40" y1="70"  x2="470" y2="70"  stroke="var(--border)" stroke-dasharray="2 4"/>
+      <line x1="40" y1="20"  x2="470" y2="20"  stroke="var(--border)" stroke-dasharray="2 4"/>
+      <g id="curve"></g>
+      <line id="cross" x1="0" y1="20" x2="0" y2="170" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3" opacity="0"/>
+      <circle id="dot" r="5" fill="var(--accent)" stroke="white" stroke-width="2" opacity="0"/>
+      <rect id="hot" x="40" y="0" width="430" height="200" fill="transparent" style="cursor:crosshair;"/>
+    </svg>
+  </div>
+</div>
+<style>
+  .chart-wrap{position:relative;}
+  .chart-tt{position:absolute;background:var(--fg-1);color:var(--bg-surface);padding:6px 10px;border-radius:6px;font-size:11px;pointer-events:none;opacity:0;transform:translate(-50%,-100%) translateY(-4px) scale(0.94);transition:opacity 160ms cubic-bezier(.2,.7,.2,1),transform 200ms cubic-bezier(.2,.7,.2,1);z-index:5;white-space:nowrap;}
+  .chart-tt.open{opacity:1;transform:translate(-50%,-100%) translateY(-8px) scale(1);}
+  .chart-tt .tt-label{font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#A6A6AD;}
+  .chart-tt .tt-value{font-weight:600;font-variant-numeric:tabular-nums;margin-top:1px;}
+</style>
+<script>
+  // Generate 30 data points
+  const POINTS = [];
+  let s = 7;
+  function rnd() { s = (s * 9301 + 49297) % 233280; return s / 233280; }
+  for (let i = 0; i < 30; i++) POINTS.push(Math.round(35 + rnd() * 50 + Math.sin(i * 0.5) * 12));
+
+  const minV = Math.min.apply(null, POINTS);
+  const maxV = Math.max.apply(null, POINTS);
+  const W = 430, H = 150, OX = 40, OY = 20;
+  const xAt = i => OX + (i / (POINTS.length - 1)) * W;
+  const yAt = v => OY + H - ((v - minV) / (maxV - minV)) * H;
+
+  // Draw line with smooth curve
+  let d = 'M' + xAt(0) + ' ' + yAt(POINTS[0]);
+  for (let i = 1; i < POINTS.length; i++) {
+    const x0 = xAt(i-1), y0 = yAt(POINTS[i-1]);
+    const x1 = xAt(i),   y1 = yAt(POINTS[i]);
+    const cx = (x0 + x1) / 2;
+    d += ' C' + cx + ' ' + y0 + ' ' + cx + ' ' + y1 + ' ' + x1 + ' ' + y1;
+  }
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', d);
+  path.setAttribute('stroke', '#F5642B');
+  path.setAttribute('stroke-width', '2');
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke-linecap', 'round');
+  document.getElementById('curve').appendChild(path);
+
+  // Hover interaction
+  const hot = document.getElementById('hot');
+  const cross = document.getElementById('cross');
+  const dot = document.getElementById('dot');
+  const tt = document.getElementById('tt');
+  const wrap = document.querySelector('.chart-wrap');
+  hot.addEventListener('mousemove', e => {
+    const rect = document.getElementById('svg').getBoundingClientRect();
+    const xPx = e.clientX - rect.left;
+    // svg viewBox is 480 wide; map screen px to svg coords
+    const svgX = (xPx / rect.width) * 480;
+    // Find nearest data index
+    let nearest = 0, minDist = Infinity;
+    for (let i = 0; i < POINTS.length; i++) {
+      const dist = Math.abs(xAt(i) - svgX);
+      if (dist < minDist) { minDist = dist; nearest = i; }
+    }
+    const cx = xAt(nearest), cy = yAt(POINTS[nearest]);
+    cross.setAttribute('x1', cx); cross.setAttribute('x2', cx);
+    cross.setAttribute('opacity', '1');
+    dot.setAttribute('cx', cx); dot.setAttribute('cy', cy);
+    dot.setAttribute('opacity', '1');
+    // Position tooltip in screen space
+    const cR = wrap.getBoundingClientRect();
+    tt.style.left = ((cx / 480) * rect.width + (rect.left - cR.left)) + 'px';
+    tt.style.top = ((cy / 200) * rect.height + (rect.top - cR.top)) + 'px';
+    document.getElementById('tt-label').textContent = 'DAY ' + (nearest + 1);
+    document.getElementById('tt-value').textContent = POINTS[nearest] + '%';
+    tt.classList.add('open');
+  });
+  hot.addEventListener('mouseleave', () => {
+    cross.setAttribute('opacity', '0');
+    dot.setAttribute('opacity', '0');
+    tt.classList.remove('open');
+  });
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

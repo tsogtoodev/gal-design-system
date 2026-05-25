@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stage texture</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg-stage); background-image: var(--stage-pattern); padding: 24px; min-height: 100vh; box-sizing: border-box; }
+  .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px 22px; box-shadow: var(--elev-1); }
+  .row { display: flex; align-items: center; gap: 12px; }
+  .col { display: flex; flex-direction: column; gap: 8px; }
+  .label { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+  .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+  <div class="card" style="padding:0; overflow:hidden; height:160px; position:relative;">
+    <div style="background:#F4F4F4; background-image: repeating-linear-gradient(-75deg, transparent 0, transparent 28px, rgba(15,15,15,0.025) 28px, rgba(15,15,15,0.025) 29px); width:100%; height:100%; position:relative;">
+      <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:white; border:1px solid var(--border); border-radius:14px; padding:14px 18px; box-shadow: var(--elev-1); font-size:13px; font-weight:500;">Floating card</div>
+      <div style="position:absolute; left:8px; bottom:8px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--fg-3);">Stage · light</div>
+    </div>
+  </div>
+  <div class="card" style="padding:0; overflow:hidden; height:160px; position:relative; background:#0B0B0C; border-color:rgba(255,255,255,0.08);">
+    <div style="background:#0B0B0C; background-image: repeating-linear-gradient(-75deg, transparent 0, transparent 28px, rgba(255,255,255,0.025) 28px, rgba(255,255,255,0.025) 29px); width:100%; height:100%; position:relative;">
+      <div style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:#141416; border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:14px 18px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); font-size:13px; font-weight:500; color:#FAFAFA;">Floating card</div>
+      <div style="position:absolute; left:8px; bottom:8px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#6B6B72;">Stage · dark</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

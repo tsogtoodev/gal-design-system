@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Slider</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .row{display:flex;align-items:center;gap:14px}
+  .col{display:flex;flex-direction:column;gap:8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:16px;">Slider · drag the thumbs</div>
+  <div class="col" style="gap:24px;">
+
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:13px;">Volume</span>
+        <span style="font-family:var(--font-mono);font-size:13px;" id="sl-vol-out">60</span>
+      </div>
+      <div class="sl" data-min="0" data-max="100">
+        <div class="sl-track">
+          <div class="sl-fill" style="left:0; width:60%;"></div>
+        </div>
+        <button class="sl-thumb" style="left:60%;" data-value="60"></button>
+      </div>
+    </div>
+
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:13px;">Range</span>
+        <span style="font-family:var(--font-mono);font-size:13px;" id="sl-rng-out">$240 – $720</span>
+      </div>
+      <div class="sl" data-range="true" data-min="0" data-max="1000">
+        <div class="sl-track">
+          <div class="sl-fill" style="left:24%; width:48%;"></div>
+        </div>
+        <button class="sl-thumb" style="left:24%;" data-value="240"></button>
+        <button class="sl-thumb" style="left:72%;" data-value="720"></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+<style>
+  .sl{position:relative;height:24px;user-select:none;touch-action:none;}
+  .sl-track{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);height:6px;background:var(--bg-surface-3);border-radius:999px;overflow:hidden;}
+  .sl-fill{position:absolute;top:0;bottom:0;background:var(--accent);transition:none;}
+  .sl-thumb{position:absolute;top:50%;width:18px;height:18px;margin-left:-9px;margin-top:-9px;border-radius:50%;background:white;border:1.5px solid var(--accent);box-shadow:var(--elev-1);cursor:grab;padding:0;transition:transform 140ms cubic-bezier(.2,.7,.2,1);}
+  .sl-thumb:hover{transform:scale(1.1);}
+  .sl-thumb:active{cursor:grabbing;transform:scale(1.15);}
+  .sl-thumb:focus-visible{outline:0;box-shadow:var(--elev-focus);}
+</style>
+<script>
+  function bindSlider(sliderEl, onChange) {
+    const thumbs = [...sliderEl.querySelectorAll('.sl-thumb')];
+    const fill = sliderEl.querySelector('.sl-fill');
+    const isRange = sliderEl.dataset.range === 'true';
+    const min = parseFloat(sliderEl.dataset.min || '0');
+    const max = parseFloat(sliderEl.dataset.max || '100');
+    let active = null;
+
+    function setThumb(t, pct) {
+      pct = Math.max(0, Math.min(100, pct));
+      t.style.left = pct + '%';
+      const value = Math.round(min + (pct/100) * (max - min));
+      t.dataset.value = value;
+      // Update fill
+      if (isRange) {
+        const [a, b] = thumbs.map(x => parseFloat(x.style.left));
+        const lo = Math.min(a, b), hi = Math.max(a, b);
+        fill.style.left = lo + '%';
+        fill.style.width = (hi - lo) + '%';
+      } else {
+        fill.style.left = '0';
+        fill.style.width = pct + '%';
+      }
+      onChange(thumbs.map(x => parseInt(x.dataset.value, 10)));
+    }
+
+    function pctFromEvent(e) {
+      const rect = sliderEl.getBoundingClientRect();
+      const x = (e.touches?.[0]?.clientX ?? e.clientX) - rect.left;
+      return (x / rect.width) * 100;
+    }
+
+    thumbs.forEach(t => {
+      const start = (e) => { active = t; e.preventDefault(); };
+      t.addEventListener('mousedown', start);
+      t.addEventListener('touchstart', start);
+    });
+    document.addEventListener('mousemove', e => { if (active) setThumb(active, pctFromEvent(e)); });
+    document.addEventListener('touchmove', e => { if (active) setThumb(active, pctFromEvent(e)); });
+    document.addEventListener('mouseup', () => active = null);
+    document.addEventListener('touchend', () => active = null);
+    // Click on track to move nearest
+    sliderEl.addEventListener('click', e => {
+      if (e.target.classList.contains('sl-thumb')) return;
+      const pct = pctFromEvent(e);
+      const nearest = thumbs.reduce((a,b) => Math.abs(parseFloat(a.style.left) - pct) < Math.abs(parseFloat(b.style.left) - pct) ? a : b);
+      setThumb(nearest, pct);
+    });
+  }
+  const sliders = document.querySelectorAll('.sl');
+  bindSlider(sliders[0], vals => document.getElementById('sl-vol-out').textContent = vals[0]);
+  bindSlider(sliders[1], vals => {
+    const [a,b] = vals.sort((x,y) => x-y);
+    document.getElementById('sl-rng-out').textContent = '$' + a + ' – $' + b;
+  });
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

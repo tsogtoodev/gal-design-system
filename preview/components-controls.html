@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Form controls</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .row{display:flex;align-items:center;gap:14px}
+  .col{display:flex;flex-direction:column;gap:8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Form controls · click to toggle</div>
+  <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+
+    <!-- Toggle (switch) -->
+    <div class="row" style="justify-content:space-between;">
+      <span style="font-size:13px;color:var(--fg-2);">Toggle</span>
+      <div style="display:flex; gap:10px;">
+        <button class="t-toggle" data-state="off" aria-pressed="false"></button>
+        <button class="t-toggle" data-state="on" aria-pressed="true"></button>
+      </div>
+    </div>
+
+    <!-- Checkbox -->
+    <div class="row" style="justify-content:space-between;">
+      <span style="font-size:13px;color:var(--fg-2);">Checkbox</span>
+      <div style="display:flex; gap:10px;">
+        <button class="t-cb" data-state="off" aria-checked="false"></button>
+        <button class="t-cb" data-state="on" aria-checked="true"><i data-lucide="check"></i></button>
+      </div>
+    </div>
+
+    <!-- Radio -->
+    <div class="row" style="justify-content:space-between;">
+      <span style="font-size:13px;color:var(--fg-2);">Radio</span>
+      <div style="display:flex; gap:10px;" id="radio-group">
+        <button class="t-radio" data-radio="a"></button>
+        <button class="t-radio" data-radio="b" aria-checked="true"></button>
+        <button class="t-radio" data-radio="c"></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* Toggle */
+  .t-toggle{width:36px;height:20px;border:0;padding:0;border-radius:999px;background:var(--bg-surface-3);position:relative;cursor:pointer;transition:background 180ms cubic-bezier(.2,.7,.2,1);}
+  .t-toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:white;box-shadow:0 1px 2px rgba(0,0,0,0.15);transition:transform 200ms cubic-bezier(.2,.7,.2,1);}
+  .t-toggle[data-state="on"]{background:var(--accent);}
+  .t-toggle[data-state="on"]::after{transform:translateX(16px);}
+  .t-toggle:focus-visible{outline:0;box-shadow:var(--elev-focus);}
+
+  /* Checkbox */
+  .t-cb{width:18px;height:18px;border-radius:6px;border:1.5px solid var(--border-strong);background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;transition:background 120ms,border-color 120ms;color:white;}
+  .t-cb svg{width:12px;height:12px;opacity:0;transform:scale(0.6);transition:opacity 140ms,transform 200ms cubic-bezier(.2,.7,.2,1);}
+  .t-cb[data-state="on"]{background:var(--accent);border-color:var(--accent);}
+  .t-cb[data-state="on"] svg{opacity:1;transform:scale(1);}
+  .t-cb:focus-visible{outline:0;box-shadow:var(--elev-focus);}
+
+  /* Radio */
+  .t-radio{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border-strong);background:var(--bg-surface);cursor:pointer;position:relative;padding:0;transition:border-color 120ms;}
+  .t-radio::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--accent);transform:scale(0);transition:transform 200ms cubic-bezier(.2,.7,.2,1);}
+  .t-radio[aria-checked="true"]{border-color:var(--accent);}
+  .t-radio[aria-checked="true"]::after{transform:scale(1);}
+  .t-radio:focus-visible{outline:0;box-shadow:var(--elev-focus);}
+</style>
+
+<script>
+  document.querySelectorAll('.t-toggle').forEach(b => b.addEventListener('click', () => {
+    const on = b.dataset.state === 'on';
+    b.dataset.state = on ? 'off' : 'on';
+    b.setAttribute('aria-pressed', String(!on));
+  }));
+  document.querySelectorAll('.t-cb').forEach(b => b.addEventListener('click', () => {
+    const on = b.dataset.state === 'on';
+    b.dataset.state = on ? 'off' : 'on';
+    if (b.dataset.state === 'on' && !b.querySelector('svg')) {
+      const i = document.createElement('i');
+      i.setAttribute('data-lucide','check');
+      b.appendChild(i);
+      lucide.createIcons();
+    }
+    b.setAttribute('aria-checked', String(!on));
+  }));
+  const radios = document.querySelectorAll('.t-radio');
+  radios.forEach(r => r.addEventListener('click', () => {
+    radios.forEach(x => x.setAttribute('aria-checked', 'false'));
+    r.setAttribute('aria-checked', 'true');
+  }));
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

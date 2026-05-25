@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Donut chart</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+</style>
+</head>
+<body>
+<div class="card" style="display:flex;align-items:center;gap:24px;">
+  <div style="position:relative;width:180px;height:180px;">
+    <svg width="180" height="180" viewBox="0 0 180 180" id="donut">
+      <circle cx="90" cy="90" r="68" stroke="#F4F4F4" stroke-width="20" fill="none"/>
+    </svg>
+    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+      <div id="donut-pct" style="font:600 28px/1 var(--font-sans);font-variant-numeric:tabular-nums;color:var(--fg-1);">6</div>
+      <div id="donut-label" style="font-family:var(--font-mono);font-size:10px;color:var(--fg-3);letter-spacing:0.12em;text-transform:uppercase;margin-top:2px;">ASSETS</div>
+    </div>
+  </div>
+  <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="legend"></div>
+</div>
+<style>
+  .leg-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;transition:background 140ms;}
+  .leg-row:hover{background:var(--bg-surface-2);}
+  .leg-row .sw{width:10px;height:10px;border-radius:3px;flex-shrink:0;transition:transform 200ms cubic-bezier(.2,.7,.2,1);}
+  .leg-row.active .sw{transform:scale(1.2);}
+  .leg-row .n{font-size:12px;color:var(--fg-1);}
+  .leg-row .p{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);}
+  .seg{cursor:pointer;transition:stroke-width 220ms cubic-bezier(.2,.7,.2,1),opacity 220ms;}
+  .seg.dim{opacity:0.4;}
+  .seg.active{stroke-width:24;}
+</style>
+<script>
+  const ITEMS = [
+    {n:'AirBnb',          c:'#F5642B', v:61.7},
+    {n:'Robinhood',       c:'#2563EB', v:14.8},
+    {n:'Bank of America', c:'#F43F5E', v:7.0},
+    {n:'Coinbase Wallet', c:'#8B5CF6', v:5.8},
+    {n:'Apple',           c:'#A6A6AD', v:5.2},
+    {n:'Other',           c:'#14B8A6', v:5.5},
+  ];
+  const svg = document.getElementById('donut');
+  const R = 68, CIRC = 2 * Math.PI * R;
+  let offset = 0;
+  ITEMS.forEach((it, i) => {
+    const len = (it.v / 100) * CIRC;
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    c.setAttribute('cx', 90); c.setAttribute('cy', 90); c.setAttribute('r', R);
+    c.setAttribute('stroke', it.c); c.setAttribute('stroke-width', 20); c.setAttribute('fill', 'none');
+    c.setAttribute('stroke-dasharray', len + ' ' + (CIRC - len));
+    c.setAttribute('stroke-dashoffset', -offset);
+    c.setAttribute('transform', 'rotate(-90 90 90)');
+    c.classList.add('seg');
+    c.dataset.i = i;
+    svg.appendChild(c);
+    offset += len;
+  });
+
+  const legend = document.getElementById('legend');
+  legend.innerHTML = ITEMS.map((it, i) => '<div class="leg-row" data-i="' + i + '"><span class="sw" style="background:' + it.c + ';"></span><div style="flex:1;"><div class="n">' + it.n + '</div><div class="p">' + it.v + '%</div></div></div>').join('');
+
+  const segs = svg.querySelectorAll('.seg');
+  const legs = legend.querySelectorAll('.leg-row');
+  function highlight(i) {
+    segs.forEach((s, j) => { s.classList.toggle('dim', j !== i); s.classList.toggle('active', j === i); });
+    legs.forEach((l, j) => l.classList.toggle('active', j === i));
+    document.getElementById('donut-pct').textContent = ITEMS[i].v + '%';
+    document.getElementById('donut-label').textContent = ITEMS[i].n.toUpperCase();
+  }
+  function reset() {
+    segs.forEach(s => { s.classList.remove('dim','active'); });
+    legs.forEach(l => l.classList.remove('active'));
+    document.getElementById('donut-pct').textContent = '6';
+    document.getElementById('donut-label').textContent = 'ASSETS';
+  }
+  segs.forEach((s,i) => { s.addEventListener('mouseenter', () => highlight(i)); s.addEventListener('mouseleave', reset); });
+  legs.forEach((l,i) => { l.addEventListener('mouseenter', () => highlight(i)); l.addEventListener('mouseleave', reset); });
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

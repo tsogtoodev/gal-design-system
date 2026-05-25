@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Toast · Sonner</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--elev-1);
+    padding: 18px 20px;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  .controls {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font: 500 13px/1 var(--font-sans);
+    cursor: pointer;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--fg-1);
+    transition: background var(--motion) var(--ease);
+  }
+  .btn:hover { background: var(--bg-surface-2); }
+  .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn.primary:hover { background: var(--accent-hover); }
+
+  /* ===== Stage ===== */
+  .stage {
+    position: relative;
+    height: 420px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .stage-hint {
+    position: absolute;
+    top: 14px; left: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  /* ===== Viewport =====
+     Anchored to bottom-right. Toasts are absolutely positioned within so we
+     can drive ALL motion (enter, exit, stack-shift, expand) from one transform
+     variable. The viewport itself never resizes; layout is pure transform. */
+  .viewport {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    width: 360px;
+    pointer-events: none; /* children re-enable */
+    z-index: 10;
+  }
+
+  /* Hover surface — invisible, just slightly oversized to give a forgiving
+     hover target above the stack. */
+  .viewport::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0;
+    height: 200px;
+    pointer-events: auto;
+  }
+
+  /* ===== Toast =====
+     Position: absolute, anchored to bottom of viewport. All motion is driven
+     by --y (translate) + --s (scale) + --o (opacity) custom properties.
+     One transition declaration handles enter / exit / stack-shift / expand. */
+  .toast {
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    background: var(--bg-surface);
+    color: var(--fg-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.04),
+      0 6px 16px rgba(0,0,0,0.06);
+    padding: 12px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    pointer-events: auto;
+    transform-origin: 50% 100%;
+    transform: translateY(var(--y, 100%)) scale(var(--s, 0.9));
+    opacity: var(--o, 0);
+    transition:
+      transform 540ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 380ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 380ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, opacity;
+  }
+
+  .viewport.expanded .toast {
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.06),
+      0 12px 28px rgba(0,0,0,0.10);
+  }
+
+  /* ---- Toast content ---- */
+  .toast .ic {
+    width: 18px; height: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .toast .ic svg { width: 16px; height: 16px; }
+  .toast .body { flex: 1; min-width: 0; }
+  .toast .title {
+    font: 600 13px/1.3 var(--font-sans);
+    color: var(--fg-1);
+  }
+  .toast .desc {
+    font: 400 12px/1.4 var(--font-sans);
+    color: var(--fg-2);
+    margin-top: 2px;
+  }
+  .toast .actions {
+    display: inline-flex; gap: 6px;
+    flex-shrink: 0;
+    align-items: center;
+  }
+  .toast .action-btn {
+    background: var(--fg-1); color: var(--bg-surface);
+    border: 0;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font: 500 12px/1 var(--font-sans);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .toast .action-btn:hover { background: #2A2A30; }
+  .toast .close {
+    background: transparent; border: 0; cursor: pointer;
+    color: var(--fg-3);
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 140ms cubic-bezier(.2,.7,.2,1), background 140ms cubic-bezier(.2,.7,.2,1);
+    flex-shrink: 0;
+  }
+  .toast .close:hover { color: var(--fg-1); background: var(--bg-surface-2); }
+  .toast .close svg { width: 14px; height: 14px; }
+
+  /* Variant tints */
+  .toast .ic.success { color: var(--success); }
+  .toast .ic.info    { color: var(--info); }
+  .toast .ic.warning { color: var(--warning); }
+  .toast .ic.error   { color: var(--danger); }
+  .toast .ic.loading { color: var(--fg-2); }
+  .toast .ic.loading svg { animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast.success { border-color: rgba(22,163,74,0.18); }
+  .toast.error   { border-color: rgba(220,38,38,0.18); }
+  .toast.warning { border-color: rgba(217,119,6,0.18); }
+  .toast.info    { border-color: rgba(37,99,235,0.18); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="controls">
+    <div>
+      <div class="label" style="margin-bottom:6px;">Toast · Sonner-style stacked deck</div>
+      <div style="font-size:13px;color:var(--fg-2);">
+        Each toast pushes in from below; siblings shift smoothly. Hover the stack to fan out.
+      </div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn" id="btn-success"><i data-lucide="check" style="width:14px;height:14px;color:var(--success);"></i> Success</button>
+      <button class="btn" id="btn-error"><i data-lucide="x-circle" style="width:14px;height:14px;color:var(--danger);"></i> Error</button>
+      <button class="btn" id="btn-promise"><i data-lucide="loader" style="width:14px;height:14px;"></i> Promise</button>
+      <button class="btn primary" id="btn-trigger"><i data-lucide="plus" style="width:14px;height:14px;"></i> Trigger</button>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="padding:0; overflow:hidden;">
+  <div class="stage" id="stage">
+    <div class="stage-hint">Stage · hover toasts to expand</div>
+    <div class="viewport" id="viewport"></div>
+  </div>
+</div>
+
+<script>
+  const viewport = document.getElementById('viewport');
+
+  // Layout constants
+  const GAP = 8;          // gap between toasts when expanded
+  const PEEK = 8;         // visible peek per back-toast when stacked
+  const SCALE_STEP = 0.05;// scale drop per back-toast when stacked
+  const OPACITY_STEP = 0.18;
+  const MAX_VISIBLE = 3;  // toasts shown in stack
+
+  let nextId = 0;
+  const toasts = []; // newest at index 0 (front)
+  let isExpanded = false;
+
+  const ICONS = {
+    success: '<i data-lucide="check"></i>',
+    error:   '<i data-lucide="x"></i>',
+    info:    '<i data-lucide="info"></i>',
+    warning: '<i data-lucide="alert-triangle"></i>',
+    loading: '<i data-lucide="loader"></i>',
+  };
+
+  /* ===== The one layout function — re-applies --y, --s, --o for every toast ===== */
+  function applyLayout() {
+    if (isExpanded) {
+      // Measure each toast's height. Stack upward from bottom with GAP.
+      let offset = 0;
+      toasts.forEach((t, i) => {
+        const h = t.el.offsetHeight || 64;
+        t.el.style.setProperty('--y', `${-offset}px`);
+        t.el.style.setProperty('--s', '1');
+        t.el.style.setProperty('--o', '1');
+        t.el.style.zIndex = String(1000 - i);
+        offset += h + GAP;
+      });
+    } else {
+      toasts.forEach((t, i) => {
+        if (i >= MAX_VISIBLE) {
+          // Tucked behind, slightly off-stack and invisible
+          t.el.style.setProperty('--y', `-${(MAX_VISIBLE - 1) * PEEK + 4}px`);
+          t.el.style.setProperty('--s', `${1 - MAX_VISIBLE * SCALE_STEP}`);
+          t.el.style.setProperty('--o', '0');
+        } else {
+          t.el.style.setProperty('--y', `-${i * PEEK}px`);
+          t.el.style.setProperty('--s', `${1 - i * SCALE_STEP}`);
+          t.el.style.setProperty('--o', `${1 - i * OPACITY_STEP}`);
+        }
+        t.el.style.zIndex = String(1000 - i);
+      });
+    }
+  }
+
+  function makeToast({ variant = 'info', title, desc, action, duration = 5000 }) {
+    const id = ++nextId;
+    const el = document.createElement('div');
+    el.className = `toast ${variant}`;
+    el.innerHTML = `
+      <span class="ic ${variant}">${ICONS[variant] || ICONS.info}</span>
+      <div class="body">
+        <div class="title">${title}</div>
+        ${desc ? `<div class="desc">${desc}</div>` : ''}
+      </div>
+      <div class="actions">
+        ${action ? `<button class="action-btn">${action.label}</button>` : ''}
+        <button class="close" aria-label="Close"><i data-lucide="x"></i></button>
+      </div>
+    `;
+    // Start state: below the viewport, transparent, shrunk
+    el.style.setProperty('--y', '100%');
+    el.style.setProperty('--s', '0.9');
+    el.style.setProperty('--o', '0');
+
+    el.querySelector('.close').addEventListener('click', () => dismiss(id));
+    if (action) {
+      el.querySelector('.action-btn').addEventListener('click', () => {
+        if (action.onClick) action.onClick(id, el);
+      });
+    }
+
+    viewport.appendChild(el);
+    toasts.unshift({ id, el, variant, duration });
+    if (window.lucide) lucide.createIcons();
+
+    // Two rAFs guarantee the start state is committed before we animate.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => applyLayout());
+    });
+
+    // Auto-dismiss timer (paused on hover by clearing/restarting)
+    scheduleDismiss(id);
+
+    // Cap visible history
+    while (toasts.length > MAX_VISIBLE + 2) {
+      const oldest = toasts.pop();
+      removeWithExit(oldest);
+    }
+    return id;
+  }
+
+  function scheduleDismiss(id) {
+    const t = toasts.find(x => x.id === id);
+    if (!t || !t.duration) return;
+    clearTimeout(t.timer);
+    t.timer = setTimeout(() => dismiss(id), t.duration);
+  }
+
+  function removeWithExit(t) {
+    // Slide further behind, fade out
+    t.el.style.setProperty('--y', `-${MAX_VISIBLE * PEEK + 8}px`);
+    t.el.style.setProperty('--s', '0.8');
+    t.el.style.setProperty('--o', '0');
+    setTimeout(() => t.el.remove(), 540);
+  }
+
+  function dismiss(id) {
+    const idx = toasts.findIndex(t => t.id === id);
+    if (idx < 0) return;
+    const t = toasts.splice(idx, 1)[0];
+    clearTimeout(t.timer);
+    // Exit motion: drop down + scale slightly + fade
+    t.el.style.setProperty('--y', '120%');
+    t.el.style.setProperty('--s', '0.92');
+    t.el.style.setProperty('--o', '0');
+    setTimeout(() => t.el.remove(), 540);
+    applyLayout();
+  }
+
+  function updateToast(id, { variant, title, desc }) {
+    const t = toasts.find(x => x.id === id);
+    if (!t) return;
+    if (variant) {
+      t.el.className = `toast ${variant}`;
+      t.variant = variant;
+      const ic = t.el.querySelector('.ic');
+      ic.className = `ic ${variant}`;
+      ic.innerHTML = ICONS[variant];
+    }
+    if (title) t.el.querySelector('.title').textContent = title;
+    if (desc != null) {
+      let d = t.el.querySelector('.desc');
+      if (!d && desc) {
+        d = document.createElement('div');
+        d.className = 'desc';
+        t.el.querySelector('.body').appendChild(d);
+      }
+      if (d) d.textContent = desc;
+    }
+    if (window.lucide) lucide.createIcons();
+  }
+
+  // Hover-to-expand / leave-to-collapse — pauses auto-dismiss timers too.
+  viewport.addEventListener('mouseenter', () => {
+    if (isExpanded) return;
+    isExpanded = true;
+    viewport.classList.add('expanded');
+    toasts.forEach(t => clearTimeout(t.timer));
+    applyLayout();
+  });
+  viewport.addEventListener('mouseleave', () => {
+    if (!isExpanded) return;
+    isExpanded = false;
+    viewport.classList.remove('expanded');
+    toasts.forEach(t => scheduleDismiss(t.id));
+    applyLayout();
+  });
+
+  // ---- Triggers ----
+  const SUCCESS_MSGS = [
+    { title: 'Workflow published',   desc: '"New User Marketing Signup" is now live.' },
+    { title: 'Deployment ready',     desc: 'main-8f3c2a1 went live · 12m 27s' },
+    { title: 'Profile saved',        desc: 'Your changes have been applied.' },
+    { title: 'Subscriber added',     desc: 'Daniel Morgan added to Mailchimp.' },
+  ];
+  const ERROR_MSGS = [
+    { title: 'Build failed', desc: 'Module ./src/api/client.ts could not be resolved.' },
+    { title: 'Sync error',   desc: 'Could not reach Mailchimp. Retrying in 30s.' },
+  ];
+  let counter = 0;
+  document.getElementById('btn-success').addEventListener('click', () => {
+    const m = SUCCESS_MSGS[counter++ % SUCCESS_MSGS.length];
+    makeToast({ variant: 'success', ...m });
+  });
+  document.getElementById('btn-error').addEventListener('click', () => {
+    const m = ERROR_MSGS[counter++ % ERROR_MSGS.length];
+    makeToast({ variant: 'error', duration: 8000, ...m,
+      action: { label: 'Retry', onClick: (id) => dismiss(id) } });
+  });
+  document.getElementById('btn-trigger').addEventListener('click', () => {
+    makeToast({ variant: 'info', title: '3 new feedback items',
+      desc: 'From Daniel Morgan and 2 others.',
+      action: { label: 'View', onClick: (id) => dismiss(id) } });
+  });
+  document.getElementById('btn-promise').addEventListener('click', () => {
+    const id = makeToast({
+      variant: 'loading',
+      title: 'Publishing changes…',
+      desc: 'Updating live workflow.',
+      duration: 0, // hold open while loading
+    });
+    setTimeout(() => {
+      updateToast(id, { variant: 'success', title: 'Workflow published', desc: '3 nodes were updated.' });
+      const t = toasts.find(x => x.id === id);
+      if (t) { t.duration = 4000; scheduleDismiss(id); }
+    }, 1600);
+  });
+
+  // Re-apply layout if the viewport ever resizes (font load, etc.)
+  new ResizeObserver(() => applyLayout()).observe(viewport);
+
+  // Seed three toasts so the stack is visible on load
+  setTimeout(() => makeToast({ variant: 'info',    title: '3 new feedback items', desc: 'From Daniel Morgan and 2 others.', action: { label: 'View', onClick: (id) => dismiss(id) }, duration: 0 }), 200);
+  setTimeout(() => makeToast({ variant: 'success', title: 'Workflow published',  desc: '"New User Marketing Signup" is now live.', duration: 0 }), 550);
+  setTimeout(() => makeToast({ variant: 'success', title: 'Deployment ready',    desc: 'main-8f3c2a1 went live · 12m 27s', duration: 0 }), 900);
+
+  if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>

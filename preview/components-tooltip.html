@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Tooltip</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms cubic-bezier(.2,.7,.2,1);white-space:nowrap;}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+  .icon-btn{width:28px;height:28px;border:0;background:transparent;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg-2);transition:background 140ms,color 140ms;}
+  .icon-btn:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+  .row{display:flex;align-items:center;gap:10px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Tooltip · hover the icons</div>
+  <div style="display:flex;justify-content:space-around;align-items:center;padding:30px 0;">
+    <div class="tt-wrap" data-tip="Workflow info" data-side="top">
+      <button class="btn btn-outline" style="padding:8px;"><i data-lucide="info" style="width:14px;height:14px;"></i></button>
+    </div>
+    <div class="tt-wrap" data-tip="Settings" data-shortcut="⌘," data-side="bottom">
+      <button class="btn btn-outline" style="padding:8px;"><i data-lucide="settings" style="width:14px;height:14px;"></i></button>
+    </div>
+    <div class="tt-wrap" data-tip="Share with team" data-side="left">
+      <button class="btn btn-outline" style="padding:8px;"><i data-lucide="share-2" style="width:14px;height:14px;"></i></button>
+    </div>
+    <div class="tt-wrap" data-tip="Delete workflow" data-side="right">
+      <button class="btn btn-outline" style="padding:8px;"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .tt-wrap{position:relative;display:inline-block;}
+  .tt{position:absolute;background:var(--fg-1);color:var(--bg-surface);padding:5px 9px;border-radius:6px;font-size:12px;white-space:nowrap;pointer-events:none;opacity:0;transform:translateY(0) scale(0.94);transform-origin:center;transition:opacity 160ms cubic-bezier(.2,.7,.2,1),transform 200ms cubic-bezier(.2,.7,.2,1);z-index:20;display:flex;align-items:center;gap:6px;}
+  .tt.open{opacity:1;transform:translateY(0) scale(1);}
+  .tt .kbd{font-family:var(--font-mono);font-size:10px;background:rgba(255,255,255,0.15);padding:1px 5px;border-radius:3px;color:white;}
+  .tt::after{content:'';position:absolute;width:6px;height:6px;background:var(--fg-1);transform:rotate(45deg);}
+  .tt[data-side="top"]{bottom:calc(100% + 8px);left:50%;transform-origin:bottom center;transform:translateX(-50%) translateY(2px) scale(0.94);}
+  .tt[data-side="top"].open{transform:translateX(-50%) translateY(0) scale(1);}
+  .tt[data-side="top"]::after{bottom:-3px;left:50%;margin-left:-3px;}
+  .tt[data-side="bottom"]{top:calc(100% + 8px);left:50%;transform-origin:top center;transform:translateX(-50%) translateY(-2px) scale(0.94);}
+  .tt[data-side="bottom"].open{transform:translateX(-50%) translateY(0) scale(1);}
+  .tt[data-side="bottom"]::after{top:-3px;left:50%;margin-left:-3px;}
+  .tt[data-side="left"]{right:calc(100% + 8px);top:50%;transform-origin:right center;transform:translateY(-50%) translateX(2px) scale(0.94);}
+  .tt[data-side="left"].open{transform:translateY(-50%) translateX(0) scale(1);}
+  .tt[data-side="left"]::after{right:-3px;top:50%;margin-top:-3px;}
+  .tt[data-side="right"]{left:calc(100% + 8px);top:50%;transform-origin:left center;transform:translateY(-50%) translateX(-2px) scale(0.94);}
+  .tt[data-side="right"].open{transform:translateY(-50%) translateX(0) scale(1);}
+  .tt[data-side="right"]::after{left:-3px;top:50%;margin-top:-3px;}
+</style>
+<script>
+  document.querySelectorAll('.tt-wrap').forEach(w => {
+    const tt = document.createElement('div');
+    tt.className = 'tt';
+    tt.dataset.side = w.dataset.side;
+    tt.innerHTML = w.dataset.tip + (w.dataset.shortcut ? '<span class="kbd">'+w.dataset.shortcut+'</span>' : '');
+    w.appendChild(tt);
+    let t;
+    w.addEventListener('mouseenter', () => { t = setTimeout(() => tt.classList.add('open'), 200); });
+    w.addEventListener('mouseleave', () => { clearTimeout(t); tt.classList.remove('open'); });
+    w.addEventListener('focusin', () => tt.classList.add('open'));
+    w.addEventListener('focusout', () => tt.classList.remove('open'));
+  });
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

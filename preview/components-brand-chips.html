@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Integration chips</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 18px 20px;
+    box-shadow: var(--elev-1);
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .sec { height: 1px; background: var(--border); margin: 18px 0; }
+
+  /* ---------- Standard chip (icon + name underneath) ---------- */
+  .chip-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 14px;
+  }
+  .chip {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    text-align: center;
+  }
+  .chip .icon-tile {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    display: inline-flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    transition: transform 180ms cubic-bezier(.2,.7,.2,1), box-shadow 180ms cubic-bezier(.2,.7,.2,1);
+  }
+  .chip .icon-tile:hover { transform: translateY(-2px); box-shadow: var(--elev-1); }
+  .chip .icon-tile img { width: 22px; height: 22px; display: block; }
+  .chip .chip-name {
+    font-size: 11px;
+    color: var(--fg-2);
+    line-height: 1.2;
+    max-width: 64px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ---------- Tinted variants (matches Disarto reference) ---------- */
+  .tile-mailchimp { background: #FFEEBE; border-color: rgba(255,200,0,0.18); }
+  .tile-slack     { background: #F0E4FF; border-color: rgba(94,46,163,0.14); }
+  .tile-figma     { background: #FFDCDC; border-color: rgba(200,30,47,0.14); }
+  .tile-notion    { background: #F4F4F4; border-color: var(--border); }
+  .tile-openai    { background: #DCEFE7; border-color: rgba(15,98,80,0.14); }
+  .tile-anthropic { background: #FEEBE0; border-color: rgba(200,71,21,0.18); }
+  .tile-google    { background: #E6F0FE; border-color: rgba(66,133,244,0.18); }
+  .tile-github    { background: #E8E8EB; border-color: var(--border-strong); }
+  .tile-linear    { background: #E8E9FE; border-color: rgba(94,106,210,0.14); }
+  .tile-vercel    { background: #0F0F10; border-color: #0F0F10; }
+  .tile-vercel img { filter: invert(1); }
+  .tile-stripe    { background: #E4E3FE; border-color: rgba(99,91,255,0.14); }
+  .tile-airbnb    { background: #FFE2E5; border-color: rgba(255,90,95,0.14); }
+  .tile-spotify   { background: #DAF6E4; border-color: rgba(30,215,96,0.14); }
+  .tile-apple     { background: #F4F4F4; border-color: var(--border); }
+  .tile-adobe     { background: #FFE0E0; border-color: rgba(255,15,0,0.14); }
+  .tile-netflix   { background: #FCE0E0; border-color: rgba(229,9,20,0.14); }
+  .tile-discord   { background: #E6E9FF; border-color: rgba(88,101,242,0.14); }
+  .tile-zoom      { background: #DCEAFE; border-color: rgba(45,128,238,0.14); }
+  .tile-dropbox   { background: #DCEAFE; border-color: rgba(0,97,255,0.14); }
+  .tile-asana     { background: #FFE0E5; border-color: rgba(247,107,109,0.14); }
+
+  /* ---------- Connected row variant (label + connected pill) ---------- */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .connect-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-surface);
+    transition: background 140ms;
+  }
+  .connect-row:hover { background: var(--bg-surface-2); }
+  .connect-row .icon-tile {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .connect-row .icon-tile img { width: 20px; height: 20px; }
+  .connect-row .info { flex: 1; min-width: 0; }
+  .connect-row .name { font-size: 13px; font-weight: 500; color: var(--fg-1); }
+  .connect-row .sub  {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--fg-3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 9px; border-radius: 999px;
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    font-weight: 500;
+  }
+  .pill::before { content:''; width:5px; height:5px; border-radius:50%; background: currentColor; }
+  .pill.success { background: var(--success-soft); color: var(--success); }
+  .pill.neutral { background: var(--bg-surface-2); color: var(--fg-3); }
+  .pill.neutral::before { display: none; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Available integrations</div>
+  <div class="chip-grid">
+    <div class="chip"><div class="icon-tile tile-mailchimp"><img src="https://cdn.simpleicons.org/mailchimp" alt=""></div><div class="chip-name">Mailchimp</div></div>
+    <div class="chip"><div class="icon-tile tile-slack"><img src="https://cdn.simpleicons.org/slack" alt=""></div><div class="chip-name">Slack</div></div>
+    <div class="chip"><div class="icon-tile tile-figma"><img src="https://cdn.simpleicons.org/figma" alt=""></div><div class="chip-name">Figma</div></div>
+    <div class="chip"><div class="icon-tile tile-notion"><img src="https://cdn.simpleicons.org/notion" alt=""></div><div class="chip-name">Notion</div></div>
+    <div class="chip"><div class="icon-tile tile-openai"><img src="https://cdn.simpleicons.org/openai" alt=""></div><div class="chip-name">ChatGPT</div></div>
+    <div class="chip"><div class="icon-tile tile-anthropic"><img src="https://cdn.simpleicons.org/anthropic" alt=""></div><div class="chip-name">Claude</div></div>
+    <div class="chip"><div class="icon-tile tile-google"><img src="https://cdn.simpleicons.org/googlegemini" alt=""></div><div class="chip-name">Gemini</div></div>
+    <div class="chip"><div class="icon-tile tile-github"><img src="https://cdn.simpleicons.org/github/0F0F10" alt=""></div><div class="chip-name">GitHub</div></div>
+
+    <div class="chip"><div class="icon-tile tile-linear"><img src="https://cdn.simpleicons.org/linear" alt=""></div><div class="chip-name">Linear</div></div>
+    <div class="chip"><div class="icon-tile tile-vercel"><img src="https://cdn.simpleicons.org/vercel" alt=""></div><div class="chip-name">Vercel</div></div>
+    <div class="chip"><div class="icon-tile tile-stripe"><img src="https://cdn.simpleicons.org/stripe" alt=""></div><div class="chip-name">Stripe</div></div>
+    <div class="chip"><div class="icon-tile tile-airbnb"><img src="https://cdn.simpleicons.org/airbnb" alt=""></div><div class="chip-name">Airbnb</div></div>
+    <div class="chip"><div class="icon-tile tile-spotify"><img src="https://cdn.simpleicons.org/spotify" alt=""></div><div class="chip-name">Spotify</div></div>
+    <div class="chip"><div class="icon-tile tile-apple"><img src="https://cdn.simpleicons.org/apple/0F0F10" alt=""></div><div class="chip-name">Apple</div></div>
+    <div class="chip"><div class="icon-tile tile-adobe"><img src="https://cdn.simpleicons.org/adobe" alt=""></div><div class="chip-name">Adobe</div></div>
+    <div class="chip"><div class="icon-tile tile-netflix"><img src="https://cdn.simpleicons.org/netflix" alt=""></div><div class="chip-name">Netflix</div></div>
+  </div>
+
+  <div class="sec"></div>
+
+  <div class="label" style="margin-bottom:12px;">Connection status</div>
+  <div class="connect-grid">
+    <div class="connect-row">
+      <div class="icon-tile tile-mailchimp"><img src="https://cdn.simpleicons.org/mailchimp" alt=""></div>
+      <div class="info">
+        <div class="name">Mailchimp</div>
+        <div class="sub">14 audiences · synced</div>
+      </div>
+      <span class="pill success">Connected</span>
+    </div>
+    <div class="connect-row">
+      <div class="icon-tile tile-slack"><img src="https://cdn.simpleicons.org/slack" alt=""></div>
+      <div class="info">
+        <div class="name">Slack</div>
+        <div class="sub">#signups · workspace</div>
+      </div>
+      <span class="pill success">Connected</span>
+    </div>
+    <div class="connect-row">
+      <div class="icon-tile tile-figma"><img src="https://cdn.simpleicons.org/figma" alt=""></div>
+      <div class="info">
+        <div class="name">Figma</div>
+        <div class="sub">Design system file</div>
+      </div>
+      <span class="pill success">Connected</span>
+    </div>
+    <div class="connect-row">
+      <div class="icon-tile tile-notion"><img src="https://cdn.simpleicons.org/notion" alt=""></div>
+      <div class="info">
+        <div class="name">Notion</div>
+        <div class="sub">Not connected</div>
+      </div>
+      <span class="pill neutral">Connect</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>

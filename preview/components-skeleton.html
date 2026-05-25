@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Skeleton</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .meta{font-family:var(--font-mono);font-size:11px;color:var(--fg-3)}
+  .row{display:flex;align-items:center;gap:10px}
+  .col{display:flex;flex-direction:column;gap:8px}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent}
+  .btn-primary{background:var(--accent);color:white}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong)}
+  .btn-ghost{background:transparent;color:var(--fg-2)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Skeleton · loading</div>
+  <style>
+    @keyframes gal-shimmer { 0% { background-position: -200px 0; } 100% { background-position: 600px 0; } }
+    .sk { background: linear-gradient(90deg, var(--bg-surface-2) 0%, var(--bg-surface-3) 50%, var(--bg-surface-2) 100%); background-size: 600px 100%; animation: gal-shimmer 1.4s infinite linear; border-radius:6px; }
+  </style>
+  <div style="display:flex;gap:14px;align-items:center;margin-bottom:18px;">
+    <div class="sk" style="width:40px;height:40px;border-radius:50%;"></div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+      <div class="sk" style="width:60%;height:12px;"></div>
+      <div class="sk" style="width:40%;height:10px;"></div>
+    </div>
+    <div class="sk" style="width:60px;height:24px;border-radius:999px;"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+    <div class="sk" style="height:72px;border-radius:10px;"></div>
+    <div class="sk" style="height:72px;border-radius:10px;"></div>
+    <div class="sk" style="height:72px;border-radius:10px;"></div>
+  </div>
+</div>
+<script>lucide && lucide.createIcons && lucide.createIcons();</script>
+</body></html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Textarea</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:8px;">Textarea · type to see counter</div>
+  <div class="ta-wrap" id="ta-wrap">
+    <textarea id="ta" placeholder="Write feedback…" maxlength="500">Real-time latency spikes during peak hours make dashboards unusable. We need a way to see API timing per endpoint.</textarea>
+    <div class="ta-foot">
+      <span class="ta-count" id="ta-count">0 / 500</span>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-ghost" style="font-size:12px;padding:4px 8px;">Cancel</button>
+        <button class="btn btn-primary" style="font-size:12px;padding:5px 12px;">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .ta-wrap{border:1.5px solid var(--border-strong);border-radius:10px;background:var(--bg-surface);padding:12px 14px;transition:border-color 140ms,box-shadow 140ms;}
+  .ta-wrap:focus-within{border-color:var(--accent);box-shadow:var(--elev-focus);}
+  textarea{width:100%;border:0;outline:0;background:transparent;font:400 14px/1.5 var(--font-sans);color:var(--fg-1);resize:vertical;min-height:80px;box-shadow:none;}
+  textarea:focus, textarea:focus-visible{outline:0;box-shadow:none;border:0;}
+  .ta-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:8px;margin-top:8px;transition:border-color 140ms;}
+  .ta-count{font-family:var(--font-mono);font-size:11px;color:var(--fg-3);transition:color 140ms;}
+  .ta-count.warn{color:var(--warning);}
+  .ta-count.full{color:var(--danger);}
+</style>
+<script>
+  const ta = document.getElementById('ta');
+  const count = document.getElementById('ta-count');
+  const MAX = 500;
+  function update() {
+    const n = ta.value.length;
+    count.textContent = n + ' / ' + MAX;
+    count.classList.toggle('warn', n > MAX * 0.8 && n < MAX);
+    count.classList.toggle('full', n >= MAX);
+  }
+  ta.addEventListener('input', update);
+  update();
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Radii</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 22px 24px;
+    box-shadow: var(--elev-1);
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-3);
+    letter-spacing: 0.04em;
+  }
+  .name { font-size: 13px; font-weight: 500; color: var(--fg-1); }
+
+  .row {
+    display: flex;
+    align-items: flex-end;
+    gap: 22px;
+    margin-top: 14px;
+  }
+  .tile { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+
+  /* Rounded swatches */
+  .sw {
+    width: 76px;
+    height: 76px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border-strong);
+  }
+  .r-xs   { border-radius: 4px; }
+  .r-sm   { border-radius: 6px; }
+  .r-md   { border-radius: 10px; }
+  .r-lg   { border-radius: 16px; }
+  .r-xl   { border-radius: 22px; }
+  .r-pill { border-radius: 999px; }
+
+  /* Squircle SVGs */
+  .sq-svg { width: 76px; height: 76px; display: block; }
+  .sq-svg.lg { width: 120px; height: 120px; }
+  .sq-svg.sm { width: 56px; height: 56px; }
+
+  .sq-svg .face {
+    fill: var(--bg-surface-2);
+    stroke: var(--border-strong);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+  .sq-svg.accent .face { fill: url(#accent-grad); stroke: transparent; }
+  .sq-svg.ink    .face { fill: #0F0F10; stroke: transparent; }
+
+  .sq-svg .label-letter {
+    fill: white;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+
+  .compare {
+    display: flex; gap: 14px; align-items: center;
+    margin-top: 22px; padding: 14px 16px;
+    background: var(--bg-surface-2); border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .compare .pair { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+
+  .anno {
+    margin-top: 22px;
+    padding: 14px 16px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--fg-2);
+    line-height: 1.5;
+  }
+  .anno b { color: var(--fg-1); }
+  .anno code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 1px 5px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--fg-1);
+  }
+</style>
+</head>
+<body>
+
+<!-- Defs container — squircle paths are populated by JS using the actual
+     superellipse formula |x/a|^n + |y/b|^n = 1, then injected as <symbol>s. -->
+<svg width="0" height="0" style="position:absolute;" aria-hidden="true">
+  <defs>
+    <symbol id="squircle-soft" viewBox="0 0 100 100"><path class="face" id="path-soft"/></symbol>
+    <symbol id="squircle-deep" viewBox="0 0 100 100"><path class="face" id="path-deep"/></symbol>
+    <linearGradient id="accent-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F5642B"/>
+      <stop offset="100%" stop-color="#C84715"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="card">
+
+  <div class="label">Rounded · circular arc corners (CSS <code style="font-family:var(--font-mono);font-size:11px;">border-radius</code>)</div>
+  <div class="row">
+    <div class="tile"><div class="sw r-xs"></div><div class="name">r-xs</div><div class="meta">4px</div></div>
+    <div class="tile"><div class="sw r-sm"></div><div class="name">r-sm</div><div class="meta">6px</div></div>
+    <div class="tile"><div class="sw r-md"></div><div class="name">r-md</div><div class="meta">10px</div></div>
+    <div class="tile"><div class="sw r-lg"></div><div class="name">r-lg</div><div class="meta">16px</div></div>
+    <div class="tile"><div class="sw r-xl"></div><div class="name">r-xl</div><div class="meta">22px</div></div>
+    <div class="tile"><div class="sw r-pill" style="width:120px;"></div><div class="name">r-pill</div><div class="meta">999px</div></div>
+  </div>
+
+  <div class="label" style="margin-top:26px;">Squircle · superellipse · continuous curvature</div>
+  <div class="row">
+    <div class="tile">
+      <svg class="sq-svg" viewBox="0 0 100 100"><use href="#squircle-soft"/></svg>
+      <div class="name">squircle · soft</div>
+      <div class="meta">n = 4</div>
+    </div>
+    <div class="tile">
+      <svg class="sq-svg" viewBox="0 0 100 100"><use href="#squircle-deep"/></svg>
+      <div class="name">squircle · deep</div>
+      <div class="meta">n = 5 (iOS icon)</div>
+    </div>
+    <div class="tile">
+      <svg class="sq-svg accent" viewBox="0 0 100 100">
+        <use href="#squircle-deep"/>
+        <text class="label-letter" x="50" y="55" font-size="46">G</text>
+      </svg>
+      <div class="name">brand icon</div>
+      <div class="meta">orange · 76px</div>
+    </div>
+    <div class="tile">
+      <svg class="sq-svg lg accent" viewBox="0 0 100 100">
+        <use href="#squircle-deep"/>
+        <text class="label-letter" x="50" y="55" font-size="46">G</text>
+      </svg>
+      <div class="name">large mark</div>
+      <div class="meta">120px</div>
+    </div>
+    <div class="tile">
+      <svg class="sq-svg ink" viewBox="0 0 100 100"><use href="#squircle-soft"/></svg>
+      <div class="name">ink chip</div>
+      <div class="meta">filled</div>
+    </div>
+  </div>
+
+  <div class="compare">
+    <div class="pair">
+      <div class="sw" style="width:56px; height:56px; border-radius:18px;"></div>
+      <div class="meta" style="text-transform:none; letter-spacing:0; font-family:var(--font-sans); font-size:12px; color:var(--fg-2);">Rounded · 18px</div>
+    </div>
+    <div class="meta" style="text-transform:none; letter-spacing:0; font-family:var(--font-sans); font-size:13px; color:var(--fg-3);">→ vs →</div>
+    <div class="pair">
+      <svg class="sq-svg sm" viewBox="0 0 100 100"><use href="#squircle-deep"/></svg>
+      <div class="meta" style="text-transform:none; letter-spacing:0; font-family:var(--font-sans); font-size:12px; color:var(--fg-2);">Squircle · matched silhouette</div>
+    </div>
+    <div style="flex:1; font-size:12px; color:var(--fg-2); line-height:1.55;">
+      The squircle is a real superellipse: <code style="font-family:var(--font-mono);">|x/a|<sup>n</sup> + |y/b|<sup>n</sup> = 1</code>. With n = 5, it matches the iOS app-icon silhouette — curvature blends continuously (G2) instead of switching abruptly from edge to arc.
+    </div>
+  </div>
+
+  <div class="anno">
+    <b>When to use which.</b> Use <code>r-*</code> rounded corners for surfaces, cards, buttons and inputs — the simpler arc reads cleaner at small radii. Use <b>squircles</b> for <b>icon containers</b> and brand marks (the Gal logo chip, app icons, integration tiles), where the continuous curvature makes the silhouette feel softer and more confident at uniform scales.
+  </div>
+</div>
+
+<script>
+  /**
+   * Build the actual superellipse path:
+   *   x(t) = cx + a · sign(cos t) · |cos t|^(2/n)
+   *   y(t) = cy + b · sign(sin t) · |sin t|^(2/n)
+   *
+   * We sample 256 points around the curve and emit a polygon-style path.
+   * At 256 segments the vertices are visually indistinguishable from a
+   * continuous curve at the sizes we render at (76–120 px).
+   */
+  function buildSuperellipsePath(n, steps = 256, cx = 50, cy = 50, a = 50, b = 50) {
+    const pts = [];
+    const exp = 2 / n;
+    for (let i = 0; i < steps; i++) {
+      const t = (i / steps) * 2 * Math.PI;
+      const ct = Math.cos(t);
+      const st = Math.sin(t);
+      const x = cx + a * Math.sign(ct) * Math.pow(Math.abs(ct), exp);
+      const y = cy + b * Math.sign(st) * Math.pow(Math.abs(st), exp);
+      pts.push(x.toFixed(3) + ',' + y.toFixed(3));
+    }
+    return 'M ' + pts[0] + ' L ' + pts.slice(1).join(' L ') + ' Z';
+  }
+
+  document.getElementById('path-soft').setAttribute('d', buildSuperellipsePath(4));
+  document.getElementById('path-deep').setAttribute('d', buildSuperellipsePath(5));
+</script>
+</body>
+</html>

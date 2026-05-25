@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Popover</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 20px 22px;
+    box-shadow: var(--elev-1);
+    text-align: center;
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font: 500 13px/1 var(--font-sans);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 180ms cubic-bezier(.2,.7,.2,1);
+    white-space: nowrap;
+  }
+  .btn-outline { background: var(--bg-surface); color: var(--fg-1); border-color: var(--border-strong); }
+  .btn-outline:hover { background: var(--bg-surface-2); }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-ghost { background: transparent; color: var(--fg-2); }
+  .btn-ghost:hover { background: var(--bg-surface-2); color: var(--fg-1); }
+
+  /* ============================ Popover ============================ */
+  .pop-host { position: relative; display: inline-block; }
+
+  .popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px) scale(0.96);
+    transform-origin: top center;
+    width: 280px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--elev-2);
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    text-align: left;
+    transition:
+      opacity 200ms cubic-bezier(.2,.7,.2,1),
+      transform 240ms cubic-bezier(.2,.7,.2,1);
+    overflow: hidden;
+  }
+  .popover.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  /* Arrow */
+  .popover::before {
+    content: '';
+    position: absolute;
+    top: -5px; left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 10px; height: 10px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
+  }
+
+  /* ---- Header zone ---- */
+  .pop-head {
+    padding: 14px 16px 10px;
+  }
+  .pop-title {
+    font: 600 14px/1.25 var(--font-sans);
+    color: var(--fg-1);
+    margin: 0;
+  }
+  .pop-sub {
+    font: 400 12px/1.4 var(--font-sans);
+    color: var(--fg-2);
+    margin: 4px 0 0;
+  }
+
+  /* ---- Items zone (separated from header by hairline) ---- */
+  .pop-list {
+    padding: 6px 8px 10px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .pop-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font: 500 13px/1.2 var(--font-sans);
+    color: var(--fg-1);
+    user-select: none;
+    transition: background 140ms cubic-bezier(.2,.7,.2,1);
+  }
+  .pop-item:hover { background: var(--bg-surface-2); }
+  .pop-item .cb {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 4px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: white;
+    flex-shrink: 0;
+    transition: background 140ms, border-color 140ms;
+  }
+  .pop-item .cb.on {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .pop-item .cb svg {
+    width: 11px; height: 11px;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 140ms, transform 200ms cubic-bezier(.2,.7,.2,1);
+  }
+  .pop-item .cb.on svg { opacity: 1; transform: scale(1); }
+  .pop-item .it-label { flex: 1; }
+  .pop-item .it-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--fg-3);
+  }
+
+  /* ---- Footer zone ---- */
+  .pop-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-surface-2);
+  }
+  .pop-foot .meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .pop-foot .meta b {
+    color: var(--fg-1);
+    font-weight: 600;
+  }
+  .pop-foot .actions { display: inline-flex; gap: 6px; }
+  .pop-foot .btn {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+  .pop-foot .btn-primary { padding: 6px 12px; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Popover · click to open</div>
+
+  <div class="pop-host">
+    <button class="btn btn-outline" id="pop-trigger">
+      <i data-lucide="filter" style="width:14px;height:14px;"></i>
+      Filter
+      <span id="trig-count" class="label" style="background:var(--accent-soft); color:var(--accent); padding:2px 6px; border-radius:999px; letter-spacing:0;font-family:var(--font-mono);font-size:11px;">1</span>
+    </button>
+
+    <div class="popover" id="popover" role="dialog" aria-label="Filter">
+      <div class="pop-head">
+        <h3 class="pop-title">Filter workflows</h3>
+        <p class="pop-sub">Combine filters to narrow your list.</p>
+      </div>
+
+      <div class="pop-list" id="filter-list">
+        <label class="pop-item" data-id="unpub">
+          <span class="cb"><i data-lucide="check"></i></span>
+          <span class="it-label">Has unpublished changes</span>
+          <span class="it-count">12</span>
+        </label>
+        <label class="pop-item" data-id="failed">
+          <span class="cb on"><i data-lucide="check"></i></span>
+          <span class="it-label">Failed last run</span>
+          <span class="it-count">3</span>
+        </label>
+        <label class="pop-item" data-id="mine">
+          <span class="cb"><i data-lucide="check"></i></span>
+          <span class="it-label">Owned by me</span>
+          <span class="it-count">42</span>
+        </label>
+        <label class="pop-item" data-id="archived">
+          <span class="cb"><i data-lucide="check"></i></span>
+          <span class="it-label">Archived</span>
+          <span class="it-count">7</span>
+        </label>
+      </div>
+
+      <div class="pop-foot">
+        <span class="meta"><b id="active-count">1</b> selected</span>
+        <div class="actions">
+          <button class="btn btn-ghost" id="pop-clear">Clear</button>
+          <button class="btn btn-primary" id="pop-apply">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const pop = document.getElementById('popover');
+  const trig = document.getElementById('pop-trigger');
+  const trigCount = document.getElementById('trig-count');
+  const activeCount = document.getElementById('active-count');
+  let isOpen = false;
+
+  function open(force) {
+    isOpen = force !== undefined ? force : !isOpen;
+    pop.classList.toggle('open', isOpen);
+  }
+  trig.addEventListener('click', e => { e.stopPropagation(); open(); });
+  document.addEventListener('click', e => { if (isOpen && !pop.contains(e.target)) open(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') open(false); });
+
+  function updateCount() {
+    const n = document.querySelectorAll('.pop-item .cb.on').length;
+    activeCount.textContent = n;
+    trigCount.textContent = n;
+    trigCount.style.display = n ? '' : 'none';
+  }
+
+  document.querySelectorAll('.pop-item').forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      item.querySelector('.cb').classList.toggle('on');
+      updateCount();
+    });
+  });
+
+  document.getElementById('pop-clear').addEventListener('click', () => {
+    document.querySelectorAll('.pop-item .cb.on').forEach(cb => cb.classList.remove('on'));
+    updateCount();
+  });
+  document.getElementById('pop-apply').addEventListener('click', () => open(false));
+
+  if (window.lucide) lucide.createIcons();
+  updateCount();
+</script>
+</body>
+</html>

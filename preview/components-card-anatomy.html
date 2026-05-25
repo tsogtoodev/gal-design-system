@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Card anatomy</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 32px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== Outer card (the "frame") =====
+     Slightly tinted off-white surface, hairline border, soft shadow.
+     Holds two nested white sub-cards + a flat footer toolbar.
+     Padding is asymmetric: tight on horizontal, more breathing room
+     on top (header) and bottom (footer). Sub-cards sit FLUSH-ish to
+     the outer edges, with small gaps between each block. */
+  .frame {
+    width: 500px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--elev-1);
+    padding: 6px 6px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+  }
+
+  /* ===== Frame header — sits OUTSIDE the inner sub-cards ===== */
+  .frame-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 12px 4px;
+  }
+  .frame-head .title {
+    font: 600 16px/1.2 var(--font-sans);
+    color: var(--fg-1);
+  }
+  .icon-btn {
+    width: 24px; height: 24px;
+    border: 0; background: transparent;
+    border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--fg-2);
+    transition: background var(--motion) var(--ease), color var(--motion) var(--ease);
+  }
+  .icon-btn:hover { background: rgba(15,15,15,0.05); color: var(--fg-1); }
+
+  /* ===== Inner sub-card =====
+     Pure white, hairline border, slightly tighter radius. */
+  .sub {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+
+  .sub {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  /* override duplicate (kept block above) */
+  .sub + .sub { /* no-op, just here for clarity */ }
+
+  /* ---- Sub-card 1: profile ---- */
+  .profile {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    grid-template-rows: auto auto auto;
+    column-gap: 12px;
+    align-items: center;
+  }
+  .profile .avatar {
+    grid-row: 1 / span 2;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f4d4a3, #d49a72);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #5a341a;
+    font: 600 16px/1 var(--font-sans);
+    overflow: hidden;
+  }
+  .profile .name-row {
+    display: flex; align-items: center; gap: 8px;
+    font: 600 15px/1.2 var(--font-sans);
+    color: var(--fg-1);
+  }
+  .profile .swap-chip {
+    width: 18px; height: 18px;
+    border-radius: 6px;
+    background: var(--success-soft);
+    color: var(--success);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .profile .org {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .profile .email-row {
+    grid-column: 2 / 3;
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .profile .email-row .copy {
+    width: 14px; height: 14px;
+    color: var(--fg-3);
+    cursor: pointer;
+  }
+  .profile .status {
+    grid-column: 3 / 4;
+    grid-row: 1 / 2;
+    align-self: start;
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--success-soft);
+    color: var(--success);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid rgba(22,163,74,0.18);
+  }
+
+  .stats-row {
+    grid-column: 1 / -1;
+    margin-top: 14px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px 5px 8px;
+    border-radius: 999px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--fg-1);
+  }
+  .stat .ic {
+    width: 14px; height: 14px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .stat .delta {
+    margin-left: 2px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .stat .delta.up   { background: var(--info-soft);   color: var(--info); }
+  .stat .delta.alt  { background: var(--accent-soft); color: var(--accent); }
+
+  /* ---- Sub-card 2: latest feedback ---- */
+  .feedback-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+    margin-bottom: 6px;
+  }
+  .feedback-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    font-size: 13px;
+    color: var(--fg-1);
+  }
+  .feedback-row + .feedback-row {
+    border-top: 1px solid var(--border);
+  }
+  .feedback-row .ic {
+    width: 18px; height: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .feedback-row .text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ---- Footer toolbar — flat, transparent over outer frame ---- */
+  .frame-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 10px 12px;
+    min-width: 0; /* let flex children shrink to prevent overflow */
+  }
+  .frame-foot .divider {
+    width: 1px; height: 14px;
+    background: var(--border-strong);
+    flex-shrink: 0;
+  }
+  .foot-action {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent; border: 0; cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-2);
+    padding: 4px 0;
+    transition: color var(--motion) var(--ease);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .foot-action:hover { color: var(--fg-1); }
+  .foot-action.right { margin-left: auto; }
+  .foot-action svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+  /* ===== Attribution row beneath the card (matches the reference) ===== */
+  .stage-foot {
+    position: fixed;
+    left: 32px; right: 32px; bottom: 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    pointer-events: none;
+  }
+  .stage-foot .who {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--fg-2);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .stage-foot .who .av {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: linear-gradient(135deg, #f4d4a3, #d49a72);
+  }
+  .stage-foot .what {
+    font: 400 13px/1.4 var(--font-sans);
+    color: var(--fg-3);
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+
+  <!-- Frame header (outside sub-cards) -->
+  <div class="frame-head">
+    <div class="title">Customer preview</div>
+    <button class="icon-btn" aria-label="Close"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
+  </div>
+
+  <!-- Sub-card 1: profile -->
+  <div class="sub">
+    <div class="profile">
+      <div class="avatar">DM</div>
+
+      <div class="name-row">
+        <span>Daniel Morgan</span>
+        <span class="swap-chip"><i data-lucide="repeat-2" style="width:10px;height:10px;"></i></span>
+        <span class="org">CLICKUP</span>
+      </div>
+
+      <div class="status">Active</div>
+
+      <div class="email-row">
+        <span>daniel@clickup.com</span>
+        <i data-lucide="copy" class="copy"></i>
+      </div>
+
+      <div class="stats-row">
+        <span class="stat">
+          <span class="ic" style="color:#2563EB;"><i data-lucide="message-square" style="width:14px;height:14px;"></i></span>
+          13 quotes
+          <span class="delta up">+1</span>
+        </span>
+        <span class="stat">
+          <span class="ic" style="color:#8B5CF6;"><i data-lucide="rocket" style="width:14px;height:14px;"></i></span>
+          6 features
+        </span>
+        <span class="stat">
+          <span class="ic" style="color:#F5642B;"><i data-lucide="alert-circle" style="width:14px;height:14px;"></i></span>
+          23 bugs
+          <span class="delta alt">+2</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sub-card 2: latest feedback -->
+  <div class="sub">
+    <div class="feedback-label">Latest feedback:</div>
+    <div class="feedback-row">
+      <span class="ic" style="color:#DC2626;"><i data-lucide="bar-chart-2" style="width:16px;height:16px;"></i></span>
+      <span class="text">Real-time latency spikes during peak hours make dashboards u…</span>
+    </div>
+    <div class="feedback-row">
+      <span class="ic" style="color:#2563EB;"><i data-lucide="bar-chart-2" style="width:16px;height:16px;"></i></span>
+      <span class="text">Rate limits feel inconsistent across endpoints, causing unexpec…</span>
+    </div>
+    <div class="feedback-row">
+      <span class="ic" style="color:#2563EB;"><i data-lucide="bar-chart-2" style="width:16px;height:16px;"></i></span>
+      <span class="text">We need better visibility into API usage and performance at the…</span>
+    </div>
+  </div>
+
+  <!-- Footer toolbar -->
+  <div class="frame-foot">
+    <button class="icon-btn" aria-label="More"><i data-lucide="more-vertical" style="width:14px;height:14px;"></i></button>
+    <div class="divider"></div>
+    <button class="foot-action">
+      <i data-lucide="users"></i>
+      Assign to team
+    </button>
+    <button class="foot-action right">
+      <i data-lucide="arrow-up-right"></i>
+      View all feedback
+    </button>
+  </div>
+
+</div>
+
+<!-- Stage attribution — matches the reference's bottom corners -->
+<div class="stage-foot">
+  <div class="who">
+    <span class="av"></span>
+    <span>@disarto_max</span>
+  </div>
+  <div class="what">Customer preview</div>
+</div>
+
+<script>
+  if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>

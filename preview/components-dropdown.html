@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dropdown menu</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg-stage);
+    background-image: var(--stage-pattern);
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 18px 20px;
+    box-shadow: var(--elev-1);
+    display: inline-block;
+    text-align: left;
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font: 500 13px/1 var(--font-sans);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 180ms cubic-bezier(.2,.7,.2,1);
+  }
+  .btn-outline { background: var(--bg-surface); color: var(--fg-1); border-color: var(--border-strong); }
+  .btn-outline:hover { background: var(--bg-surface-2); }
+
+  /* ===== Menu ===== */
+  .dd-host { position: relative; display: inline-block; }
+
+  .menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 240px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--elev-2);
+    padding: 6px;
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+    transform-origin: top left;
+    pointer-events: none;
+    transition:
+      opacity 180ms cubic-bezier(.2,.7,.2,1),
+      transform 220ms cubic-bezier(.2,.7,.2,1);
+    z-index: 10;
+  }
+  .menu.open { opacity: 1; transform: none; pointer-events: auto; }
+
+  .menu-section {
+    padding: 8px 10px 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--fg-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .menu-item {
+    width: 100%;
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px;
+    border: 0;
+    background: transparent;
+    border-radius: 6px;
+    font: 500 13px/1 var(--font-sans);
+    color: var(--fg-1);
+    cursor: pointer;
+    text-align: left;
+    transition: background 100ms;
+    position: relative;
+  }
+  .menu-item:hover, .menu-item.hl { background: var(--bg-surface-2); }
+  .menu-item > svg, .menu-item > .ic { width: 14px; height: 14px; color: var(--fg-3); flex-shrink: 0; }
+  .menu-item .label-text { flex: 1; }
+  .menu-item .check {
+    width: 14px; height: 14px;
+    margin-left: auto;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 140ms;
+  }
+  .menu-item[aria-checked="true"] .check { opacity: 1; }
+  .menu-item.danger { color: var(--danger); }
+  .menu-item.danger > svg, .menu-item.danger > .ic { color: var(--danger); }
+  .menu-item .kbd {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 2px 5px;
+    background: var(--bg-surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--fg-3);
+    margin-left: auto;
+  }
+  .menu-item .sub-chev { margin-left: auto; color: var(--fg-3); width: 14px; height: 14px; }
+
+  .menu-divider { height: 1px; background: var(--border); margin: 6px 4px; }
+
+  /* ===== Submenu ===== */
+  .submenu-host { position: relative; }
+  .submenu {
+    position: absolute;
+    top: -7px; /* align item top */
+    left: calc(100% + 4px);
+    width: 220px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--elev-2);
+    padding: 6px;
+    opacity: 0;
+    transform: translateX(-4px) scale(0.97);
+    transform-origin: top left;
+    pointer-events: none;
+    transition:
+      opacity 180ms cubic-bezier(.2,.7,.2,1),
+      transform 220ms cubic-bezier(.2,.7,.2,1);
+    z-index: 20;
+  }
+  .submenu-host.open > .submenu,
+  .submenu-host:hover > .submenu { opacity: 1; transform: none; pointer-events: auto; }
+
+  /* Highlight the parent row when the submenu is open */
+  .submenu-host.open > .menu-item,
+  .submenu-host:hover > .menu-item { background: var(--bg-surface-2); }
+
+  /* Bridge to allow cursor to travel from row → submenu without flicker */
+  .submenu-host::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 100%;
+    width: 8px;
+    pointer-events: none;
+  }
+  .submenu-host:hover::after,
+  .submenu-host.open::after { pointer-events: auto; }
+
+  /* Workspace avatar in submenu */
+  .ws-av {
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+  }
+  .ws-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ws-role {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="label" style="margin-bottom:12px;">Dropdown · click to open · hover a row with ▸ to expand</div>
+
+  <div class="dd-host">
+    <button class="btn btn-outline" id="trigger">
+      <span style="width:20px;height:20px;border-radius:50%;background-image:url('https://i.pravatar.cc/60?img=7');background-size:cover;"></span>
+      James Carter
+      <i data-lucide="chevron-down" style="width:12px;height:12px;color:var(--fg-3);"></i>
+    </button>
+
+    <div class="menu" id="menu" role="menu">
+      <div class="menu-section">Account</div>
+      <button class="menu-item" role="menuitem">
+        <i data-lucide="user"></i>
+        <span class="label-text">Profile</span>
+        <span class="kbd">⇧⌘P</span>
+      </button>
+      <button class="menu-item" role="menuitem">
+        <i data-lucide="credit-card"></i>
+        <span class="label-text">Billing</span>
+        <span class="kbd">⌘B</span>
+      </button>
+      <button class="menu-item" role="menuitem">
+        <i data-lucide="settings"></i>
+        <span class="label-text">Settings</span>
+        <span class="kbd">⌘,</span>
+      </button>
+
+      <div class="menu-divider"></div>
+      <div class="menu-section">Preferences</div>
+
+      <!-- Submenu: Theme -->
+      <div class="submenu-host">
+        <button class="menu-item" role="menuitem" aria-haspopup="true" aria-expanded="false">
+          <i data-lucide="moon"></i>
+          <span class="label-text">Theme</span>
+          <i data-lucide="chevron-right" class="sub-chev"></i>
+        </button>
+        <div class="submenu" role="menu">
+          <button class="menu-item" role="menuitemradio" aria-checked="false" data-theme="light">
+            <i data-lucide="sun"></i>
+            <span class="label-text">Light</span>
+            <i data-lucide="check" class="check"></i>
+          </button>
+          <button class="menu-item" role="menuitemradio" aria-checked="true" data-theme="dark">
+            <i data-lucide="moon"></i>
+            <span class="label-text">Dark</span>
+            <i data-lucide="check" class="check"></i>
+          </button>
+          <button class="menu-item" role="menuitemradio" aria-checked="false" data-theme="system">
+            <i data-lucide="monitor"></i>
+            <span class="label-text">System</span>
+            <i data-lucide="check" class="check"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submenu: Switch workspace -->
+      <div class="submenu-host">
+        <button class="menu-item" role="menuitem" aria-haspopup="true">
+          <i data-lucide="users"></i>
+          <span class="label-text">Switch workspace</span>
+          <i data-lucide="chevron-right" class="sub-chev"></i>
+        </button>
+        <div class="submenu" role="menu">
+          <button class="menu-item" role="menuitemradio" aria-checked="true">
+            <span class="ws-av" style="background-image:url('https://i.pravatar.cc/40?img=7')"></span>
+            <span class="ws-name">Stacklane</span>
+            <span class="ws-role">Admin</span>
+          </button>
+          <button class="menu-item" role="menuitemradio" aria-checked="false">
+            <span class="ws-av" style="background-image:url('https://i.pravatar.cc/40?img=12')"></span>
+            <span class="ws-name">ClickUp</span>
+            <span class="ws-role">Member</span>
+          </button>
+          <button class="menu-item" role="menuitemradio" aria-checked="false">
+            <span class="ws-av" style="background-image:url('https://i.pravatar.cc/40?img=33')"></span>
+            <span class="ws-name">Folk</span>
+            <span class="ws-role">Guest</span>
+          </button>
+          <div class="menu-divider"></div>
+          <button class="menu-item" role="menuitem">
+            <i data-lucide="plus"></i>
+            <span class="label-text">New workspace…</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submenu: Invite -->
+      <div class="submenu-host">
+        <button class="menu-item" role="menuitem" aria-haspopup="true">
+          <i data-lucide="user-plus"></i>
+          <span class="label-text">Invite people</span>
+          <i data-lucide="chevron-right" class="sub-chev"></i>
+        </button>
+        <div class="submenu" role="menu">
+          <button class="menu-item" role="menuitem">
+            <i data-lucide="mail"></i>
+            <span class="label-text">By email</span>
+          </button>
+          <button class="menu-item" role="menuitem">
+            <i data-lucide="link"></i>
+            <span class="label-text">Share invite link</span>
+          </button>
+          <button class="menu-item" role="menuitem">
+            <i data-lucide="qr-code"></i>
+            <span class="label-text">QR code</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="menu-divider"></div>
+
+      <button class="menu-item danger" role="menuitem">
+        <i data-lucide="log-out"></i>
+        <span class="label-text">Sign out</span>
+        <span class="kbd">⇧⌘Q</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const dd = document.getElementById('menu');
+  const trig = document.getElementById('trigger');
+  let open = false;
+
+  function toggle(v) {
+    open = v !== undefined ? v : !open;
+    dd.classList.toggle('open', open);
+    // Reset any sticky-open submenus when the parent menu reopens.
+    if (!open) document.querySelectorAll('.submenu-host.open').forEach(s => s.classList.remove('open'));
+  }
+  trig.addEventListener('click', e => { e.stopPropagation(); toggle(); });
+  document.addEventListener('click', e => { if (open && !dd.contains(e.target)) toggle(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') toggle(false); });
+
+  // Close on regular item click (not on submenu-host)
+  dd.querySelectorAll('.menu-item:not([aria-haspopup="true"])').forEach(b => {
+    b.addEventListener('click', () => toggle(false));
+  });
+
+  // Submenu radio toggling (Theme + Workspace)
+  document.querySelectorAll('.submenu').forEach(sub => {
+    sub.querySelectorAll('[role="menuitemradio"]').forEach(item => {
+      item.addEventListener('click', e => {
+        e.stopPropagation();
+        sub.querySelectorAll('[role="menuitemradio"]').forEach(x => x.setAttribute('aria-checked', 'false'));
+        item.setAttribute('aria-checked', 'true');
+      });
+    });
+  });
+
+  if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>

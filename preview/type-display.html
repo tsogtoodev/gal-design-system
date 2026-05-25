@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Type · Display</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg-stage); background-image: var(--stage-pattern); padding: 24px; min-height: 100vh; box-sizing: border-box; }
+  .card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 20px 22px; box-shadow: var(--elev-1); }
+  .row { display: flex; align-items: center; gap: 12px; }
+  .col { display: flex; flex-direction: column; gap: 8px; }
+  .label { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); }
+  .meta { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); letter-spacing: 0.04em; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label" style="margin-bottom:14px;">Display & headings · Geist</div>
+  <div style="display:grid; grid-template-columns: 1fr auto; gap:12px 24px; align-items:baseline;">
+    <div style="font: 600 48px/1.05 var(--font-sans); letter-spacing:-0.02em; font-variant-numeric: tabular-nums;">$485,970</div>
+    <div class="meta">display · 48 / 600</div>
+    <div style="font: 600 28px/1.15 var(--font-sans); letter-spacing:-0.01em;">Customer preview</div>
+    <div class="meta">h1 · 28 / 600</div>
+    <div style="font: 600 22px/1.2 var(--font-sans); letter-spacing:-0.005em;">Wealth Overview</div>
+    <div class="meta">h2 · 22 / 600</div>
+    <div style="font: 600 18px/1.25 var(--font-sans);">Deployment Status</div>
+    <div class="meta">h3 · 18 / 600</div>
+  </div>
+</div>
+</body>
+</html>

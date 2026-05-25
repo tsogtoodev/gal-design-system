@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><title>Navigation menu</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-stage);background-image:var(--stage-pattern);padding:24px;min-height:100vh;box-sizing:border-box}
+  .card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--elev-1)}
+  .label{font-family:var(--font-mono);font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--fg-3)}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font:500 13px/1 var(--font-sans);cursor:pointer;border:1px solid transparent;transition:background 180ms;}
+  .btn-outline{background:var(--bg-surface);color:var(--fg-1);border-color:var(--border-strong);}
+  .btn-outline:hover{background:var(--bg-surface-2);}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-primary:hover{background:var(--accent-hover);}
+  .btn-ghost{background:transparent;color:var(--fg-2);}
+  .btn-ghost:hover{background:var(--bg-surface-2);color:var(--fg-1);}
+</style>
+</head>
+<body>
+<div class="card" style="padding:0;overflow:visible;">
+  <div class="nav-bar">
+    <div class="nav-brand">
+      <img src="../assets/logo.png" alt="Gal">Gal
+    </div>
+    <nav class="nav-list">
+      <div class="nav-item" data-mega="workspace">
+        <a>
+          <span class="nav-label">Workspace</span>
+          <i data-lucide="chevron-down" class="chev"></i>
+        </a>
+        <div class="mega" data-id="workspace">
+          <div class="mega-col">
+            <div class="mega-row" data-icon="layout-grid" data-title="Overview" data-sub="Workspace dashboard"></div>
+            <div class="mega-row" data-icon="git-branch" data-title="Workflows" data-sub="Build automations"></div>
+            <div class="mega-row" data-icon="bar-chart-3" data-title="Competitors" data-sub="Track your peers"></div>
+          </div>
+          <div class="mega-col">
+            <div class="mega-row" data-icon="sparkles" data-title="Prompts" data-sub="Library + history"></div>
+            <div class="mega-row" data-icon="file-text" data-title="Articles" data-sub="SEO content"></div>
+            <div class="mega-row" data-icon="line-chart" data-title="Reports" data-sub="Weekly summaries"></div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-item" data-mega="resources">
+        <a>
+          <span class="nav-label">Resources</span>
+          <i data-lucide="chevron-down" class="chev"></i>
+        </a>
+        <div class="mega" data-id="resources">
+          <div class="mega-col">
+            <div class="mega-row" data-icon="book-open" data-title="Docs" data-sub="API & integrations"></div>
+            <div class="mega-row" data-icon="graduation-cap" data-title="Guides" data-sub="Tutorials & best practices"></div>
+            <div class="mega-row" data-icon="messages-square" data-title="Community" data-sub="Forum & Discord"></div>
+          </div>
+        </div>
+      </div>
+      <a class="nav-item flat"><span class="nav-label">Pricing</span></a>
+      <a class="nav-item flat"><span class="nav-label">Customer stories &amp; case studies</span></a>
+      <a class="nav-item flat"><span class="nav-label">Changelog</span></a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" style="font-size:13px;">Sign in</button>
+      <button class="btn btn-primary" style="font-size:13px;">Start free</button>
+    </div>
+  </div>
+</div>
+<style>
+  /* Outer bar — flex shell with three zones */
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    min-width: 0;
+  }
+  .nav-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .nav-brand img { width: 22px; height: 30px; object-fit: contain; }
+
+  .nav-list {
+    display: flex;
+    gap: 4px;
+    flex: 1 1 auto;
+    min-width: 0;          /* lets the list shrink past contents */
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Each nav item is an inline-flex container with a label that can ellipsize
+     and a chevron that never shrinks. min-width:0 propagates so the label
+     actually shortens instead of the item overflowing into its siblings. */
+  .nav-item {
+    position: relative;
+    min-width: 0;
+    flex: 0 1 auto;        /* shrink but don't stretch */
+  }
+  .nav-item > a,
+  .nav-item.flat {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg-2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 140ms, color 140ms;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .nav-item:hover > a,
+  .nav-item.open > a,
+  .nav-item.flat:hover { background: var(--bg-surface-2); color: var(--fg-1); }
+
+  .nav-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 0 1 auto;
+  }
+  .chev {
+    width: 12px;
+    height: 12px;
+    color: var(--fg-3);
+    flex-shrink: 0;
+  }
+  .mega{position:absolute;top:calc(100% + 8px);left:0;background:var(--bg-surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--elev-2);padding:14px;display:flex;gap:10px;min-width:480px;z-index:20;opacity:0;transform:translateY(-4px) scale(0.98);transform-origin:top left;pointer-events:none;transition:opacity 220ms cubic-bezier(.2,.7,.2,1),transform 260ms cubic-bezier(.2,.7,.2,1);}
+  .nav-item.open .mega{opacity:1;transform:none;pointer-events:auto;}
+  .mega-col{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0;width:200px;}
+  .mega-row{display:flex;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background 140ms;align-items:flex-start;min-width:0;}
+  .mega-row:hover{background:var(--bg-surface-2);}
+  .mega-row .mr-ic{width:30px;height:30px;border-radius:8px;background:var(--bg-surface-2);color:var(--fg-1);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .mega-row .mr-ic svg{width:14px;height:14px;}
+  .mega-row:hover .mr-ic{background:var(--accent-soft);color:var(--accent);}
+  .mega-row .mr-body{flex:1;min-width:0;overflow:hidden;}
+  .mega-row .mr-title{font-size:13px;font-weight:600;color:var(--fg-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mega-row .mr-sub{font-size:11px;color:var(--fg-2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+</style>
+<script>
+  // Render mega rows
+  document.querySelectorAll('.mega-row').forEach(r => {
+    r.innerHTML = '<span class="mr-ic"><i data-lucide="' + r.dataset.icon + '"></i></span><div class="mr-body"><div class="mr-title">' + r.dataset.title + '</div><div class="mr-sub">' + r.dataset.sub + '</div></div>';
+  });
+  lucide.createIcons();
+
+  // Hover open with shared close timer (so moving between items doesn't flicker)
+  let openTimer = null;
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.addEventListener('mouseenter', () => {
+      clearTimeout(openTimer);
+      document.querySelectorAll('.nav-item.open').forEach(x => { if (x !== n) x.classList.remove('open'); });
+      if (n.querySelector('.mega')) n.classList.add('open');
+    });
+    n.addEventListener('mouseleave', () => {
+      openTimer = setTimeout(() => n.classList.remove('open'), 200);
+    });
+  });
+</script>
+
+<script>if (window.lucide) lucide.createIcons();</script>
+</body></html>
