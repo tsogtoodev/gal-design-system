@@ -388,7 +388,7 @@
               <div class="value" id="stat-components">—</div>
             </div>
             <div class="welcome-stat">
-              <span class="gal-label">AI elements</span>
+              <span class="gal-label">AI Components</span>
               <div class="value" id="stat-ai">—</div>
             </div>
           </div>
@@ -532,7 +532,7 @@
       g.items.forEach(it => lookup[it.id] = { ...it, group: g.label });
       if (g.label.startsWith('Foundations')) total.foundations += g.items.length;
       if (g.label === 'Components') total.components += g.items.length;
-      if (g.label === 'AI Elements') total.ai += g.items.length;
+      if (g.label === 'AI Components') total.ai += g.items.length;
     });
     document.getElementById('stat-foundations').textContent = total.foundations;
     document.getElementById('stat-components').textContent = total.components;

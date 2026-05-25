@@ -1,5 +1,5 @@
 // Gal AI app — main shell.
-// Demonstrates the full AI Elements library in a working conversation flow.
+// Demonstrates the full AI Components library in a working conversation flow.
 
 const { useState: useStateApp, useEffect: useEffApp, useRef: useRefApp } = React;
 
